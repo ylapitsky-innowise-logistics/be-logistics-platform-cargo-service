@@ -1,0 +1,13 @@
+# src/main/resources/application-dev.yml (разработка)
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/logistics_db
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+logging:
+  level:
+    org.springframework.security: DEBUG

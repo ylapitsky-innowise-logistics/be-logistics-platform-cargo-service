@@ -1,0 +1,15 @@
+#  src/main/resources/application-prod.yml (продакшен — через переменные)
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    com.innowise.logistics.cargoservice: INFO
