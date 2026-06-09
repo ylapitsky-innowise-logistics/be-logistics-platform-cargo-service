@@ -30,4 +30,31 @@
         <sqlFile path="v001/05-create-cargos-table.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
+    <!-- Версия 1.0.0: Заполнение основных таблиц Cargo Service тестовыми танными -->
+
+    <changeSet id="2026-06-09-006" author="Yury Lapitski">
+        <comment>PЗаполнение таблицы АДРЕСОВ тестовыми данными</comment>
+        <sqlFile path="v002/06-insert-test-addresses.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="2026-06-09-007-test-data" author="Yury Lapitski">
+        <comment>Заполнение таблицы артикулов тестовыми данными</comment>
+        <sqlFile path="v002/07-insert-test-skus.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="2026-06-09-008-test-data" author="Yury Lapitski">
+        <comment>Заполнение таблицы габаритных размеров тестовыми данными</comment>
+        <sqlFile path="v002/08-insert-test-dimensions.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="2026-06-09-009-test-data" author="Yury Lapitski">
+        <comment>Заполнение таблицы складских локаций тестовыми данными</comment>
+        <sqlFile path="v002/09-insert-test-locations.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="2026-06-09-010-test-data" author="Yury Lapitski">
+        <comment>Автогенерация 1000 грузов для нагрузочного тестирования</comment>
+        <sqlFile path="v002/10-insert-test-cargos.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
 </databaseChangeLog>
