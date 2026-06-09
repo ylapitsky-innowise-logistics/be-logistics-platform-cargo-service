@@ -1,4 +1,4 @@
-### Для встроенного HTTP-клиента в IDE
+# Для встроенного HTTP-клиента в IDE
 
 ### Получить первую страницу (20 элементов по умолчанию)
 GET http://localhost:8085/api/v1/catalog/items
@@ -13,3 +13,9 @@ GET http://localhost:8085/api/v1/catalog/items?page=0&size=20&sort=price,asc
 GET http://localhost:8085/api/v1/catalog/items?sort=createdAt,desc
 
 
+
+### Получить конкретный товар по его ID (например, ID = 500)
+GET http://localhost:8085/api/v1/catalog/items/500
+
+### Проверить обработку ошибки 404 (запрос несуществующего ID, например 9999)
+GET http://localhost:8085/api/v1/catalog/items/9999

@@ -1,0 +1,24 @@
+### Расчет стоимости товаров в корзине (Успешный сценарий)
+POST http://localhost:8085/api/v1/catalog/items/calculate-price
+Content-Type: application/json
+
+[
+  { "cargoId": 5, "quantity": 2 },
+  { "cargoId": 12, "quantity": 1 }
+]
+
+### Проверка валидации (Ошибка 400 - Передано отрицательное количество)
+POST http://localhost:8085/api/v1/catalog/items/calculate-price
+Content-Type: application/json
+
+[
+  { "cargoId": 5, "quantity": -3 }
+]
+
+### Проверка валидации (Ошибка 400 - Товар не существует в базе)
+POST http://localhost:8085/api/v1/catalog/items/calculate-price
+Content-Type: application/json
+
+[
+  { "cargoId": 999999, "quantity": 1 }
+]
