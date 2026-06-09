@@ -7,6 +7,7 @@ Content-Type: application/json
   { "cargoId": 12, "quantity": 1 }
 ]
 
+
 ### Проверка валидации (Ошибка 400 - Передано отрицательное количество)
 POST http://localhost:8085/api/v1/catalog/items/calculate-price
 Content-Type: application/json
@@ -14,6 +15,7 @@ Content-Type: application/json
 [
   { "cargoId": 5, "quantity": -3 }
 ]
+
 
 ### Проверка валидации (Ошибка 400 - Товар не существует в базе)
 POST http://localhost:8085/api/v1/catalog/items/calculate-price
