@@ -1,0 +1,33 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Версия 1.0.0: Основные таблицы Cargo Service -->
+
+    <changeSet id="2026-06-09-001" author="Yury Lapitski">
+        <comment>Инициализация таблицы адресов</comment>
+        <sqlFile path="v001/01-create-addresses-table.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="2026-06-09-002" author="Yury Lapitski">
+        <comment>Инициализация таблицы артикулов</comment>
+        <sqlFile path="v001/02-create-skus-table.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="2026-06-09-003" author="Yury Lapitski">
+        <comment>Инициализация таблицы габаритов</comment>
+        <sqlFile path="v001/03-create-dimensions-table.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="2026-06-09-004" author="Yury Lapitski">
+        <comment>Инициализация таблицы складских ячеек</comment>
+        <sqlFile path="v001/04-create-locations-table.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="2026-06-09-005" author="Yury Lapitski">
+        <comment>Инициализация таблицы грузов</comment>
+        <sqlFile path="v001/05-create-cargos-table.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+</databaseChangeLog>

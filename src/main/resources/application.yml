@@ -1,12 +1,15 @@
 # src/main/resources/application.yml для cargo-service
 
+server:
+  port: 8085
+
 spring:
   application:
     name: be-logistics-platform-cargo-service
 
   # DataSource для PostgreSQL (основная БД)
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=cargo_schema
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
