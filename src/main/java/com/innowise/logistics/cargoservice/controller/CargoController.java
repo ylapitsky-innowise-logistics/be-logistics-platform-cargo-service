@@ -1,14 +1,19 @@
 package com.innowise.logistics.cargoservice.controller;
 
-import com.innowise.logistics.cargoservice.dto.CargoCalculationRequest;
-import com.innowise.logistics.cargoservice.dto.CargoCalculationResponse;
-import com.innowise.logistics.cargoservice.dto.CargoResponseDto;
+import com.innowise.logistics.cargoservice.dto.request.CargoCalculationRequest;
+import com.innowise.logistics.cargoservice.dto.request.CargoReservationRequest;
+import com.innowise.logistics.cargoservice.dto.response.CargoCalculationResponse;
+import com.innowise.logistics.cargoservice.dto.response.CargoReservationResponse;
+import com.innowise.logistics.cargoservice.dto.response.CargoResponseDto;
 import com.innowise.logistics.cargoservice.service.CargoService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,11 +40,53 @@ public class CargoController {
         return ResponseEntity.ok(item);
     }
 
+//    @PostMapping("/items/calculate-price")
+//    public ResponseEntity<CargoCalculationResponse> calculatePrice(
+//            @RequestBody
+//            @NotEmpty(message = "Список артикулов товаров не может быть пустым")
+//            List<@Valid CargoCalculationRequest> requests) {
+//
+//        CargoCalculationResponse response = cargoService.calculatePrice(requests);
+//        return ResponseEntity.ok(response);
+//    }
+
     @PostMapping("/items/calculate-price")
     public ResponseEntity<CargoCalculationResponse> calculatePrice(
-            @Valid @RequestBody List<CargoCalculationRequest> requests) {
+            @RequestBody
+            @NotEmpty(message = "Список товаров не может быть пустым")
+            List<@Valid Long> requests) {
 
         CargoCalculationResponse response = cargoService.calculatePrice(requests);
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/reservations")
+    public ResponseEntity<CargoReservationResponse> reserveItems(
+            @RequestBody
+            @NotEmpty(message = "Список резервируемых товаров не может быть пустым")
+            List<@Valid CargoReservationRequest> requests) {
+        CargoReservationResponse response = cargoService.reserveItems(requests);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+//    @PostMapping("/reservations/confirm")
+//    public ResponseEntity<Void> confirmReservation(
+//            @RequestBody @Valid ConfirmReservationRequest request) {
+//        cargoService.confirmReservation(request);
+//        return ResponseEntity.ok().build();
+//    }
+//
+//    @PostMapping("/reservations/cancel")
+//    public ResponseEntity<Void> cancelReservation(
+//            @RequestParam UUID orderId) {
+//        cargoService.cancelReservation(orderId);
+//        return ResponseEntity.ok().build();
+//    }
+//
+//    @GetMapping("/reservations/{orderId}")
+//    public ResponseEntity<CargoReservationResponse> getReservationByOrderId(
+//            @PathVariable UUID orderId) {
+//        CargoReservationResponse response = cargoService.getReservationByOrderId(orderId);
+//        return ResponseEntity.ok(response);
+//    }
 }

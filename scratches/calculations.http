@@ -3,8 +3,7 @@ POST http://localhost:8085/api/v1/catalog/items/calculate-price
 Content-Type: application/json
 
 [
-  { "cargoId": 5, "quantity": 2 },
-  { "cargoId": 12, "quantity": 1 }
+  2, 5
 ]
 
 

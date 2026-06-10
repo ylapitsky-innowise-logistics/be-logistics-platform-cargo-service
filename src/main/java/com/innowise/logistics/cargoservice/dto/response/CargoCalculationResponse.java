@@ -1,4 +1,4 @@
-package com.innowise.logistics.cargoservice.dto;
+package com.innowise.logistics.cargoservice.dto.response;
 
 import java.math.BigDecimal;
 

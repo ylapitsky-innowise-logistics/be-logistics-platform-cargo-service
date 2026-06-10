@@ -1,4 +1,4 @@
-package com.innowise.logistics.cargoservice.dto;
+package com.innowise.logistics.cargoservice.dto.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
