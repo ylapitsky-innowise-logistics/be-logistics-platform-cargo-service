@@ -7,12 +7,16 @@ import com.innowise.logistics.cargoservice.dto.response.CargoReservationResponse
 import com.innowise.logistics.cargoservice.dto.response.CargoResponseDto;
 import com.innowise.logistics.cargoservice.entity.Cargo;
 import com.innowise.logistics.cargoservice.entity.Reservation;
+import com.innowise.logistics.cargoservice.entity.Sku;
 import com.innowise.logistics.cargoservice.entity.Status;
 import com.innowise.logistics.cargoservice.repository.CargoRepository;
+import com.innowise.logistics.cargoservice.repository.ReservationRepository;
+import com.innowise.logistics.cargoservice.repository.SkuRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,6 +35,8 @@ import static com.innowise.logistics.cargoservice.constant.Constants.CYRRENCY;
 public class CargoService {
 
     private final CargoRepository cargoRepository;
+    private final ReservationRepository reservationRepository;
+    private final SkuRepository skuRepository;
 
     @Transactional(readOnly = true)
     public Page<CargoResponseDto> getCatalogItems(Pageable pageable) {
@@ -132,7 +138,7 @@ public class CargoService {
     /// ///////////////////////////////////////////////////////////////////////////////////
     // Резервирование
 
-/*
+
     @Transactional
     public CargoReservationResponse reserveItems(List<CargoReservationRequest> requests) {
         log.info("Попытка резервирования списка {} (кол-во) товаров.", requests.size());
@@ -142,123 +148,64 @@ public class CargoService {
         // 3. возможность разбронирования товаров
         // 4. возможность отгрузки товаров в доставку
 
-        // 1. Проверяем, нет ли уже активной брони для этого orderId
-        Optional<Reservation> existingReservation = reservationRepository.findByOrderId(request.getOrderId());
-        if (existingReservation.isPresent()) {
-            Reservation existing = existingReservation.get();
-            if (existing.getReservationStatus() == ReservationStatus.PENDING) {
+
+        Set<Cargo> existCargos = new HashSet<>(); // Список ВСЕХ Валидных товары из базы, подлежащих резервированию
+        for (CargoReservationRequest request : requests) {
+            Optional<Sku> sku = skuRepository.findById(request.skuId());
+            if (sku.isEmpty()) {
+                log.error("Артикула с id = {} не существует", request.skuId());
                 throw new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        String.format("Активная бронь для заказа %s уже существует", request.getOrderId())
+                        HttpStatus.BAD_REQUEST,
+                        "Передан не верный артикул товара."
                 );
             }
+
+            List<Cargo> existCargosBySkus = cargoRepository.findFirstNAvailableBySkuIdAndStatus(
+                    request.skuId(),
+                    Status.AVAILABLE,
+                    PageRequest.of(0, request.quantity()));
+
+            if (!request.quantity().equals(existCargosBySkus.size())) {
+                log.error("Недостаточное количество товара с артикулом {} на складе. Нужно {} а аеть в наличии только {}",
+                        sku.get(),
+                        request.quantity(),
+                        existCargosBySkus.size());
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Недостаточное количество товара на складе."
+                );
+            }
+            existCargos.addAll(existCargosBySkus);
         }
 
-        // 2. Получаем все товары из БД одним запросом
-        Set<Long> cargoIds = request.getItems().stream()
-                .map(CargoReservationRequest.ReservationItem::getId)
-                .collect(Collectors.toSet());
-
-        Map<Long, Cargo> cargoMap = cargoRepository.findAllById(cargoIds).stream()
-                .collect(Collectors.toMap(Cargo::getId, cargo -> cargo));
-
-        // 3. Валидация и расчёт
+        // резервируем
+        Set<Long> existCargoIds = new HashSet<>();
         BigDecimal totalPrice = BigDecimal.ZERO;
         Double totalWeight = 0.0;
-        Integer totalQuantity = 0;
-        List<ReservationItem> reservationItems = new ArrayList<>();
 
-        for (CargoReservationRequest.ReservationItem item : request.getItems()) {
-            Cargo cargo = cargoMap.get(item.getId());
-
-            if (cargo == null) {
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        String.format("Товар с id = %d не существует", item.getId())
-                );
-            }
-
-            if (cargo.getStatus() != Status.AVAILABLE) {
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        String.format("Товар с id = %d недоступен для резервирования (статус: %s)",
-                                item.getId(), cargo.getStatus())
-                );
-            }
-
-            // Проверка достаточности количества (если нужно, добавьте поле availableQuantity в Cargo)
-            // if (cargo.getAvailableQuantity() < item.getQuantity()) { ... }
-
-            BigDecimal itemTotalPrice = cargo.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
-            totalPrice = totalPrice.add(itemTotalPrice);
-            totalWeight += cargo.getWeight() * item.getQuantity();
-            totalQuantity += item.getQuantity();
-
-            // Создаём объект ReservationItem (без сохранения пока)
-            ReservationItem reservationItem = ReservationItem.builder()
-                    .cargo(cargo)
-                    .requestedQuantity(item.getQuantity())
-                    .reservedQuantity(item.getQuantity()) // TODO: если частичное резервирование
-                    .pricePerUnit(cargo.getPrice())
-                    .totalPrice(itemTotalPrice)
-                    .build();
-            reservationItems.add(reservationItem);
+        for (Cargo cargo: existCargos) {
+            totalPrice = totalPrice.add(cargo.getPrice());
+            totalWeight += cargo.getWeight();
+            existCargoIds.add(cargo.getId());
+            cargo.updateStatus(Status.RESERVED);
+            cargoRepository.save(cargo);
         }
 
-        // 4. Создаём и сохраняем Reservation
-        Reservation reservation = Reservation.builder()
-                .orderId(request.getOrderId())
-                .reservationStatus(ReservationStatus.PENDING)
-                .expiresAt(request.getExpiresAt())
-                .createdAt(Instant.now())
-                .totalPrice(totalPrice)
-                .totalWeight(totalWeight)
-                .totalQuantity(totalQuantity)
-                .currency(CYRRENCY)
-                .build();
-
+        Reservation reservation = new Reservation();
+        reservation.setCargoIds(existCargoIds);
+        reservation.setIsActive(true);
+        reservation.setTotalPrice(totalPrice);
+        reservation.setTotalWeight(totalWeight);
+        reservation.setTotalQuantity(existCargos.size());
+        reservation.setCurrency(CYRRENCY);
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        // 5. Привязываем reservation к каждому item и сохраняем
-        for (ReservationItem item : reservationItems) {
-            item.setReservation(savedReservation);
-        }
-        reservationItemRepository.saveAll(reservationItems);
-
-        // 6. Меняем статус товаров на RESERVED
-        for (Cargo cargo : cargoMap.values()) {
-            cargo.setStatus(Status.RESERVED);
-            cargo.setStatusAt(Instant.now());
-        }
-        cargoRepository.saveAll(cargoMap.values());
-
-        // 7. Формируем ответ
-        List<CargoReservationResponse.ReservedItem> responseItems = reservationItems.stream()
-                .map(item -> new CargoReservationResponse.ReservedItem(
-                        item.getCargo().getId(),
-                        item.getCargo().getName(),
-                        item.getRequestedQuantity(),
-                        item.getReservedQuantity(),
-                        item.getPricePerUnit(),
-                        item.getTotalPrice()
-                ))
-                .toList();
-
         return new CargoReservationResponse(
-                savedReservation.getOrderId(),
                 savedReservation.getId(),
                 savedReservation.getCreatedAt(),
-                savedReservation.getExpiresAt(),
-                ReservationStatus.PENDING,
-                responseItems,
                 savedReservation.getTotalPrice(),
                 savedReservation.getTotalWeight(),
                 savedReservation.getTotalQuantity(),
-                savedReservation.getCurrency()
-        );
+                CYRRENCY);
     }
-    */
-
-
-
 }
