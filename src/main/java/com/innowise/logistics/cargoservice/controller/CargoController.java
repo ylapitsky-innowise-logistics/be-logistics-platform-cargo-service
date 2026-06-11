@@ -1,10 +1,7 @@
 package com.innowise.logistics.cargoservice.controller;
 
 import com.innowise.logistics.cargoservice.dto.request.CargoReservationRequest;
-import com.innowise.logistics.cargoservice.dto.response.CargoCalculationResponse;
-import com.innowise.logistics.cargoservice.dto.response.CargoReservationResponse;
-import com.innowise.logistics.cargoservice.dto.response.CargoViewResponse;
-import com.innowise.logistics.cargoservice.dto.response.PageResponse;
+import com.innowise.logistics.cargoservice.dto.response.*;
 import com.innowise.logistics.cargoservice.service.CargoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -26,7 +23,8 @@ public class CargoController {
 
     private final CargoService cargoService;
 
-
+    // ########## ########## ##########   ПРОСМОТРЫ  ########## ########## ##########
+    // Просмотр поштучного перечня доступных товаров ИЗ БД
     @GetMapping("/items")
     public ResponseEntity<PageResponse<CargoViewResponse>> getCatalogItems(
             @PageableDefault(size = 20, sort = "id") Pageable pageable) {
@@ -35,13 +33,31 @@ public class CargoController {
         return ResponseEntity.ok(PageResponse.from(page));
     }
 
+    // Просмотр выбранного из БД товара по его id
     @GetMapping("/items/{id}")
     public ResponseEntity<CargoViewResponse> getCatalogItemById(@PathVariable Long id) {
         CargoViewResponse item = cargoService.getCatalogItemById(id);
         return ResponseEntity.ok(item);
     }
 
+    /*
+    GET	/api/v1/catalog/skus - Все SKU с количеством доступных товаров
+    GET	/api/v1/catalog/skus/{skuId}/items	skuId — ID артикула	Все товары конкретного SKU
+    GET	/api/v1/catalog/skus/grouped-by-category	—	SKU сгруппированные по категориям
+    /api/v1/catalog/skus/availability   -   Список SKU
+     */
 
+    // 1️⃣ Просмотр списка всех SKU из БД с количеством доступных товаров
+    @GetMapping("/skus")
+    public ResponseEntity<PageResponse<SkuAvailabilityResponse>> getAvailableSkus(
+            @PageableDefault(size = 10, sort = "sku.id") Pageable pageable) {
+
+        Page<SkuAvailabilityResponse> page = cargoService.getAvailableSkus(pageable);
+        return ResponseEntity.ok(PageResponse.from(page));
+    }
+
+
+    // ########## ########## ##########   РАССЧЕТЫ  ########## ########## ##########
     @PostMapping("/items/calculate-price")
     public ResponseEntity<CargoCalculationResponse> calculatePrice(
             @RequestBody

@@ -4,6 +4,7 @@ import com.innowise.logistics.cargoservice.dto.request.CargoReservationRequest;
 import com.innowise.logistics.cargoservice.dto.response.CargoCalculationResponse;
 import com.innowise.logistics.cargoservice.dto.response.CargoReservationResponse;
 import com.innowise.logistics.cargoservice.dto.response.CargoViewResponse;
+import com.innowise.logistics.cargoservice.dto.response.SkuAvailabilityResponse;
 import com.innowise.logistics.cargoservice.entity.Cargo;
 import com.innowise.logistics.cargoservice.entity.Reservation;
 import com.innowise.logistics.cargoservice.entity.Sku;
@@ -100,6 +101,11 @@ public class CargoService {
         }
 
         return new CargoCalculationResponse(totalPrice, totalWeight, cargoIds.size(), CYRRENCY);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SkuAvailabilityResponse> getAvailableSkus(Pageable pageable) {
+        return cargoRepository.findAvailableSkuStats(pageable);
     }
 
 

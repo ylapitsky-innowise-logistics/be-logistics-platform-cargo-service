@@ -19,3 +19,13 @@ GET http://localhost:8085/api/v1/catalog/items/500
 
 ### Проверить обработку ошибки 404 (запрос несуществующего ID, например 9999)
 GET http://localhost:8085/api/v1/catalog/items/9999
+
+
+
+
+### Получить первую страницу товаров по АРТИКУЛАМ (20 sku по умолчанию)
+GET http://localhost:8085/api/v1/catalog/skus
+
+### Получить вторую страницу товаров по АРТИКУЛАМ с размером в 3 элементов (индексация с 0)
+GET http://localhost:8085/api/v1/catalog/skus?page=2&size=3
+
