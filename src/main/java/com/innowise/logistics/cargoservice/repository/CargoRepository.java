@@ -64,4 +64,7 @@ public interface CargoRepository extends JpaRepository<Cargo, Long> {
             GROUP BY c.sku.id, c.sku.name, c.dimension
         """)
     Page<SkuAvailabilityResponse> findAvailableSkuStats(Pageable pageable);
+
+    List<Cargo> findBySkuIdAndStatus(Long skuId, Status status);
+
 }

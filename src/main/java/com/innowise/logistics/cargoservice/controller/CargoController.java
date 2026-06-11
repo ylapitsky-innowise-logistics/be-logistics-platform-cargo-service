@@ -56,6 +56,12 @@ public class CargoController {
         return ResponseEntity.ok(PageResponse.from(page));
     }
 
+    // 2️⃣ Все доступные товары по конкретному SKU
+    @GetMapping("/skus/{skuId}/items")
+    public ResponseEntity<List<SkuItemsResponse>> getAvailableItemsBySku(@PathVariable Long skuId) {
+        return ResponseEntity.ok(cargoService.getAvailableItemsBySku(skuId));
+    }
+
 
     // ########## ########## ##########   РАССЧЕТЫ  ########## ########## ##########
     @PostMapping("/items/calculate-price")
