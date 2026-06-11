@@ -3,8 +3,8 @@
 ### Получить первую страницу (20 элементов по умолчанию)
 GET http://localhost:8085/api/v1/catalog/items
 
-### Получить вторую страницу с размером в 10 элементов (индексация с 0)
-GET http://localhost:8085/api/v1/catalog/items?page=1&size=10
+### Получить вторую страницу с размером в 3 элементов (индексация с 0)
+GET http://localhost:8085/api/v1/catalog/items?page=2&size=3
 
 ### Отсортировать по цене (по возрастанию)
 GET http://localhost:8085/api/v1/catalog/items?page=0&size=20&sort=price,asc

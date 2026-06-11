@@ -1,15 +1,13 @@
 package com.innowise.logistics.cargoservice.controller;
 
-import com.innowise.logistics.cargoservice.dto.request.CargoCalculationRequest;
 import com.innowise.logistics.cargoservice.dto.request.CargoReservationRequest;
 import com.innowise.logistics.cargoservice.dto.response.CargoCalculationResponse;
 import com.innowise.logistics.cargoservice.dto.response.CargoReservationResponse;
-import com.innowise.logistics.cargoservice.dto.response.CargoResponseDto;
+import com.innowise.logistics.cargoservice.dto.response.CargoViewResponse;
 import com.innowise.logistics.cargoservice.service.CargoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,16 +27,16 @@ public class CargoController {
 
 
     @GetMapping("/items")
-    public ResponseEntity<Page<CargoResponseDto>> getCatalogItems(
+    public ResponseEntity<Page<CargoViewResponse>> getCatalogItems(
             @PageableDefault(size = 20, sort = "id") Pageable pageable) {
 
-        Page<CargoResponseDto> items = cargoService.getCatalogItems(pageable);
+        Page<CargoViewResponse> items = cargoService.getCatalogItems(pageable);
         return ResponseEntity.ok(items);
     }
 
     @GetMapping("/items/{id}")
-    public ResponseEntity<CargoResponseDto> getCatalogItemById(@PathVariable Long id) {
-        CargoResponseDto item = cargoService.getCatalogItemById(id);
+    public ResponseEntity<CargoViewResponse> getCatalogItemById(@PathVariable Long id) {
+        CargoViewResponse item = cargoService.getCatalogItemById(id);
         return ResponseEntity.ok(item);
     }
 

@@ -1,18 +1,17 @@
 package com.innowise.logistics.cargoservice.service;
 
-import com.innowise.logistics.cargoservice.dto.request.CargoCalculationRequest;
 import com.innowise.logistics.cargoservice.dto.request.CargoReservationRequest;
 import com.innowise.logistics.cargoservice.dto.response.CargoCalculationResponse;
 import com.innowise.logistics.cargoservice.dto.response.CargoReservationResponse;
-import com.innowise.logistics.cargoservice.dto.response.CargoResponseDto;
+import com.innowise.logistics.cargoservice.dto.response.CargoViewResponse;
 import com.innowise.logistics.cargoservice.entity.Cargo;
 import com.innowise.logistics.cargoservice.entity.Reservation;
 import com.innowise.logistics.cargoservice.entity.Sku;
 import com.innowise.logistics.cargoservice.entity.Status;
+import com.innowise.logistics.cargoservice.mapper.CargoMapper;
 import com.innowise.logistics.cargoservice.repository.CargoRepository;
 import com.innowise.logistics.cargoservice.repository.ReservationRepository;
 import com.innowise.logistics.cargoservice.repository.SkuRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -37,46 +36,20 @@ public class CargoService {
     private final CargoRepository cargoRepository;
     private final ReservationRepository reservationRepository;
     private final SkuRepository skuRepository;
+    private final CargoMapper cargoMapper;
 
     @Transactional(readOnly = true)
-    public Page<CargoResponseDto> getCatalogItems(Pageable pageable) {
+    public Page<CargoViewResponse> getCatalogItems(Pageable pageable) {
         Page<Cargo> cargoPage = cargoRepository.findAll(pageable);
 
         // Маппим Entity в DTO "на лету"
-        return cargoPage.map(this::convertToDto);
+        return cargoPage.map(cargoMapper::toDto);
     }
-
-    private CargoResponseDto convertToDto(Cargo cargo) {
-        String dimensionsStr = String.format("%.1fx%.1fx%.1f",
-                cargo.getDimension().getLength(),
-                cargo.getDimension().getWidth(),
-                cargo.getDimension().getHeight());
-
-        String locationStr = String.format("%s / %s",
-                cargo.getLocation().getRack(),
-                cargo.getLocation().getShelf() != null ? cargo.getLocation().getShelf() : "Нет полки");
-
-        return new CargoResponseDto(
-                cargo.getId(),
-                cargo.getSku().getName(),
-                cargo.getMongoDocId(),
-                cargo.getName(),
-                cargo.getCategory(),
-                cargo.getWeight(),
-                dimensionsStr,
-                cargo.getPrice(),
-                locationStr,
-                cargo.getCreatedAt(),
-                cargo.getStatus(),
-                cargo.getStatusAt()
-        );
-    }
-
 
     @Transactional(readOnly = true)
-    public CargoResponseDto getCatalogItemById(Long id) {
+    public CargoViewResponse getCatalogItemById(Long id) {
         return cargoRepository.findById(id)
-                .map(this::convertToDto)
+                .map(cargoMapper::toDto)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         String.format("Товар с id = %d не найден в каталоге", id)
