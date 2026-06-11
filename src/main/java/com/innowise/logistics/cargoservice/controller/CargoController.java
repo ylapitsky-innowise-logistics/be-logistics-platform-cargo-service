@@ -8,6 +8,7 @@ import com.innowise.logistics.cargoservice.dto.response.CargoResponseDto;
 import com.innowise.logistics.cargoservice.service.CargoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ public class CargoController {
 
     private final CargoService cargoService;
 
+
     @GetMapping("/items")
     public ResponseEntity<Page<CargoResponseDto>> getCatalogItems(
             @PageableDefault(size = 20, sort = "id") Pageable pageable) {
@@ -40,31 +42,24 @@ public class CargoController {
         return ResponseEntity.ok(item);
     }
 
-//    @PostMapping("/items/calculate-price")
-//    public ResponseEntity<CargoCalculationResponse> calculatePrice(
-//            @RequestBody
-//            @NotEmpty(message = "Список артикулов товаров не может быть пустым")
-//            List<@Valid CargoCalculationRequest> requests) {
-//
-//        CargoCalculationResponse response = cargoService.calculatePrice(requests);
-//        return ResponseEntity.ok(response);
-//    }
 
     @PostMapping("/items/calculate-price")
     public ResponseEntity<CargoCalculationResponse> calculatePrice(
             @RequestBody
-            @NotEmpty(message = "Список товаров не может быть пустым")
-            List<@Valid Long> requests) {
+            @Valid                                                                      // @Valid на параметре – включает валидацию для @NotEmpty
+            @NotEmpty(message = "Список товаров не может быть пустым")                  // @NotEmpty – проверяет (сначала), что список не null и не пуст
+            List<@NotNull (message = "ID товара не может быть = null") Long> cargoIds) {  // List<@NotNull Long> – (во 2-ю очередь) при наличии @Valid на параметре будет проверять, что каждый элемент списка не null
 
-        CargoCalculationResponse response = cargoService.calculatePrice(requests);
+        CargoCalculationResponse response = cargoService.calculatePrice(cargoIds);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/reservations")
     public ResponseEntity<CargoReservationResponse> reserveItems(
             @RequestBody
+            @Valid
             @NotEmpty(message = "Список резервируемых товаров не может быть пустым")
-            List<@Valid CargoReservationRequest> requests) {
+            List<@NotNull (message = "Запрос по артикулу не может быть = null") CargoReservationRequest> requests) {
         CargoReservationResponse response = cargoService.reserveItems(requests);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

@@ -84,53 +84,49 @@ public class CargoService {
     }
 
 
+    // прилетел список id товаров, выплевываем стоимость, зашитую в объекте CargoCalculationResponse (+немного контекста)
     @Transactional(readOnly = true)
-    public CargoCalculationResponse calculatePrice(List<Long> requests) {
-        log.debug("Попытка рассчета стоимости {} товаров из списка: {}", requests.size(), Arrays.toString(requests.toArray()));
-        if (requests == null || requests.isEmpty()) {
-            log.error("Список товаров пуст или == null");
+    public CargoCalculationResponse calculatePrice(List<Long> cargoIds) {
+        log.debug("Попытка рассчета стоимости {} товаров из списка: {}", cargoIds.size(), Arrays.toString(cargoIds.toArray()));
+        if (cargoIds.isEmpty()) {
+            log.error("Список товаров пуст");
             return new CargoCalculationResponse(BigDecimal.ZERO, 0.0, 0, CYRRENCY);
         }
 
-        // 1. Извлекаем уникальные ID, чтобы сделать ОДИН пачкой запрос к БД
-        Set<Long> cargoIds = new HashSet<>(requests);
-
-        // 2. Достаем сущности из базы и превращаем в Map для быстрого доступа O(1)
+        // 1. Достаем сущности из базы и превращаем в Map для быстрого доступа O(1)
         Map<Long, Cargo> cargoMap = cargoRepository.findAllById(cargoIds).stream()
                 .collect(Collectors.toMap(Cargo::getId, cargo -> cargo));
 
         BigDecimal totalPrice = BigDecimal.ZERO;
         Double totalWeight = 0.0;
-        int totalItemsCount = 0;
 
-        // 3. Бежим по запросу пользователя и калькулируем в памяти
-        for (Long req : requests) {
-            Cargo cargo = cargoMap.get(req);
+        // 2. Бежим по запросу пользователя и калькулируем в памяти
+        for (Long id : cargoIds) {
+            Cargo cargo = cargoMap.get(id);
 
             // Валидация: существует ли товар вообще?
             if (cargo == null) {
-                log.error("Товар с id = {} не существует в каталоге", req);
+                log.warn("Товар с id = {} не существует в каталоге", id);  // предупреждение, т.к. ожидаемое явление
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
-                        String.format("Товар с id = %d не существует в каталоге", req)
+                        String.format("Товар с id = %d не существует в каталоге", id)
                 );
             }
 
             // Валидация: доступен ли он? (Если его статус != AVAILABLE, его нельзя считать в корзину)
             if (cargo.getStatus() != Status.AVAILABLE) {
-                log.error("Товар с id = {} сейчас недоступен для покупки (Статус: {})", req, cargo.getStatus());
+                log.warn("Товар с id = {} сейчас недоступен для покупки (Статус: {})", id, cargo.getStatus());
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
-                        String.format("Товар с id = %d сейчас недоступен для покупки", req)
+                        String.format("Товар с id = %d сейчас недоступен для покупки", id)
                 );
             }
 
             totalPrice = totalPrice.add(cargo.getPrice());
             totalWeight += cargo.getWeight();
-            totalItemsCount += req;
         }
 
-        return new CargoCalculationResponse(totalPrice, totalWeight, totalItemsCount, CYRRENCY);
+        return new CargoCalculationResponse(totalPrice, totalWeight, cargoIds.size(), CYRRENCY);
     }
 
 
@@ -141,16 +137,24 @@ public class CargoService {
 
     @Transactional
     public CargoReservationResponse reserveItems(List<CargoReservationRequest> requests) {
-        log.info("Попытка резервирования списка {} (кол-во) товаров.", requests.size());
+        log.info("Попытка резервирования списка товаров из {} шт.", requests.size());
+
+        if (requests.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Список артикулов товаров пуст");
+        }
 
         // 1. Делаем выборку по каждому артикулу. Если товаров не хватает - выдаем ошибку и сообщаем сколько на данный момент свободно товаров по каждому из переданных артикулу
-        // 2. Если все хорошо - Бронируем выбранные товары и возвращаем ссылку на их бронь
-        // 3. возможность разбронирования товаров
-        // 4. возможность отгрузки товаров в доставку
-
-
-        Set<Cargo> existCargos = new HashSet<>(); // Список ВСЕХ Валидных товары из базы, подлежащих резервированию
+        Set<Cargo> reservationCargos = new HashSet<>();                       // Список найденных по запросу товаров, подлежащих резервированию
         for (CargoReservationRequest request : requests) {
+            if (request.quantity() <= 0) {
+                log.error("Для артикула с id = {} количество = {}. Количество должно быть > 0",
+                        request.skuId(), request.quantity());
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Количество должно быть > 0"
+                );
+            }
+
             Optional<Sku> sku = skuRepository.findById(request.skuId());
             if (sku.isEmpty()) {
                 log.error("Артикула с id = {} не существует", request.skuId());
@@ -160,45 +164,46 @@ public class CargoService {
                 );
             }
 
-            List<Cargo> existCargosBySkus = cargoRepository.findFirstNAvailableBySkuIdAndStatus(
+            List<Cargo> availableCargosBySkus = cargoRepository.findFirstNAvailableBySkuIdAndStatus(
                     request.skuId(),
                     Status.AVAILABLE,
                     PageRequest.of(0, request.quantity()));
 
-            if (!request.quantity().equals(existCargosBySkus.size())) {
+            if (!request.quantity().equals(availableCargosBySkus.size())) {
                 log.error("Недостаточное количество товара с артикулом {} на складе. Нужно {} а аеть в наличии только {}",
                         sku.get(),
                         request.quantity(),
-                        existCargosBySkus.size());
+                        availableCargosBySkus.size());
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Недостаточное количество товара на складе."
                 );
             }
-            existCargos.addAll(existCargosBySkus);
+            reservationCargos.addAll(availableCargosBySkus);
         }
 
-        // резервируем
-        Set<Long> existCargoIds = new HashSet<>();
+        // 2. Если все хорошо - Бронируем выбранные товары и возвращаем ссылку на их бронь
+        Set<Long> reservationCargoIds = new HashSet<>();
         BigDecimal totalPrice = BigDecimal.ZERO;
         Double totalWeight = 0.0;
 
-        for (Cargo cargo: existCargos) {
+        for (Cargo cargo: reservationCargos) {
             totalPrice = totalPrice.add(cargo.getPrice());
             totalWeight += cargo.getWeight();
-            existCargoIds.add(cargo.getId());
+            reservationCargoIds.add(cargo.getId());
             cargo.updateStatus(Status.RESERVED);
-            cargoRepository.save(cargo);
         }
+        cargoRepository.saveAll(reservationCargos);
 
         Reservation reservation = new Reservation();
-        reservation.setCargoIds(existCargoIds);
+        reservation.setCargoIds(reservationCargoIds);
         reservation.setIsActive(true);
         reservation.setTotalPrice(totalPrice);
         reservation.setTotalWeight(totalWeight);
-        reservation.setTotalQuantity(existCargos.size());
+        reservation.setTotalQuantity(reservationCargos.size());
         reservation.setCurrency(CYRRENCY);
         Reservation savedReservation = reservationRepository.save(reservation);
+        log.info("Закончено резервирование {} товаров. id={}", reservation.getCargoIds().size(), reservation.getId());
 
         return new CargoReservationResponse(
                 savedReservation.getId(),
@@ -207,5 +212,8 @@ public class CargoService {
                 savedReservation.getTotalWeight(),
                 savedReservation.getTotalQuantity(),
                 CYRRENCY);
+
+        // 3. возможность разбронирования товаров
+        // 4. возможность отгрузки товаров в доставку
     }
 }
