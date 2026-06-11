@@ -1,0 +1,80 @@
+### 1. Зарезервировать 2 товара
+POST http://localhost:8085/api/v1/catalog/reservations
+Content-Type: application/json
+
+[
+  {
+    "skuId": 1,
+    "quantity": 1
+  },
+  {
+    "skuId": 2,
+    "quantity": 1
+  }
+]
+
+### 5. Зарезервировать 1 товар (минимальный запрос)
+POST http://localhost:8085/api/v1/catalog/reservations
+Content-Type: application/json
+
+[
+  {
+    "cargoId": 1,
+    "quantity": 1
+  }
+]
+
+### 6. Ошибка: пустой список
+POST http://localhost:8085/api/v1/catalog/reservations
+Content-Type: application/json
+
+[]
+
+### 7. Ошибка: null в списке
+POST http://localhost:8085/api/v1/catalog/reservations
+Content-Type: application/json
+
+[
+  {
+    "cargoId": 1,
+    "quantity": 2
+  },
+  null,
+  {
+    "cargoId": 3,
+    "quantity": 5
+  }
+]
+
+### 8. Ошибка: отрицательное количество
+POST http://localhost:8085/api/v1/catalog/reservations
+Content-Type: application/json
+
+[
+  {
+    "cargoId": 1,
+    "quantity": -1
+  }
+]
+
+### 9. Ошибка: нулевое количество
+POST http://localhost:8085/api/v1/catalog/reservations
+Content-Type: application/json
+
+[
+  {
+    "cargoId": 1,
+    "quantity": 0
+  }
+]
+
+### 10. Ошибка: несуществующий cargoId
+POST http://localhost:8085/api/v1/catalog/reservations
+Content-Type: application/json
+
+[
+  {
+    "cargoId": 99999,
+    "quantity": 1
+  }
+]

@@ -146,18 +146,18 @@ public class CargoService {
         // 1. Делаем выборку по каждому артикулу. Если товаров не хватает - выдаем ошибку и сообщаем сколько на данный момент свободно товаров по каждому из переданных артикулу
         Set<Cargo> reservationCargos = new HashSet<>();                       // Список найденных по запросу товаров, подлежащих резервированию
         for (CargoReservationRequest request : requests) {
-            if (request.quantity() <= 0) {
+            if (request.getQuantity() <= 0) {
                 log.error("Для артикула с id = {} количество = {}. Количество должно быть > 0",
-                        request.skuId(), request.quantity());
+                        request.getSkuId(), request.getQuantity());
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Количество должно быть > 0"
                 );
             }
 
-            Optional<Sku> sku = skuRepository.findById(request.skuId());
+            Optional<Sku> sku = skuRepository.findById(request.getSkuId());
             if (sku.isEmpty()) {
-                log.error("Артикула с id = {} не существует", request.skuId());
+                log.error("Артикула с id = {} не существует", request.getSkuId());
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Передан не верный артикул товара."
@@ -165,14 +165,14 @@ public class CargoService {
             }
 
             List<Cargo> availableCargosBySkus = cargoRepository.findFirstNAvailableBySkuIdAndStatus(
-                    request.skuId(),
+                    request.getSkuId(),
                     Status.AVAILABLE,
-                    PageRequest.of(0, request.quantity()));
+                    PageRequest.of(0, request.getQuantity()));
 
-            if (!request.quantity().equals(availableCargosBySkus.size())) {
+            if (!request.getQuantity().equals(availableCargosBySkus.size())) {
                 log.error("Недостаточное количество товара с артикулом {} на складе. Нужно {} а аеть в наличии только {}",
                         sku.get(),
-                        request.quantity(),
+                        request.getQuantity(),
                         availableCargosBySkus.size());
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
