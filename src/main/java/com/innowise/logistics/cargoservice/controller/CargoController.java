@@ -4,6 +4,7 @@ import com.innowise.logistics.cargoservice.dto.request.CargoReservationRequest;
 import com.innowise.logistics.cargoservice.dto.response.CargoCalculationResponse;
 import com.innowise.logistics.cargoservice.dto.response.CargoReservationResponse;
 import com.innowise.logistics.cargoservice.dto.response.CargoViewResponse;
+import com.innowise.logistics.cargoservice.dto.response.PageResponse;
 import com.innowise.logistics.cargoservice.service.CargoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -27,11 +28,11 @@ public class CargoController {
 
 
     @GetMapping("/items")
-    public ResponseEntity<Page<CargoViewResponse>> getCatalogItems(
+    public ResponseEntity<PageResponse<CargoViewResponse>> getCatalogItems(
             @PageableDefault(size = 20, sort = "id") Pageable pageable) {
 
-        Page<CargoViewResponse> items = cargoService.getCatalogItems(pageable);
-        return ResponseEntity.ok(items);
+        Page<CargoViewResponse> page = cargoService.getCatalogItems(pageable);
+        return ResponseEntity.ok(PageResponse.from(page));
     }
 
     @GetMapping("/items/{id}")

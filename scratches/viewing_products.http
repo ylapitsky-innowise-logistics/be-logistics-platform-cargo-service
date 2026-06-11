@@ -7,7 +7,7 @@ GET http://localhost:8085/api/v1/catalog/items
 GET http://localhost:8085/api/v1/catalog/items?page=2&size=3
 
 ### Отсортировать по цене (по возрастанию)
-GET http://localhost:8085/api/v1/catalog/items?page=0&size=20&sort=price,asc
+GET http://localhost:8085/api/v1/catalog/items?page=0&size=2000&sort=price,asc
 
 ### Отсортировать по дате создания (свежие сверху)
 GET http://localhost:8085/api/v1/catalog/items?sort=createdAt,desc
