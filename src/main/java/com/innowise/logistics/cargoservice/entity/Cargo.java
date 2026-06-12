@@ -45,7 +45,8 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = "id")
+@EqualsAndHashCode
+//@EqualsAndHashCode(exclude = "id")
 //@EqualsAndHashCode(onlyExplicitlyIncluded = true)   // Говорим Lombok: сравнивать ТОЛЬКО то, что помечено ниже
 public class Cargo {
 
@@ -103,8 +104,12 @@ public class Cargo {
     private Instant createdAt = Instant.now();
 
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(
+            name = "status",
+            nullable = false,
+            columnDefinition = "cargo_schema.cargo_status_enum" // Явно указываем схему и имя типа в Postgres
+    )
     @Setter(AccessLevel.NONE)                       // Отмен. Lombok сеттер. Только через updateStatus(..)
-    @Column(nullable = false)
     @Comment("Текущий статус")
     private Status status = Status.AVAILABLE;
 

@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = "id")
+@EqualsAndHashCode
 public class Sku {
 
     @Id
@@ -33,4 +33,10 @@ public class Sku {
      */
     @Column(name = "name", nullable = false)
     private String name;
+
+//    @Override
+//    public String toString() {
+//        return  "id=" + id + '\n' +
+//                "name='" + name + '\n';
+//    }
 }

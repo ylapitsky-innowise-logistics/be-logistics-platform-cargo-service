@@ -103,9 +103,13 @@ public class CargoService {
         return new CargoCalculationResponse(totalPrice, totalWeight, cargoIds.size(), CYRRENCY);
     }
 
+    // каталог уникальных товаров
     @Transactional(readOnly = true)
     public Page<SkuAvailabilityResponse> getAvailableSkus(Pageable pageable) {
-        return cargoRepository.findAvailableSkuStats(pageable);
+        return cargoRepository.findAvailableSkuStats(
+                Status.AVAILABLE,
+                pageable
+        );
     }
 
 
