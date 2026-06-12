@@ -47,49 +47,6 @@ public interface CargoRepository extends JpaRepository<Cargo, Long> {
     long countBySkuIdAndStatus(Long skuId, Status status);
 
 
-//    @Query("""
-//            SELECT new com.innowise.logistics.cargoservice.dto.response.SkuAvailabilityResponse(
-//                c.sku.id,\s
-//                c.sku.name,\s
-//                MIN(c.mongoDocId),\s
-//                MIN(c.name),\s
-//                MIN(c.category),\s
-//                MIN(c.weight),\s
-//                c.dimension,\s
-//                MIN(c.price),\s
-//                COUNT(c)
-//            )
-//            FROM Cargo c\s
-//            WHERE c.status = 'AVAILABLE'\s
-//            GROUP BY c.sku.id, c.sku.name, c.dimension
-//        """)
-//    Page<SkuAvailabilityResponse> findAvailableSkuStats(Pageable pageable);
-
-//    /**
-//            * Выгрузка агрегированного отчета по доступности SKU на складах.
-//            * Запрос собирает метрики, рассчитывает диапазоны цен и считает точное количество доступного товара.
-//     */
-//    @Query("""
-//            SELECT new com.innowise.logistics.cargoservice.dto.response.SkuAvailabilityResponse(
-//                c.sku,
-//                MIN(c.mongoDocId),
-//                MIN(c.name),
-//                MIN(c.category),
-//                MIN(c.weight),
-//                c.dimension,
-//                MIN(c.price),
-//                MAX(c.price),
-//                MIN(c.createdAt),
-//                MAX(c.createdAt),
-//                COUNT(c)
-//            )
-//            FROM Cargo c
-//            WHERE c.status = com.innowise.logistics.cargoservice.entity.Status.AVAILABLE
-//            GROUP BY c.sku, c.dimension
-//            """)
-//    List<SkuAvailabilityResponse> findSkuAvailabilityReport();
-
-
     /**
      * Пагинированный отчет по доступности SKU на складах.
      * Статус передается параметром во избежание ошибок нативного приведения типов в СУБД.
@@ -121,7 +78,4 @@ public interface CargoRepository extends JpaRepository<Cargo, Long> {
             @Param("status") Status status,
             Pageable pageable
     );
-
-    List<Cargo> findBySkuIdAndStatus(Long skuId, Status status);
-
 }
