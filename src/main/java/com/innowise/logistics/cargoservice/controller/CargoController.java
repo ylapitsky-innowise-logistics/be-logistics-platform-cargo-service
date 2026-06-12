@@ -47,7 +47,7 @@ public class CargoController {
     /api/v1/catalog/skus/availability   -   Список SKU
      */
 
-    // 1️⃣ Просмотр списка всех SKU из БД с количеством доступных товаров
+    // 1️⃣ Просмотр списка всех УНИКАЛЬНЫХ товаров из БД
     @GetMapping("/skus")
     public ResponseEntity<PageResponse<SkuAvailabilityResponse>> getAvailableSkus(
             @PageableDefault(size = 10, sort = "sku.id") Pageable pageable) {
@@ -57,10 +57,10 @@ public class CargoController {
     }
 
     // 2️⃣ Все доступные товары по конкретному SKU
-    @GetMapping("/skus/{skuId}/items")
-    public ResponseEntity<List<SkuItemsResponse>> getAvailableItemsBySku(@PathVariable Long skuId) {
-        return ResponseEntity.ok(cargoService.getAvailableItemsBySku(skuId));
-    }
+//    @GetMapping("/skus/{skuId}/items")
+//    public ResponseEntity<List<SkuItemsResponse>> getAvailableItemsBySku(@PathVariable Long skuId) {
+//        return ResponseEntity.ok(cargoService.getAvailableItemsBySku(skuId));
+//    }
 
 
     // ########## ########## ##########   РАССЧЕТЫ  ########## ########## ##########

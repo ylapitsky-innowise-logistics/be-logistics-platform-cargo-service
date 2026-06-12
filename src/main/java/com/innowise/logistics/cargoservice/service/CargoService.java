@@ -109,20 +109,20 @@ public class CargoService {
     }
 
 
-    @Transactional(readOnly = true)
-    public List<SkuItemsResponse> getAvailableItemsBySku(Long skuId) {
-        return cargoRepository.findBySkuIdAndStatus(skuId, Status.AVAILABLE)
-                .stream()
-                .map(cargo -> new SkuItemsResponse(
-                        cargo.getId(),
-                        cargo.getName(),
-                        cargo.getWeight(),
-                        cargo.getPrice(),
-                        formatLocation(cargo.getLocation()),
-                        cargo.getCreatedAt()
-                ))
-                .toList();
-    }
+//    @Transactional(readOnly = true)
+//    public List<SkuItemsResponse> getAvailableItemsBySku(Long skuId) {
+//        return cargoRepository.findBySkuIdAndStatus(skuId, Status.AVAILABLE)
+//                .stream()
+//                .map(cargo -> new SkuItemsResponse(
+//                        cargo.getId(),
+//                        cargo.getName(),
+//                        cargo.getWeight(),
+//                        cargo.getPrice(),
+//                        formatLocation(cargo.getLocation()),
+//                        cargo.getCreatedAt()
+//                ))
+//                .toList();
+//    }
 
     /// ///////////////////////////////////////////////////////////////////////////////////
     // Резервирование
