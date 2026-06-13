@@ -78,4 +78,28 @@ public interface CargoRepository extends JpaRepository<Cargo, Long> {
             @Param("status") Status status,
             Pageable pageable
     );
+
+    /**
+     * Получение детального пагинированного списка конкретных грузов для указанного SKU.
+     * Использование JOIN FETCH предотвращает проблему N+1 при загрузке связанных сущностей на диске.
+     */
+    @Query(value = """
+            SELECT c 
+            FROM Cargo c
+            JOIN FETCH c.sku
+            JOIN FETCH c.dimension
+            JOIN FETCH c.location l
+            JOIN FETCH l.address
+            WHERE c.sku.id = :skuId AND c.status = :status
+            """,
+            countQuery = """
+            SELECT COUNT(c) 
+            FROM Cargo c 
+            WHERE c.sku.id = :skuId AND c.status = :status
+            """)
+    Page<Cargo> findBySkuIdAndStatus(
+            @Param("skuId") Long skuId,
+            @Param("status") Status status,
+            Pageable pageable
+    );
 }

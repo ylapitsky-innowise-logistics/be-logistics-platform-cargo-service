@@ -21,12 +21,15 @@ public record SkuAvailabilityResponse(
         // Вычисляемые поля
         BigDecimal priceMin,
         BigDecimal priceMax,
-// 🟢 Форматируем дату и принудительно переводим Instant (UTC) в зону GMT+3
+
+        // 🟢 Форматируем дату и принудительно переводим Instant (UTC) в зону GMT+3
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm 'GMT+3'", timezone = "GMT+3")
         Instant createdAtFrom,
 
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm 'GMT+3'", timezone = "GMT+3")
-        Instant createdAtTo,        Long availableQuantity     // сколько таких товаров доступно
+        Instant createdAtTo,
+
+        Long availableQuantity     // сколько таких товаров доступно
 ) {
     /**
      * 🟢 Компактный конструктор Java Record.

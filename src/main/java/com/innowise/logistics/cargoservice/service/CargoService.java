@@ -103,7 +103,7 @@ public class CargoService {
         return new CargoCalculationResponse(totalPrice, totalWeight, cargoIds.size(), CYRRENCY);
     }
 
-    // каталог уникальных товаров
+    // 1️⃣ Просмотр списка всех УНИКАЛЬНЫХ товаров из БД
     @Transactional(readOnly = true)
     public Page<SkuAvailabilityResponse> getAvailableSkus(Pageable pageable) {
         return cargoRepository.findAvailableSkuStats(
@@ -112,21 +112,15 @@ public class CargoService {
         );
     }
 
+    // 2️⃣ Все доступные товары по конкретному SKU
+    @Transactional(readOnly = true)
+    public Page<CargoViewResponse> getAvailableItemsBySku(Long skuId, Pageable pageable) {
+        // 1. Вычитываем пагинированную страницу сущностей из репозитория (с FETCH JOIN внутри, как написали ранее)
+        Page<Cargo> cargoPage = cargoRepository.findBySkuIdAndStatus(skuId, Status.AVAILABLE, pageable);
 
-//    @Transactional(readOnly = true)
-//    public List<SkuItemsResponse> getAvailableItemsBySku(Long skuId) {
-//        return cargoRepository.findBySkuIdAndStatus(skuId, Status.AVAILABLE)
-//                .stream()
-//                .map(cargo -> new SkuItemsResponse(
-//                        cargo.getId(),
-//                        cargo.getName(),
-//                        cargo.getWeight(),
-//                        cargo.getPrice(),
-//                        formatLocation(cargo.getLocation()),
-//                        cargo.getCreatedAt()
-//                ))
-//                .toList();
-//    }
+        // 2. Используем метод маппера для ленивой трансформации страницы.
+        return cargoPage.map(cargoMapper::toDto);
+    }
 
     /// ///////////////////////////////////////////////////////////////////////////////////
     // Резервирование

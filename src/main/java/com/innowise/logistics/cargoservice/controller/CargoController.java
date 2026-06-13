@@ -57,10 +57,14 @@ public class CargoController {
     }
 
     // 2️⃣ Все доступные товары по конкретному SKU
-//    @GetMapping("/skus/{skuId}/items")
-//    public ResponseEntity<List<SkuItemsResponse>> getAvailableItemsBySku(@PathVariable Long skuId) {
-//        return ResponseEntity.ok(cargoService.getAvailableItemsBySku(skuId));
-//    }
+    @GetMapping("/skus/{skuId}/items")
+    public ResponseEntity<PageResponse<CargoViewResponse>> getAvailableItemsBySku(
+            @PathVariable Long skuId,
+            @PageableDefault(size = 10, sort = "sku.id") Pageable pageable) {
+
+        Page<CargoViewResponse> page = cargoService.getAvailableItemsBySku(skuId, pageable);
+        return ResponseEntity.ok(PageResponse.from(page));
+    }
 
 
     // ########## ########## ##########   РАССЧЕТЫ  ########## ########## ##########
