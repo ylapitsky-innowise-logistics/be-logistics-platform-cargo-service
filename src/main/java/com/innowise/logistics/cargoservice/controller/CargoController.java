@@ -4,8 +4,7 @@ import com.innowise.logistics.cargoservice.dto.request.CargoReservationRequest;
 import com.innowise.logistics.cargoservice.dto.response.*;
 import com.innowise.logistics.cargoservice.service.CargoService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -59,11 +58,14 @@ public class CargoController {
     // 2️⃣ Все доступные товары по конкретному SKU
     @GetMapping("/skus/{skuId}/items")
     public ResponseEntity<PageResponse<CargoViewResponse>> getAvailableItemsBySku(
-            @PathVariable Long skuId,
-            @PageableDefault(size = 10, sort = "sku.id") Pageable pageable) {
+        @PathVariable @Positive(message = "ID артикула должен быть целым положительным числом") Long skuId,
+        @RequestParam(defaultValue = "0") @Min(value = 0, message = "Номер страницы не может быть отрицательным") int page,
+        @RequestParam(defaultValue = "10") @Min(value = 1, message = "Размер страницы должен быть не менее 1")
+            @Max(value = 100, message = "Размер страницы не может превышать 100 товаров на 1 страницу") int size,
+        @RequestParam(defaultValue = "id") String sortBy) {
 
-        Page<CargoViewResponse> page = cargoService.getAvailableItemsBySku(skuId, pageable);
-        return ResponseEntity.ok(PageResponse.from(page));
+        Page<CargoViewResponse> responsePage = cargoService.getAvailableItemsBySku(skuId, page, size, sortBy);
+        return ResponseEntity.ok(PageResponse.from(responsePage));
     }
 
 

@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,15 +113,64 @@ public class CargoService {
         );
     }
 
-    // 2️⃣ Все доступные товары по конкретному SKU
+    /**
+     * 2️⃣ Получить доступные товары по SKU с динамической пагинацией и гибкой сортировкой.
+     * * @param skuId   идентификатор артикула
+     * @param pageNum   номер страницы (начиная с 0)
+     * @param pageSize  размер страницы
+     * @param sortBy    строковый код сортировки (например, "price_asc", "created_desc")
+     */
     @Transactional(readOnly = true)
-    public Page<CargoViewResponse> getAvailableItemsBySku(Long skuId, Pageable pageable) {
-        // 1. Вычитываем пагинированную страницу сущностей из репозитория (с FETCH JOIN внутри, как написали ранее)
+    public Page<CargoViewResponse> getAvailableItemsBySku(Long skuId, int pageNum, int pageSize, String sortBy) {
+
+        // 1. Собираем объект Sort на основе переданного строкового критерия
+        Sort sort = resolveSortOrder(sortBy);
+
+        // 2. Объединяем пагинацию и нашу динамическую сортировку
+        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+
+        // 3. Выполняем запрос в репозиторий (там отработает наш FETCH JOIN) // Вычитываем пагинированную страницу сущностей из репозитория
         Page<Cargo> cargoPage = cargoRepository.findBySkuIdAndStatus(skuId, Status.AVAILABLE, pageable);
 
-        // 2. Используем метод маппера для ленивой трансформации страницы.
+        // 4. Мапим через ваш MapStruct маппер в CargoViewResponse
         return cargoPage.map(cargoMapper::toDto);
     }
+
+    /**
+     * Вспомогательный метод-резолвер для маппинга бизнес-критериев в технический Sort.
+     * Промышленный Senior-стандарт разделения логики.
+     */
+    private Sort resolveSortOrder(String sortBy) {
+        if (sortBy == null || sortBy.isBlank()) {
+                return Sort.by("id").ascending(); // Дефолтная сортировка по ID
+        }
+
+        return switch (sortBy.toLowerCase()) {
+            // 1 & 2. Сортировка по стоимости
+            case "price_asc"  -> Sort.by("price").ascending();
+            case "price_desc" -> Sort.by("price").descending();
+
+            // 3 & 4. Сортировка по дате поступления
+            case "created_asc"  -> Sort.by("createdAt").ascending();
+            case "created_desc" -> Sort.by("createdAt").descending();
+
+            // 5 & 6. Сортировка по дате изменения статуса
+            case "status_date_asc"  -> Sort.by("statusAt").ascending();
+            case "status_date_desc" -> Sort.by("statusAt").descending();
+
+            // 7. Сортировка по самому статусу
+            case "status" -> Sort.by("status").ascending();
+
+            // 8. Доп. вариант: Сортировка по вложенному объекту (например, по названию стеллажа)
+            case "location_rack" -> Sort.by("location.rack").ascending();
+            case "location_shelf" -> Sort.by("location.shelf").ascending();
+
+            // На случай, если прилетело что-то неизвестное
+            default -> Sort.by("id").ascending();
+        };
+    }
+
+
 
     /// ///////////////////////////////////////////////////////////////////////////////////
     // Резервирование
