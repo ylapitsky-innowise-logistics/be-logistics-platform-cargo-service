@@ -2,6 +2,7 @@ package com.innowise.logistics.cargoservice.controller;
 
 import com.innowise.logistics.cargoservice.dto.request.CargoReservationRequest;
 import com.innowise.logistics.cargoservice.dto.response.CargoReservationResponse;
+import com.innowise.logistics.cargoservice.dto.response.PageResponse;
 import com.innowise.logistics.cargoservice.service.ReservationService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -61,12 +62,12 @@ public class ReservationController {
      * Просмотреть все существующие резервирования (с пагинацией).
      */
     @GetMapping
-    public ResponseEntity<Page<CargoReservationResponse>> getAllReservations(
+    public ResponseEntity<PageResponse<CargoReservationResponse>> getAllReservations(
             @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
         log.info("REST запрос на получение списка всех бронирований. Пагинация: {}", pageable);
         Page<CargoReservationResponse> response = reservationService.getAllReservations(pageable);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(PageResponse.from(response));
     }
 
     /**
