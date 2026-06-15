@@ -24,6 +24,14 @@ Content-Type: application/json
   }
 ]
 
+
+
+
+
+
+
+
+
 ### 6. Ошибка: пустой список
 POST http://localhost:8085/api/v1/catalog/reservations
 Content-Type: application/json

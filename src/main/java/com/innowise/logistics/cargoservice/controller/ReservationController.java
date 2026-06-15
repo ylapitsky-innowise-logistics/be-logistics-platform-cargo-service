@@ -2,7 +2,7 @@ package com.innowise.logistics.cargoservice.controller;
 
 import com.innowise.logistics.cargoservice.dto.request.CargoReservationRequest;
 import com.innowise.logistics.cargoservice.dto.response.CargoReservationResponse;
-import com.innowise.logistics.cargoservice.service.CargoService;
+import com.innowise.logistics.cargoservice.service.ReservationService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservationController {
 
-    private final CargoService cargoService;
+    private final ReservationService reservationService;
 
 
     @PostMapping("")
@@ -30,7 +30,7 @@ public class ReservationController {
             @Valid
             @NotEmpty(message = "Список резервируемых товаров не может быть пустым")
             List<@NotNull(message = "Запрос по артикулу не может быть = null") CargoReservationRequest> requests) {
-        CargoReservationResponse response = cargoService.reserveItems(requests);
+        CargoReservationResponse response = reservationService.reserveItems(requests);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

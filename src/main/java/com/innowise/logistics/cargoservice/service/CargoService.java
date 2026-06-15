@@ -1,11 +1,9 @@
 package com.innowise.logistics.cargoservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.innowise.logistics.cargoservice.dto.request.CargoReservationRequest;
-import com.innowise.logistics.cargoservice.dto.response.*;
+import com.innowise.logistics.cargoservice.dto.response.CargoCalculationResponse;
+import com.innowise.logistics.cargoservice.dto.response.CargoViewResponse;
 import com.innowise.logistics.cargoservice.entity.Cargo;
-import com.innowise.logistics.cargoservice.entity.Reservation;
-import com.innowise.logistics.cargoservice.entity.Sku;
 import com.innowise.logistics.cargoservice.entity.Status;
 import com.innowise.logistics.cargoservice.mapper.CargoMapper;
 import com.innowise.logistics.cargoservice.repository.CargoRepository;
@@ -14,16 +12,16 @@ import com.innowise.logistics.cargoservice.repository.SkuRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.innowise.logistics.cargoservice.constant.Constants.CYRRENCY;
@@ -39,16 +37,24 @@ public class CargoService {
     private final CargoMapper cargoMapper;
     private final ObjectMapper objectMapper;
 
+    /**
+     * 1️⃣ Просмотр агрегированного списка всех доступных товаров.
+     */
     @Transactional(readOnly = true)
-    public Page<CargoViewResponse> getCatalogItems(Pageable pageable) {
+    public Page<CargoViewResponse> getAllCargos(Pageable pageable) {
         Page<Cargo> cargoPage = cargoRepository.findAll(pageable);
 
         // Маппим Entity в DTO "на лету"
         return cargoPage.map(cargoMapper::toDto);
     }
 
+    /**
+     * 2️⃣ Получить выбранный товар по его ID.
+     * @param id выбранный товар (его id)
+     * @return DTO выбранного товара
+     */
     @Transactional(readOnly = true)
-    public CargoViewResponse getCatalogItemById(Long id) {
+    public CargoViewResponse getCargoById(Long id) {
         return cargoRepository.findById(id)
                 .map(cargoMapper::toDto)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -57,10 +63,13 @@ public class CargoService {
                 ));
     }
 
-
-    // прилетел список id товаров, выплевываем стоимость, зашитую в объекте CargoCalculationResponse (+немного контекста)
+    /**
+     * 3️⃣ Рассчет стоимости списка товаров по переданному списку их 'id'
+     * @param cargoIds список id товаров
+     * @return стоимость, зашитая в объекте CargoCalculationResponse (+немного контекста)
+     */
     @Transactional(readOnly = true)
-    public CargoCalculationResponse calculatePrice(List<Long> cargoIds) {
+    public CargoCalculationResponse calculatePriceByIds(List<Long> cargoIds) {
         log.debug("Попытка рассчета стоимости {} товаров из списка: {}", cargoIds.size(), Arrays.toString(cargoIds.toArray()));
         if (cargoIds.isEmpty()) {
             log.error("Список товаров пуст");
@@ -101,173 +110,5 @@ public class CargoService {
         }
 
         return new CargoCalculationResponse(totalPrice, totalWeight, cargoIds.size(), CYRRENCY);
-    }
-
-    // 1️⃣ Просмотр списка всех УНИКАЛЬНЫХ товаров из БД
-    @Transactional(readOnly = true)
-    public Page<SkuAvailabilityResponse> getAvailableSkus(Pageable pageable) {
-        return cargoRepository.findAvailableSkuStats(
-                Status.AVAILABLE,
-                pageable
-        );
-    }
-
-    /**
-     * 2️⃣ Получить доступные товары по SKU с динамической пагинацией и гибкой сортировкой.
-     * * @param skuId   идентификатор артикула
-     * @param pageNum   номер страницы (начиная с 0)
-     * @param pageSize  размер страницы
-     * @param sortBy    строковый код сортировки (например, "price_asc", "created_desc")
-     */
-    @Transactional(readOnly = true)
-    public Page<CargoViewResponse> getAvailableItemsBySku(Long skuId, int pageNum, int pageSize, String sortBy) {
-
-        // 1. Собираем объект Sort на основе переданного строкового критерия
-        Sort sort = resolveSortOrder(sortBy);
-
-        // 2. Объединяем пагинацию и нашу динамическую сортировку
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
-
-        // 3. Выполняем запрос в репозиторий (там отработает наш FETCH JOIN) // Вычитываем пагинированную страницу сущностей из репозитория
-        Page<Cargo> cargoPage = cargoRepository.findBySkuIdAndStatus(skuId, Status.AVAILABLE, pageable);
-
-        // 4. Мапим через ваш MapStruct маппер в CargoViewResponse
-        return cargoPage.map(cargoMapper::toDto);
-    }
-
-    /**
-     * Вспомогательный метод-резолвер для маппинга бизнес-критериев в технический Sort.
-     * Промышленный Senior-стандарт разделения логики.
-     */
-    private Sort resolveSortOrder(String sortBy) {
-        if (sortBy == null || sortBy.isBlank()) {
-                return Sort.by("id").ascending(); // Дефолтная сортировка по ID
-        }
-
-        return switch (sortBy.toLowerCase()) {
-            // 1 & 2. Сортировка по стоимости
-            case "price_asc"  -> Sort.by("price").ascending();
-            case "price_desc" -> Sort.by("price").descending();
-
-            // 3 & 4. Сортировка по дате поступления
-            case "created_asc"  -> Sort.by("createdAt").ascending();
-            case "created_desc" -> Sort.by("createdAt").descending();
-
-            // 5 & 6. Сортировка по дате изменения статуса
-            case "status_date_asc"  -> Sort.by("statusAt").ascending();
-            case "status_date_desc" -> Sort.by("statusAt").descending();
-
-            // 7. Сортировка по самому статусу
-            case "status" -> Sort.by("status").ascending();
-
-            // 8. Доп. вариант: Сортировка по вложенному объекту (например, по названию стеллажа)
-            case "location_rack" -> Sort.by("location.rack").ascending();
-            case "location_shelf" -> Sort.by("location.shelf").ascending();
-
-            // На случай, если прилетело что-то неизвестное
-            default -> Sort.by("id").ascending();
-        };
-    }
-
-    /**
-     * Получить пагинированный список всех зарегистрированных артикулов (SKU).
-     */
-    @Transactional(readOnly = true)
-    public Page<SkuResponse> getSkus(Pageable pageable) {
-        // 1. Запрашиваем страницу сущностей Sku из правильного репозитория
-        Page<Sku> skuPage = skuRepository.findAll(pageable);
-
-        // 2. Маппим Entity в DTO "на лету" через чистый конструктор рекорда
-        return skuPage.map(sku -> new SkuResponse(sku.getId(), sku.getName()));
-    }
-
-
-
-
-
-    /// ///////////////////////////////////////////////////////////////////////////////////
-    // Резервирование
-
-
-    @Transactional
-    public CargoReservationResponse reserveItems(List<CargoReservationRequest> requests) {
-        log.info("Попытка резервирования списка товаров из {} шт.", requests.size());
-
-        if (requests.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Список артикулов товаров пуст");
-        }
-
-        // 1. Делаем выборку по каждому артикулу. Если товаров не хватает - выдаем ошибку и сообщаем сколько на данный момент свободно товаров по каждому из переданных артикулу
-        Set<Cargo> reservationCargos = new HashSet<>();                       // Список найденных по запросу товаров, подлежащих резервированию
-        for (CargoReservationRequest request : requests) {
-            if (request.getQuantity() <= 0) {
-                log.error("Для артикула с id = {} количество = {}. Количество должно быть > 0",
-                        request.getSkuId(), request.getQuantity());
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Количество должно быть > 0"
-                );
-            }
-
-            Optional<Sku> sku = skuRepository.findById(request.getSkuId());
-            if (sku.isEmpty()) {
-                log.error("Артикула с id = {} не существует", request.getSkuId());
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Передан не верный артикул товара."
-                );
-            }
-
-            List<Cargo> availableCargosBySkus = cargoRepository.findFirstNAvailableBySkuIdAndStatus(
-                    request.getSkuId(),
-                    Status.AVAILABLE,
-                    PageRequest.of(0, request.getQuantity()));
-
-            if (!request.getQuantity().equals(availableCargosBySkus.size())) {
-                log.error("Недостаточное количество товара с артикулом {} на складе. Нужно {} а аеть в наличии только {}",
-                        sku.get(),
-                        request.getQuantity(),
-                        availableCargosBySkus.size());
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Недостаточное количество товара на складе."
-                );
-            }
-            reservationCargos.addAll(availableCargosBySkus);
-        }
-
-        // 2. Если все хорошо - Бронируем выбранные товары и возвращаем ссылку на их бронь
-        Set<Long> reservationCargoIds = new HashSet<>();
-        BigDecimal totalPrice = BigDecimal.ZERO;
-        Double totalWeight = 0.0;
-
-        for (Cargo cargo: reservationCargos) {
-            totalPrice = totalPrice.add(cargo.getPrice());
-            totalWeight += cargo.getWeight();
-            reservationCargoIds.add(cargo.getId());
-            cargo.updateStatus(Status.RESERVED);
-        }
-        cargoRepository.saveAll(reservationCargos);
-
-        Reservation reservation = new Reservation();
-        reservation.setCargoIds(reservationCargoIds);
-        reservation.setIsActive(true);
-        reservation.setTotalPrice(totalPrice);
-        reservation.setTotalWeight(totalWeight);
-        reservation.setTotalQuantity(reservationCargos.size());
-        reservation.setCurrency(CYRRENCY);
-        Reservation savedReservation = reservationRepository.save(reservation);
-        log.info("Закончено резервирование {} товаров. id={}", reservation.getCargoIds().size(), reservation.getId());
-
-        return new CargoReservationResponse(
-                savedReservation.getId(),
-                savedReservation.getCreatedAt(),
-                savedReservation.getTotalPrice(),
-                savedReservation.getTotalWeight(),
-                savedReservation.getTotalQuantity(),
-                CYRRENCY);
-
-        // 3. возможность разбронирования товаров
-        // 4. возможность отгрузки товаров в доставку
     }
 }

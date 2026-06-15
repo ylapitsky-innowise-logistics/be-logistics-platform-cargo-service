@@ -1,0 +1,92 @@
+# Для встроенного HTTP-клиента в IDE
+
+# 1️⃣ GET /api/v1/catalog/cargos
+# Просмотр агрегированного списка всех доступных товаров.
+
+### Получить первую страницу (20 элементов по умолчанию)
+GET http://localhost:8085/api/v1/catalog/cargos
+
+### Получить вторую страницу с размером в 3 элементов (индексация с 0)
+GET http://localhost:8085/api/v1/catalog/cargos?page=2&size=3
+
+
+
+# 2️⃣ GET /api/v1/catalog/cargos/{id}
+# Получить выбранный товар по его ID.
+### Получить товар по его id
+GET http://localhost:8085/api/v1/catalog/cargos/1
+
+
+
+# 3️⃣ GET /api/v1/catalog/cargos/calculate-price
+# Рассчет стоимости списка товаров по переданному списку их 'id'
+### Расчет стоимости товаров в корзине (Успешный сценарий)
+POST http://localhost:8085/api/v1/catalog/cargos/calculate-price
+Content-Type: application/json
+
+[
+  2, 5
+]
+
+### Проверка валидации (Ошибка 400 - Передано отрицательное количество)
+POST http://localhost:8085/api/v1/catalog/cargos/calculate-price
+Content-Type: application/json
+
+[
+  { "cargoId": 5, "quantity": -3 }
+]
+
+
+### Проверка валидации (Ошибка 400 - Товар не существует в базе)
+POST http://localhost:8085/api/v1/catalog/cargos/calculate-price
+Content-Type: application/json
+
+[
+  { "cargoId": 999999, "quantity": 1 }
+]
+
+
+
+### Получить конкретный товар по его ID (например, ID = 500)
+GET http://localhost:8085/api/v1/catalog/items/500
+
+### Проверить обработку ошибки 404 (запрос несуществующего ID, например 9999)
+GET http://localhost:8085/api/v1/catalog/items/9999
+
+
+
+# ------------------------- ------------------------- -------------------------
+
+
+
+### Отсортировать по цене (по возрастанию)
+GET http://localhost:8085/api/v1/catalog/items?page=0&size=2000&sort=price,asc
+
+### Отсортировать по дате создания (свежие сверху)
+GET http://localhost:8085/api/v1/catalog/items?sort=createdAt,desc
+
+
+
+### Получить конкретный товар по его ID (например, ID = 500)
+GET http://localhost:8085/api/v1/catalog/items/500
+
+### Проверить обработку ошибки 404 (запрос несуществующего ID, например 9999)
+GET http://localhost:8085/api/v1/catalog/items/9999
+
+
+
+
+### Получить первую страницу УНИКАЛЬНЫХ товаров по АРТИКУЛАМ (20 sku по умолчанию)
+GET http://localhost:8085/api/v1/catalog/skus
+
+### Получить вторую страницу УНИКАЛЬНЫХ товаров по АРТИКУЛАМ с размером в 3 элементов (индексация с 0)
+GET http://localhost:8085/api/v1/catalog/skus?page=2&size=3
+
+
+
+
+
+#### Просмотр списка всех УНИКАЛЬНЫХ товаров из БД
+GET http://localhost:8085/api/v1/catalog/skus/items
+
+
