@@ -1,92 +1,44 @@
-# Для встроенного HTTP-клиента в IDE
+# Для встроенного HTTP-клиента IntelliJ IDEA
+@host = http://localhost:8085
+@base_path = /api/v1/catalog/cargos
 
-# 1️⃣ GET /api/v1/catalog/cargos
-# Просмотр агрегированного списка всех доступных товаров.
+### 1. Получить первую страницу доступных грузов (По умолчанию 20 элементов, сортировка по id)
+GET {{host}}{{base_path}}
+Accept: application/json
 
-### Получить первую страницу (20 элементов по умолчанию)
-GET http://localhost:8085/api/v1/catalog/cargos
+### 2. Получить доступные грузы с кастомной пагинацией и нативной сортировкой Spring Data
+GET {{host}}{{base_path}}?page=1&size=5&sort=price,desc
+Accept: application/json
 
-### Получить вторую страницу с размером в 3 элементов (индексация с 0)
-GET http://localhost:8085/api/v1/catalog/cargos?page=2&size=3
+### 3. Получить конкретный товар по его ID
+GET {{host}}{{base_path}}/1
+Accept: application/json
 
-
-
-# 2️⃣ GET /api/v1/catalog/cargos/{id}
-# Получить выбранный товар по его ID.
-### Получить товар по его id
-GET http://localhost:8085/api/v1/catalog/cargos/1
-
-
-
-# 3️⃣ GET /api/v1/catalog/cargos/calculate-price
-# Рассчет стоимости списка товаров по переданному списку их 'id'
-### Расчет стоимости товаров в корзине (Успешный сценарий)
-POST http://localhost:8085/api/v1/catalog/cargos/calculate-price
+### 4. Расчет стоимости товаров в корзине (Успешный сценарий)
+POST {{host}}{{base_path}}/calculate-price
 Content-Type: application/json
 
 [
-  2, 5
+  1, 2, 5
 ]
 
-### Проверка валидации (Ошибка 400 - Передано отрицательное количество)
-POST http://localhost:8085/api/v1/catalog/cargos/calculate-price
+
+### ❌ ОШИБКА 404: Запрос несуществующего ID товара
+GET {{host}}{{base_path}}/999999
+Accept: application/json
+
+### ❌ ОШИБКА ВАЛИДАЦИИ: Передан пустой список для расчета цены (Trigger @NotEmpty)
+POST {{host}}{{base_path}}/calculate-price
+Content-Type: application/json
+
+[]
+
+### ❌ ОШИБКА ВАЛИДАЦИИ: Один из элементов списка является null (Trigger List<@NotNull Long>)
+POST {{host}}{{base_path}}/calculate-price
 Content-Type: application/json
 
 [
-  { "cargoId": 5, "quantity": -3 }
+  1,
+  null,
+  2
 ]
-
-
-### Проверка валидации (Ошибка 400 - Товар не существует в базе)
-POST http://localhost:8085/api/v1/catalog/cargos/calculate-price
-Content-Type: application/json
-
-[
-  { "cargoId": 999999, "quantity": 1 }
-]
-
-
-
-### Получить конкретный товар по его ID (например, ID = 500)
-GET http://localhost:8085/api/v1/catalog/items/500
-
-### Проверить обработку ошибки 404 (запрос несуществующего ID, например 9999)
-GET http://localhost:8085/api/v1/catalog/items/9999
-
-
-
-# ------------------------- ------------------------- -------------------------
-
-
-
-### Отсортировать по цене (по возрастанию)
-GET http://localhost:8085/api/v1/catalog/items?page=0&size=2000&sort=price,asc
-
-### Отсортировать по дате создания (свежие сверху)
-GET http://localhost:8085/api/v1/catalog/items?sort=createdAt,desc
-
-
-
-### Получить конкретный товар по его ID (например, ID = 500)
-GET http://localhost:8085/api/v1/catalog/items/500
-
-### Проверить обработку ошибки 404 (запрос несуществующего ID, например 9999)
-GET http://localhost:8085/api/v1/catalog/items/9999
-
-
-
-
-### Получить первую страницу УНИКАЛЬНЫХ товаров по АРТИКУЛАМ (20 sku по умолчанию)
-GET http://localhost:8085/api/v1/catalog/skus
-
-### Получить вторую страницу УНИКАЛЬНЫХ товаров по АРТИКУЛАМ с размером в 3 элементов (индексация с 0)
-GET http://localhost:8085/api/v1/catalog/skus?page=2&size=3
-
-
-
-
-
-#### Просмотр списка всех УНИКАЛЬНЫХ товаров из БД
-GET http://localhost:8085/api/v1/catalog/skus/items
-
-

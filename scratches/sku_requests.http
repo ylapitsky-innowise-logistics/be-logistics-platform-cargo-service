@@ -1,68 +1,36 @@
-# Для встроенного HTTP-клиента в IDE
+# Для встроенного HTTP-клиента IntelliJ IDEA
+@host = http://localhost:8085
+@base_path = /api/v1/catalog/skus
 
-# 1️⃣ GET /api/v1/catalog/skus
-# Просмотр агрегированной статистики по всем УНИКАЛЬНЫХ доступным SKU. (просмотр уникальных товаров)
+### 1. Просмотр агрегированной статистики по всем УНИКАЛЬНЫМ доступным SKU (По умолчанию)
+GET {{host}}{{base_path}}
+Accept: application/json
 
-### Все доступные артикулы Sku товаров
-GET http://localhost:8085/api/v1/catalog/skus
+### 2. Уникальные SKU с пагинацией (Страница 2, размер 3)
+GET {{host}}{{base_path}}?page=2&size=3
+Accept: application/json
 
-### Все доступные артикулы Sku товаров с пагинацией
-GET http://localhost:8085/api/v1/catalog/skus?page=2&size=3
+### 3. Базовый плоский список абсолютно всех зарегистрированных SKU в системе
+GET {{host}}{{base_path}}/base?page=0&size=10&sort=id,asc
+Accept: application/json
 
+### 4. Детальный список конкретных доступных грузов по ID артикула (Сортировка по увеличению цены)
+GET {{host}}{{base_path}}/2/items?page=0&size=5&sortBy=price_asc
+Accept: application/json
 
+### 5. Детальный список грузов по ID артикула (Сортировка по уменьшению цены)
+GET {{host}}{{base_path}}/2/items?page=0&size=5&sortBy=price_desc
+Accept: application/json
 
-# 2️⃣ GET /api/v1/catalog/skus/{skuId}/items
-# Получить детальный пагинированный список конкретных доступных грузов по ID артикула.
-
-### Все доступные товары по конкретному SKU
-GET http://localhost:8085/api/v1/catalog/skus/2/items
-
-### Все доступные товары по конкретному SKU с размером в 3 элементов страница 2 (индексация с 0) сортировка по увеличению цены
-GET http://localhost:8085/api/v1/catalog/skus/2/items?page=2&size=3&sortBy=price_asc
-
-### Все доступные товары по конкретному SKU с размером в 3 элементов страница 2 (индексация с 0) сортировка по уменьшению цены
-GET http://localhost:8085/api/v1/catalog/skus/2/items?page=2&size=3&sortBy=price_desc
-
-
-
-# 3️⃣ GET /api/v1/catalog/skus/base
-# Получить плоский пагинированный список абсолютно всех зарегистрированных в системе SKU (артикулов).
-
-### Получить все Sku первую страницу (10 элементов по умолчанию)
-GET http://localhost:8085/api/v1/catalog/skus/base
-
-### Получить вторую страницу с размером в 3 элементов (индексация с 0)
-GET http://localhost:8085/api/v1/catalog/skus/base?page=2&size=3
+### 6. Детальный список грузов по ID артикула (Сортировка по свежести поступления)
+GET {{host}}{{base_path}}/2/items?page=0&size=5&sortBy=created_desc
+Accept: application/json
 
 
+### ❌ ОШИБКА ВАЛИДАЦИИ: ID артикула должен быть положительным чисвлом (Trigger @Positive)
+GET {{host}}{{base_path}}/-5/items
+Accept: application/json
 
-
-
-#--- !!! убрать !!! ---
-### Получить первую страницу (20 элементов по умолчанию)
-GET http://localhost:8085/api/v1/catalog/items
-
-### Получить вторую страницу с размером в 3 элементов (индексация с 0)
-GET http://localhost:8085/api/v1/catalog/items?page=2&size=3
-
-### Отсортировать по цене (по возрастанию)
-GET http://localhost:8085/api/v1/catalog/items?page=0&size=2000&sort=price,asc
-
-### Отсортировать по дате создания (свежие сверху)
-GET http://localhost:8085/api/v1/catalog/items?sort=createdAt,desc
-
-
-
-
-### Получить первую страницу УНИКАЛЬНЫХ товаров по АРТИКУЛАМ (20 sku по умолчанию)
-GET http://localhost:8085/api/v1/catalog/skus
-
-### Получить вторую страницу УНИКАЛЬНЫХ товаров по АРТИКУЛАМ с размером в 3 элементов (индексация с 0)
-GET http://localhost:8085/api/v1/catalog/skus?page=2&size=3
-
-
-
-
-
-#### Просмотр списка всех УНИКАЛЬНЫХ товаров из БД
-GET http://localhost:8085/api/v1/catalog/skus/items
+### ❌ ОШИБКА ВАЛИДАЦИИ: Размер страницы превышает максимально допустимый (Trigger @Max(100))
+GET {{host}}{{base_path}}/2/items?page=0&size=500
+Accept: application/json

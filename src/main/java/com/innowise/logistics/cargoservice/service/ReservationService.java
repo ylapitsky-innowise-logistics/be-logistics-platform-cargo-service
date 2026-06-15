@@ -13,7 +13,9 @@ import com.innowise.logistics.cargoservice.repository.ReservationRepository;
 import com.innowise.logistics.cargoservice.repository.SkuRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +38,14 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final SkuRepository skuRepository;
     private final CargoMapper cargoMapper;
-    private final ObjectMapper objectMapper;
 
+    /**
+     * 1️⃣ Зарезервировать товары
+     * согласно переданному списку (Sku / количество, зашито в CargoReservationResponse) .
+     *
+     * @param requests объект с перечнем Sku (артикулов) и количеством товаров в бронь
+     * @return объект CargoReservationResponse, содержащий id брони (резервирования)
+     */
     @Transactional
     public CargoReservationResponse reserveItems(List<CargoReservationRequest> requests) {
         log.info("Попытка резервирования списка товаров из {} шт.", requests.size());
@@ -115,30 +123,132 @@ public class ReservationService {
                 savedReservation.getTotalWeight(),
                 savedReservation.getTotalQuantity(),
                 CYRRENCY);
-
-        // 3. возможность разбронирования товаров
-        // 4. возможность отгрузки товаров в доставку
     }
 
+    /**
+     * 2️⃣ Снять резервирование (бронь) с товаров по ID бронирования.
+     * Переводит бронь в неактивное состояние и возвращает товары в статус AVAILABLE.
+     *
+     * @param id идентификатор бронирования
+     */
+    @Transactional
+    public void cancelReservation(Long id) {
+        log.info("Запуск процесса отмены бронирования с id = {}", id);
 
-//    @PostMapping("/reservations/confirm")
-//    public ResponseEntity<Void> confirmReservation(
-//            @RequestBody @Valid ConfirmReservationRequest request) {
-//        cargoService.confirmReservation(request);
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    @PostMapping("/reservations/cancel")
-//    public ResponseEntity<Void> cancelReservation(
-//            @RequestParam UUID orderId) {
-//        cargoService.cancelReservation(orderId);
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    @GetMapping("/reservations/{orderId}")
-//    public ResponseEntity<CargoReservationResponse> getReservationByOrderId(
-//            @PathVariable UUID orderId) {
-//        CargoReservationResponse response = cargoService.getReservationByOrderId(orderId);
-//        return ResponseEntity.ok(response);
-//    }
+        // 1. Ищем бронирование в БД
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        String.format("Бронирование с id = %d не найдено", id)
+                ));
+
+        // 2. Проверяем, активна ли бронь на данный момент
+        if (!reservation.getIsActive()) {
+            log.warn("Попытка отменить уже неактивное бронирование с id = {}", id);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Данное бронирование уже было отменено ранее"
+            );
+        }
+
+        // 3. Получаем список ID товаров, привязанных к этой брони
+        Set<Long> cargoIds = reservation.getCargoIds();
+        if (cargoIds != null && !cargoIds.isEmpty()) {
+            // Извлекаем сущности Cargo из базы пачкой
+            List<Cargo> reservedCargos = cargoRepository.findAllById(cargoIds);
+
+            // Возвращаем каждый товар обратно в оборот склада
+            for (Cargo cargo : reservedCargos) {
+                if (cargo.getStatus() == Status.RESERVED) {
+                    cargo.updateStatus(Status.AVAILABLE);
+                }
+            }
+
+            cargoRepository.saveAll(reservedCargos);
+        }
+
+        // 4. Гасим саму бронь и сохраняем изменения
+        reservation.setIsActive(false);
+        reservationRepository.save(reservation);
+
+        log.info("Бронирование id = {} успешно отменено. Товары в количестве {} шт. возвращены на склад.",
+                id, reservation.getTotalQuantity());
+    }
+
+    /**
+     * 3️⃣ Получить пагинированный список всех резервирований в системе.
+     *
+     * @param pageable параметры пагинации от контроллера
+     * @return страница с DTO бронирований
+     */
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<CargoReservationResponse> getAllReservations(Pageable pageable) {
+        Page<Reservation> reservationPage = reservationRepository.findAll(pageable);
+
+        return reservationPage.map(r -> new CargoReservationResponse(
+                r.getId(),
+                r.getCreatedAt(),
+                r.getTotalPrice(),
+                r.getTotalWeight(),
+                r.getTotalQuantity(),
+                r.getCurrency()
+        ));
+    }
+
+    /**
+     * 4️⃣ Перевести забронированные товары в статус отгрузки (SHIPPED).
+     * Проверяет, что товары действительно забронированы, меняет их статус и закрывает бронь.
+     *
+     * @param id идентификатор бронирования
+     */
+    @Transactional
+    public void shipReservation(Long id) {
+        log.info("Запуск процесса отгрузки товаров по бронированию с id = {}", id);
+
+        // 1. Ищем бронирование в БД
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        String.format("Бронирование с id = %d не найдено", id)
+                ));
+
+        // 2. Проверяем, активна ли бронь (нельзя отгрузить отмененную или уже отгруженную бронь)
+        if (!reservation.getIsActive()) {
+            log.warn("Попытка отгрузить неактивное бронирование с id = {}", id);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Невозможно отгрузить товары: данное бронирование неактивно (отменено или уже отгружено)"
+            );
+        }
+
+        // 3. Извлекаем ID товаров и переводим их в статус SHIPPED
+        Set<Long> cargoIds = reservation.getCargoIds();
+        if (cargoIds != null && !cargoIds.isEmpty()) {
+            List<Cargo> cargosToShip = cargoRepository.findAllById(cargoIds);
+
+            for (Cargo cargo : cargosToShip) {
+                // 🛑 Критическая валидация: товар обязан быть зарезервирован именно под эту операцию
+                if (cargo.getStatus() != Status.RESERVED) {
+                    log.error("Конфликт статуса! Товар id = {} имеет статус {}, ожидался RESERVED",
+                            cargo.getId(), cargo.getStatus());
+                    throw new ResponseStatusException(
+                            HttpStatus.CONFLICT,
+                            String.format("Товар с id = %d не может быть отгружен, так как он не забронирован (Текущий статус: %s)",
+                                    cargo.getId(), cargo.getStatus())
+                    );
+                }
+                // Переводим в статус SHIPPED
+                cargo.updateStatus(Status.SHIPPED);
+            }
+            // Сохраняем обновленные товары пачкой
+            cargoRepository.saveAll(cargosToShip);
+        }
+
+        // 4. Фиксируем, что стадия резервации завершена (гасим активность брони)
+        reservation.setIsActive(false);
+        reservationRepository.save(reservation);
+
+        log.info("Бронирование id = {} успешно переведено в статус SHIPPED. Отгружено {} единиц товара.",
+                id, reservation.getTotalQuantity());
+    }
 }
