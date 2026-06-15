@@ -18,12 +18,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/catalog")
 @RequiredArgsConstructor
-public class CargoController {
+public class ViewController {
 
     private final CargoService cargoService;
 
     // ########## ########## ##########   ПРОСМОТРЫ  ########## ########## ##########
-    // Просмотр поштучного перечня доступных товаров ИЗ БД
+    // 1️⃣ Просмотр поштучного перечня доступных товаров ИЗ БД
     @GetMapping("/items")
     public ResponseEntity<PageResponse<CargoViewResponse>> getCatalogItems(
             @PageableDefault(size = 20, sort = "id") Pageable pageable) {
@@ -32,22 +32,15 @@ public class CargoController {
         return ResponseEntity.ok(PageResponse.from(page));
     }
 
-    // Просмотр выбранного из БД товара по его id
+    // 2️⃣ Просмотр выбранного товара из БД по его id
     @GetMapping("/items/{id}")
     public ResponseEntity<CargoViewResponse> getCatalogItemById(@PathVariable Long id) {
         CargoViewResponse item = cargoService.getCatalogItemById(id);
         return ResponseEntity.ok(item);
     }
 
-    /*
-    GET	/api/v1/catalog/skus - Все SKU с количеством доступных товаров
-    GET	/api/v1/catalog/skus/{skuId}/items	skuId — ID артикула	Все товары конкретного SKU
-    GET	/api/v1/catalog/skus/grouped-by-category	—	SKU сгруппированные по категориям
-    /api/v1/catalog/skus/availability   -   Список SKU
-     */
-
-    // 1️⃣ Просмотр списка всех УНИКАЛЬНЫХ товаров из БД
-    @GetMapping("/skus")
+    // 3️⃣ Просмотр списка всех УНИКАЛЬНЫХ товаров из БД
+    @GetMapping("/skus/items")
     public ResponseEntity<PageResponse<SkuAvailabilityResponse>> getAvailableSkus(
             @PageableDefault(size = 10, sort = "sku.id") Pageable pageable) {
 
@@ -55,7 +48,7 @@ public class CargoController {
         return ResponseEntity.ok(PageResponse.from(page));
     }
 
-    // 2️⃣ Все доступные товары по конкретному SKU
+    // 4️⃣ Все доступные товары по конкретному SKU
     @GetMapping("/skus/{skuId}/items")
     public ResponseEntity<PageResponse<CargoViewResponse>> getAvailableItemsBySku(
         @PathVariable @Positive(message = "ID артикула должен быть целым положительным числом") Long skuId,
@@ -66,6 +59,15 @@ public class CargoController {
 
         Page<CargoViewResponse> responsePage = cargoService.getAvailableItemsBySku(skuId, page, size, sortBy);
         return ResponseEntity.ok(PageResponse.from(responsePage));
+    }
+
+    // 5️⃣ Все доступные артикулы SKU товаров
+    @GetMapping("/skus")
+    public ResponseEntity<PageResponse<SkuResponse>> getSkus(
+            @PageableDefault(size = 10, sort = "id") Pageable pageable) {
+
+        Page<SkuResponse> page = cargoService.getSkus(pageable);
+        return ResponseEntity.ok(PageResponse.from(page));
     }
 
 
@@ -79,16 +81,6 @@ public class CargoController {
 
         CargoCalculationResponse response = cargoService.calculatePrice(cargoIds);
         return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/reservations")
-    public ResponseEntity<CargoReservationResponse> reserveItems(
-            @RequestBody
-            @Valid
-            @NotEmpty(message = "Список резервируемых товаров не может быть пустым")
-            List<@NotNull (message = "Запрос по артикулу не может быть = null") CargoReservationRequest> requests) {
-        CargoReservationResponse response = cargoService.reserveItems(requests);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 //    @PostMapping("/reservations/confirm")

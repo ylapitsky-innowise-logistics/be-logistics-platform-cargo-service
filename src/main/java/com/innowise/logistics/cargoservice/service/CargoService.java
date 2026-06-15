@@ -1,10 +1,8 @@
 package com.innowise.logistics.cargoservice.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.innowise.logistics.cargoservice.dto.request.CargoReservationRequest;
-import com.innowise.logistics.cargoservice.dto.response.CargoCalculationResponse;
-import com.innowise.logistics.cargoservice.dto.response.CargoReservationResponse;
-import com.innowise.logistics.cargoservice.dto.response.CargoViewResponse;
-import com.innowise.logistics.cargoservice.dto.response.SkuAvailabilityResponse;
+import com.innowise.logistics.cargoservice.dto.response.*;
 import com.innowise.logistics.cargoservice.entity.Cargo;
 import com.innowise.logistics.cargoservice.entity.Reservation;
 import com.innowise.logistics.cargoservice.entity.Sku;
@@ -39,6 +37,7 @@ public class CargoService {
     private final ReservationRepository reservationRepository;
     private final SkuRepository skuRepository;
     private final CargoMapper cargoMapper;
+    private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
     public Page<CargoViewResponse> getCatalogItems(Pageable pageable) {
@@ -169,6 +168,20 @@ public class CargoService {
             default -> Sort.by("id").ascending();
         };
     }
+
+    /**
+     * Получить пагинированный список всех зарегистрированных артикулов (SKU).
+     */
+    @Transactional(readOnly = true)
+    public Page<SkuResponse> getSkus(Pageable pageable) {
+        // 1. Запрашиваем страницу сущностей Sku из правильного репозитория
+        Page<Sku> skuPage = skuRepository.findAll(pageable);
+
+        // 2. Маппим Entity в DTO "на лету" через чистый конструктор рекорда
+        return skuPage.map(sku -> new SkuResponse(sku.getId(), sku.getName()));
+    }
+
+
 
 
 

@@ -40,3 +40,12 @@ GET http://localhost:8085/api/v1/catalog/skus/2/items?page=2&size=3&sortBy=price
 ### Все доступные товары по конкретному SKU с размером в 3 элементов страница 2 (индексация с 0) сортировка по уменьшению цены
 GET http://localhost:8085/api/v1/catalog/skus/2/items?page=2&size=3&sortBy=price_desc
 
+
+### Все доступные артикулы Sku товаров
+GET http://localhost:8085/api/v1/catalog/skus
+### Все доступные артикулы Sku товаров с пагинацией
+GET http://localhost:8085/api/v1/catalog/skus?page=2&size=3
+#### Просмотр списка всех УНИКАЛЬНЫХ товаров из БД
+GET http://localhost:8085/api/v1/catalog/skus/items
+
+
