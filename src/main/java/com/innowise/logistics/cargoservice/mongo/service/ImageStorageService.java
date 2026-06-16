@@ -1,6 +1,7 @@
-package com.innowise.logistics.cargoservice.service;
+package com.innowise.logistics.cargoservice.mongo.service;
 
 import com.innowise.logistics.cargoservice.dto.response.ImageUploadResponse;
+import com.innowise.logistics.cargoservice.mongo.repository.ImageMetadataRepository;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,10 @@ public class ImageStorageService {
 
     private final GridFsTemplate gridFsTemplate;
     private final GridFSBucket gridFSBucket;
+    private final ImageMetadataRepository imageMetadataRepository;
 
     /**
-     * 1️⃣ Загрузка изображения в MongoDB GridFS
+     * 1️⃣ Загрузка изображения в MongoDB GridFS + Регистрация в image_metadata
      */
     public ImageUploadResponse uploadImage(MultipartFile file) {
         log.info("Попытка загрузки файла в MongoDB: {}, размер: {} байт", file.getOriginalFilename(), file.getSize());

@@ -1,7 +1,7 @@
 package com.innowise.logistics.cargoservice.controller;
 
 import com.innowise.logistics.cargoservice.dto.response.ImageUploadResponse;
-import com.innowise.logistics.cargoservice.service.ImageStorageService;
+import com.innowise.logistics.cargoservice.mongo.service.ImageStorageService;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import lombok.RequiredArgsConstructor;
