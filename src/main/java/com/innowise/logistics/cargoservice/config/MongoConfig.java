@@ -13,6 +13,6 @@ public class MongoConfig {
     @Bean
     public GridFSBucket gridFSBucket(MongoClient mongoClient) {
         // Извлекаем имя базы данных прямо из настроек подключения в yaml
-        return GridFSBuckets.create(mongoClient.getDatabase("cargo_storage_db"));
+        return GridFSBuckets.create(mongoClient.getDatabase("logistics_cargo_mongo_db"));
     }
 }

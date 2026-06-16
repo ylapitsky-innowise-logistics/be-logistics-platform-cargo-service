@@ -2,11 +2,14 @@
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/logistics_db
+    # 🟢 ИСПРАВЛЕНО: Теперь dev-режим смотрит на правильный выделенный порт платформы и общую базу
+    url: jdbc:postgresql://localhost:5439/logistics_platform_db?currentSchema=cargo_schema
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+
   jpa:
-    show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: update # На деве разрешаем Hibernate обновлять схему на лету
 
 logging:
   level:

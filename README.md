@@ -5,19 +5,21 @@
 
 >### Подключение к `Postgres`
 > - Hosh: **`localhost`**
-> - Port: **`5432`**
+> - Port: **`5439`**
 > - User: **`postgres`**
 > - Password: **`postgres`**
 > - Databade: **`postgres`**
-> - URL: **`jdbc:postgresql://localhost:5432/postgres`**
+> - URL: **`jdbc:postgresql://localhost:5439/postgres`**
 
 > ### Подключение к `Mongo`
 > - Hosh: **`localhost`**
-> - Port: **`27017`**
+> - Port: **`27020`**
 > - User: **`admin`** - НЕ НУЖНО! 
 > - Password: **`pass`** - НЕ НУЖНО!
-> - Databade: **`cargo_storage_db`**
-> - URL: **`mongodb://localhost:27017/cargo_storage_db`**
+> - Databade: **`logistics_cargo_mongo_db`**
+> - URL: **`mongodb://localhost:27017/logistics_cargo_mongo_db`**
+>
+> Порт со стандартного `27017` на нестандартный `27020`
 
 ---
 ```text

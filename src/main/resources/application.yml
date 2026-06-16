@@ -7,9 +7,9 @@ spring:
   application:
     name: be-logistics-platform-cargo-service
 
-  # DataSource для PostgreSQL (основная БД)
+  # DataSource для PostgreSQL (Единая общеплатформенная БД)
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=cargo_schema
+    url: jdbc:postgresql://localhost:5439/logistics_platform_db?currentSchema=cargo_schema # 👈 Изменили порт на 5439, база данных и схема сохранены прежние
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -25,10 +25,10 @@ spring:
       write-dates-as-timestamps: false
     time-zone: UTC
 
-  # JPA / Hibernate
+  # JPA / Hibernate базовые настройки
   jpa:
-    hibernate:
-      ddl-auto: validate
+#    hibernate:
+#      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
@@ -39,6 +39,7 @@ spring:
         default_schema: cargo_schema
     open-in-view: false
 
+  # Общий Liquibase
   liquibase:
     enabled: true
 #    enabled: false   # временно отключаем Liquibase
@@ -46,9 +47,11 @@ spring:
     default-schema: cargo_schema
 #    rollback-file: classpath:db/changelog/rollback.sql  # файл для SQL отката
 
+  # Настройки баз данных Spring Data
   data:
     mongodb:
-      uri: mongodb://localhost:27017/cargo_storage_db
+      # 👈 Внедряем специфичную переменную с дефолтным значением для логистики грузов
+      uri: ${LOGISTICS_CARGO_MONGO_URI:mongodb://localhost:27020/logistics_cargo_mongo_db}
 
   security:
     oauth2:
