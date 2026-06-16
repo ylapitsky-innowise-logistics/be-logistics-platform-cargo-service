@@ -8,8 +8,8 @@
 > - Port: **`5439`**
 > - User: **`postgres`**
 > - Password: **`postgres`**
-> - Databade: **`postgres`**
-> - URL: **`jdbc:postgresql://localhost:5439/postgres`**
+> - Databade: **`logistics_platform_db`**
+> - URL: **`jdbc:postgresql://localhost:5439/logistics_platform_db`**
 
 > ### Подключение к `Mongo`
 > - Hosh: **`localhost`**
