@@ -1,0 +1,18 @@
+# Для встроенного HTTP-клиента IntelliJ IDEA
+@host = http://localhost:8085
+@base_path = /api/v1/catalog/images
+
+### 1. Загрузить картинку на сервер (Форма отправки файла)
+POST {{host}}{{base_path}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Смартфон_премиум.png"
+Content-Type: image/png
+
+< ./pictures/Смартфон_премиум.png
+--boundary--
+
+### 2. Просмотр/стриминг картинки в браузере (Замени ID на тот, что придет из первого запроса)
+GET {{host}}{{base_path}}/6a310fa1b452ad4ac15816ad
+Accept: image/*

@@ -46,6 +46,10 @@ spring:
     default-schema: cargo_schema
 #    rollback-file: classpath:db/changelog/rollback.sql  # файл для SQL отката
 
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/cargo_storage_db
+
   security:
     oauth2:
       resourceserver:
