@@ -14,5 +14,5 @@ Content-Type: image/png
 --boundary--
 
 ### 2. Просмотр/стриминг картинки в браузере (Замени ID на тот, что придет из первого запроса)
-GET {{host}}{{base_path}}/6a310fa1b452ad4ac15816ad
+GET {{host}}{{base_path}}/6a3157811c03442507e3cedf
 Accept: image/*

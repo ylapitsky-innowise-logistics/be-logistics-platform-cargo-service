@@ -23,7 +23,7 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
     (18, 'https://mongodb.internal/storage/docs/img_8841.jpg', 'Увлажнитель воздуха ультразвуковой', 'OTHER', 1.5, 18, 4761.99, 35, '2026-05-07 18:56:00+03', 'AVAILABLE', '2026-05-07 18:56:00+03'),
     (19, 'https://mongodb.internal/storage/docs/img_1290.jpg', 'Термокружка вакуумная', 'OTHER', 0.35, 19, 1836.46, 28, '2026-05-13 20:29:00+03', 'RESERVED', '2026-06-01 12:00:00+03'),
     (20, 'https://mongodb.internal/storage/docs/img_3345.jpg', 'Компактный складной зонт', 'OTHER', 0.4, 20, 2156.0, 18, '2026-05-24 17:34:00+03', 'AVAILABLE', '2026-05-24 17:34:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74129.39, 75, '2026-05-19 12:23:00+03', 'RESERVED', '2026-06-01 12:00:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74129.39, 75, '2026-05-19 12:23:00+03', 'RESERVED', '2026-06-01 12:00:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.1, 2, 118242.29, 18, '2026-05-16 02:48:00+03', 'SHIPPED', '2026-06-01 12:00:00+03'),
     (3, 'https://mongodb.internal/storage/docs/img_4412.jpg', 'Беспроводные наушники', 'ELECTRONICS', 0.05, 3, 12166.23, 15, '2026-05-21 05:50:00+03', 'AVAILABLE', '2026-05-21 05:50:00+03'),
     (4, 'https://mongodb.internal/storage/docs/img_7011.jpg', 'Умные часы', 'ELECTRONICS', 0.08, 4, 25440.84, 77, '2026-05-13 12:38:00+03', 'AVAILABLE', '2026-05-13 12:38:00+03'),
@@ -43,7 +43,7 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
     (18, 'https://mongodb.internal/storage/docs/img_8841.jpg', 'Увлажнитель воздуха ультразвуковой', 'OTHER', 1.5, 18, 4803.2, 67, '2026-05-04 07:14:00+03', 'RESERVED', '2026-06-01 12:00:00+03'),
     (19, 'https://mongodb.internal/storage/docs/img_1290.jpg', 'Термокружка вакуумная', 'OTHER', 0.35, 19, 1754.07, 3, '2026-05-18 07:37:00+03', 'SHIPPED', '2026-06-01 12:00:00+03'),
     (20, 'https://mongodb.internal/storage/docs/img_3345.jpg', 'Компактный складной зонт', 'OTHER', 0.4, 20, 2167.91, 10, '2026-05-08 02:57:00+03', 'AVAILABLE', '2026-05-08 02:57:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 72914.92, 43, '2026-05-17 07:17:00+03', 'AVAILABLE', '2026-05-17 07:17:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 72914.92, 43, '2026-05-17 07:17:00+03', 'AVAILABLE', '2026-05-17 07:17:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.1, 2, 122019.41, 28, '2026-05-05 23:59:00+03', 'SHIPPED', '2026-06-01 12:00:00+03'),
     (3, 'https://mongodb.internal/storage/docs/img_4412.jpg', 'Беспроводные наушники', 'ELECTRONICS', 0.05, 3, 12897.09, 74, '2026-05-08 15:51:00+03', 'RESERVED', '2026-06-01 12:00:00+03'),
     (4, 'https://mongodb.internal/storage/docs/img_7011.jpg', 'Умные часы', 'ELECTRONICS', 0.08, 4, 24962.35, 13, '2026-05-22 13:22:00+03', 'AVAILABLE', '2026-05-22 13:22:00+03'),
@@ -55,7 +55,7 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
     (10, 'https://mongodb.internal/storage/docs/img_3411.jpg', 'Коврик для йоги нескользящий', 'SPORTS', 0.9, 10, 2096.74, 62, '2026-05-28 12:57:00+03', 'AVAILABLE', '2026-05-28 12:57:00+03'),
     (11, 'https://mongodb.internal/storage/docs/img_2204.jpg', 'Набор разборных гантелей', 'SPORTS', 20.0, 11, 8669.53, 49, '2026-05-13 08:59:00+03', 'AVAILABLE', '2026-05-13 08:59:00+03'),
 
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74375.98, 48, '2026-05-05 02:49:00+03', 'AVAILABLE', '2026-05-05 02:49:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74375.98, 48, '2026-05-05 02:49:00+03', 'AVAILABLE', '2026-05-05 02:49:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.1, 2, 115206.51, 62, '2026-05-24 16:51:00+03', 'AVAILABLE', '2026-05-24 16:51:00+03'),
     (3, 'https://mongodb.internal/storage/docs/img_4412.jpg', 'Беспроводные наушники', 'ELECTRONICS', 0.05, 3, 11985.34, 38, '2026-05-18 21:05:00+03', 'AVAILABLE', '2026-05-18 21:05:00+03'),
     (4, 'https://mongodb.internal/storage/docs/img_7011.jpg', 'Умные часы', 'ELECTRONICS', 0.08, 4, 25298.3, 31, '2026-05-17 19:42:00+03', 'AVAILABLE', '2026-05-17 19:42:00+03'),
@@ -75,7 +75,7 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
     (18, 'https://mongodb.internal/storage/docs/img_8841.jpg', 'Увлажнитель воздуха ультразвуковой', 'OTHER', 1.5, 18, 5026.68, 44, '2026-05-20 22:58:00+03', 'AVAILABLE', '2026-05-20 22:58:00+03'),
     (19, 'https://mongodb.internal/storage/docs/img_1290.jpg', 'Термокружка вакуумная', 'OTHER', 0.35, 19, 1718.06, 4, '2026-05-21 00:02:00+03', 'AVAILABLE', '2026-05-21 00:02:00+03'),
     (20, 'https://mongodb.internal/storage/docs/img_3345.jpg', 'Компактный складной зонт', 'OTHER', 0.4, 20, 2253.25, 45, '2026-05-24 10:13:00+03', 'AVAILABLE', '2026-05-24 10:13:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74653.25, 12, '2026-05-17 07:34:00+03', 'AVAILABLE', '2026-05-17 07:34:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74653.25, 12, '2026-05-17 07:34:00+03', 'AVAILABLE', '2026-05-17 07:34:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.1, 2, 11488.19, 70, '2026-05-21 16:35:00+03', 'AVAILABLE', '2026-05-21 16:35:00+03'),
     (3, 'https://mongodb.internal/storage/docs/img_4412.jpg', 'Беспроводные наушники', 'ELECTRONICS', 0.05, 3, 13110.21, 21, '2026-05-09 17:15:00+03', 'AVAILABLE', '2026-05-09 17:15:00+03'),
     (4, 'https://mongodb.internal/storage/docs/img_7011.jpg', 'Умные часы', 'ELECTRONICS', 0.08, 4, 24163.68, 78, '2026-05-26 21:04:00+03', 'AVAILABLE', '2026-05-26 21:04:00+03'),
@@ -95,7 +95,7 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
     (18, 'https://mongodb.internal/storage/docs/img_8841.jpg', 'Увлажнитель воздуха ультразвуковой', 'OTHER', 1.5, 18, 4785.83, 30, '2026-05-18 10:18:00+03', 'AVAILABLE', '2026-05-18 10:18:00+03'),
     (19, 'https://mongodb.internal/storage/docs/img_1290.jpg', 'Термокружка вакуумная', 'OTHER', 0.35, 19, 1852.12, 36, '2026-05-22 09:39:00+03', 'AVAILABLE', '2026-05-22 09:39:00+03'),
     (20, 'https://mongodb.internal/storage/docs/img_3345.jpg', 'Компактный складной зонт', 'OTHER', 0.4, 20, 2224.96, 21, '2026-05-08 09:12:00+03', 'AVAILABLE', '2026-05-08 09:12:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 72232.06, 4, '2026-05-03 11:21:00+03', 'AVAILABLE', '2026-05-03 11:21:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 72232.06, 4, '2026-05-03 11:21:00+03', 'AVAILABLE', '2026-05-03 11:21:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.1, 2, 114163.68, 62, '2026-05-09 23:54:00+03', 'AVAILABLE', '2026-05-09 23:54:00+03'),
     (3, 'https://mongodb.internal/storage/docs/img_4412.jpg', 'Беспроводные наушники', 'ELECTRONICS', 0.05, 3, 12215.13, 20, '2026-05-02 02:40:00+03', 'AVAILABLE', '2026-05-02 02:40:00+03'),
     (4, 'https://mongodb.internal/storage/docs/img_7011.jpg', 'Умные часы', 'ELECTRONICS', 0.08, 4, 25619.64, 43, '2026-05-21 15:47:00+03', 'AVAILABLE', '2026-05-21 15:47:00+03'),
@@ -115,7 +115,7 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
     (18, 'https://mongodb.internal/storage/docs/img_8841.jpg', 'Увлажнитель воздуха ультразвуковой', 'OTHER', 1.5, 18, 4619.64, 43, '2026-05-21 15:47:00+03', 'AVAILABLE', '2026-05-21 15:47:00+03'),
     (19, 'https://mongodb.internal/storage/docs/img_1290.jpg', 'Термокружка вакуумная', 'OTHER', 0.35, 19, 1850.81, 10, '2026-05-18 20:54:00+03', 'RESERVED', '2026-06-02 09:15:00+03'),
     (20, 'https://mongodb.internal/storage/docs/img_3345.jpg', 'Компактный складной зонт', 'OTHER', 0.4, 20, 2271.21, 60, '2026-05-20 23:14:00+03', 'AVAILABLE', '2026-05-20 23:14:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74799.37, 78, '2026-05-21 07:14:00+03', 'AVAILABLE', '2026-05-21 07:14:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74799.37, 78, '2026-05-21 07:14:00+03', 'AVAILABLE', '2026-05-21 07:14:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.1, 2, 114679.91, 5, '2026-05-19 13:50:00+03', 'AVAILABLE', '2026-05-19 13:50:00+03'),
     (3, 'https://mongodb.internal/storage/docs/img_4412.jpg', 'Беспроводные наушники', 'ELECTRONICS', 0.05, 3, 11878.6, 9, '2026-05-14 02:40:00+03', 'AVAILABLE', '2026-05-14 02:40:00+03'),
     (4, 'https://mongodb.internal/storage/docs/img_7011.jpg', 'Умные часы', 'ELECTRONICS', 0.08, 4, 25110.15, 68, '2026-05-27 21:05:00+03', 'AVAILABLE', '2026-05-27 21:05:00+03'),
@@ -135,7 +135,7 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
     (18, 'https://mongodb.internal/storage/docs/img_8841.jpg', 'Увлажнитель воздуха ультразвуковой', 'OTHER', 1.5, 18, 4952.12, 36, '2026-05-22 09:39:00+03', 'AVAILABLE', '2026-05-22 09:39:00+03'),
     (19, 'https://mongodb.internal/storage/docs/img_1290.jpg', 'Термокружка вакуумная', 'OTHER', 0.35, 19, 1797.4, 88, '2026-05-27 15:23:00+03', 'AVAILABLE', '2026-05-27 15:23:00+03'),
     (20, 'https://mongodb.internal/storage/docs/img_3345.jpg', 'Компактный складной зонт', 'OTHER', 0.4, 20, 2218.06, 92, '2026-05-02 07:11:00+03', 'AVAILABLE', '2026-05-02 07:11:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74211.01, 48, '2026-05-22 10:55:00+03', 'AVAILABLE', '2026-05-22 10:55:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74211.01, 48, '2026-05-22 10:55:00+03', 'AVAILABLE', '2026-05-22 10:55:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.1, 2, 117163.68, 62, '2026-05-09 23:54:00+03', 'AVAILABLE', '2026-05-09 23:54:00+03'),
     (3, 'https://mongodb.internal/storage/docs/img_4412.jpg', 'Беспроводные наушники', 'ELECTRONICS', 0.05, 3, 12611.87, 4, '2026-05-05 06:17:00+03', 'SHIPPED', '2026-06-02 09:15:00+03'),
     (4, 'https://mongodb.internal/storage/docs/img_7011.jpg', 'Умные часы', 'ELECTRONICS', 0.08, 4, 24190.1, 70, '2026-05-21 16:35:00+03', 'AVAILABLE', '2026-05-21 16:35:00+03'),
@@ -155,7 +155,7 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
     (18, 'https://mongodb.internal/storage/docs/img_8841.jpg', 'Увлажнитель воздуха ультразвуковой', 'OTHER', 1.5, 18, 4712.21, 8, '2026-05-09 17:15:00+03', 'AVAILABLE', '2026-05-09 17:15:00+03'),
     (19, 'https://mongodb.internal/storage/docs/img_1290.jpg', 'Термокружка вакуумная', 'OTHER', 0.35, 19, 1818.06, 92, '2026-05-02 21:50:00+03', 'AVAILABLE', '2026-05-02 21:50:00+03'),
     (20, 'https://mongodb.internal/storage/docs/img_3345.jpg', 'Компактный складной зонт', 'OTHER', 0.4, 20, 2154.01, 88, '2026-05-24 15:52:00+03', 'RESERVED', '2026-06-02 09:15:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74785.83, 30, '2026-05-18 10:18:00+03', 'AVAILABLE', '2026-05-18 10:18:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74785.83, 30, '2026-05-18 10:18:00+03', 'AVAILABLE', '2026-05-18 10:18:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.1, 2, 122215.13, 20, '2026-05-02 02:40:00+03', 'AVAILABLE', '2026-05-02 02:40:00+03'),
     (3, 'https://mongodb.internal/storage/docs/img_4412.jpg', 'Беспроводные наушники', 'ELECTRONICS', 0.05, 3, 12195.6, 92, '2026-05-02 23:36:00+03', 'AVAILABLE', '2026-05-02 23:36:00+03'),
     (4, 'https://mongodb.internal/storage/docs/img_7011.jpg', 'Умные часы', 'ELECTRONICS', 0.08, 4, 24116.79, 14, '2026-05-04 03:22:00+03', 'AVAILABLE', '2026-05-04 03:22:00+03'),
@@ -179,11 +179,11 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
 
 
     -- Патия 1: SKU 1 - 5 (Электроника и Книги)
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74250.00, 1, '2026-05-10 09:15:00+03', 'AVAILABLE', '2026-05-10 09:15:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75800.00, 2, '2026-05-11 10:20:00+03', 'AVAILABLE', '2026-05-11 10:20:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 73900.00, 3, '2026-05-12 14:05:00+03', 'AVAILABLE', '2026-05-12 14:05:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 76100.00, 4, '2026-05-13 16:45:00+03', 'AVAILABLE', '2026-05-13 16:45:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75200.00, 5, '2026-05-14 11:30:00+03', 'AVAILABLE', '2026-05-14 11:30:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74250.00, 1, '2026-05-10 09:15:00+03', 'AVAILABLE', '2026-05-10 09:15:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75800.00, 2, '2026-05-11 10:20:00+03', 'AVAILABLE', '2026-05-11 10:20:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 73900.00, 3, '2026-05-12 14:05:00+03', 'AVAILABLE', '2026-05-12 14:05:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 76100.00, 4, '2026-05-13 16:45:00+03', 'AVAILABLE', '2026-05-13 16:45:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75200.00, 5, '2026-05-14 11:30:00+03', 'AVAILABLE', '2026-05-14 11:30:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.10, 2, 119500.00, 6, '2026-05-15 08:22:00+03', 'AVAILABLE', '2026-05-15 08:22:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.10, 2, 121000.00, 7, '2026-05-16 09:11:00+03', 'AVAILABLE', '2026-05-16 09:11:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.10, 2, 118400.00, 8, '2026-05-17 13:54:00+03', 'AVAILABLE', '2026-05-17 13:54:00+03'),
@@ -229,16 +229,16 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
 
     -- Разгон массы: Добавляем по 8-10 дубликатов на самые ходовые SKU для глубоких страниц пагинации
     -- Циклический bulk-набор (SKU 1)
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75000.00, 44, '2026-06-01 10:00:00+03', 'AVAILABLE', '2026-06-01 10:00:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74800.00, 45, '2026-06-01 11:00:00+03', 'AVAILABLE', '2026-06-01 11:00:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75500.00, 46, '2026-06-02 09:30:00+03', 'AVAILABLE', '2026-06-02 09:30:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75900.00, 47, '2026-06-02 14:15:00+03', 'AVAILABLE', '2026-06-02 14:15:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74100.00, 48, '2026-06-03 12:00:00+03', 'AVAILABLE', '2026-06-03 12:00:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 76300.00, 49, '2026-06-03 15:45:00+03', 'AVAILABLE', '2026-06-03 15:45:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75150.00, 50, '2026-06-04 10:10:00+03', 'AVAILABLE', '2026-06-04 10:10:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74900.00, 51, '2026-06-04 11:55:00+03', 'AVAILABLE', '2026-06-04 11:55:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75600.00, 52, '2026-06-05 13:20:00+03', 'AVAILABLE', '2026-06-05 13:20:00+03'),
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74450.00, 53, '2026-06-05 16:40:00+03', 'AVAILABLE', '2026-06-05 16:40:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75000.00, 44, '2026-06-01 10:00:00+03', 'AVAILABLE', '2026-06-01 10:00:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74800.00, 45, '2026-06-01 11:00:00+03', 'AVAILABLE', '2026-06-01 11:00:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75500.00, 46, '2026-06-02 09:30:00+03', 'AVAILABLE', '2026-06-02 09:30:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75900.00, 47, '2026-06-02 14:15:00+03', 'AVAILABLE', '2026-06-02 14:15:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74100.00, 48, '2026-06-03 12:00:00+03', 'AVAILABLE', '2026-06-03 12:00:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 76300.00, 49, '2026-06-03 15:45:00+03', 'AVAILABLE', '2026-06-03 15:45:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75150.00, 50, '2026-06-04 10:10:00+03', 'AVAILABLE', '2026-06-04 10:10:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74900.00, 51, '2026-06-04 11:55:00+03', 'AVAILABLE', '2026-06-04 11:55:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75600.00, 52, '2026-06-05 13:20:00+03', 'AVAILABLE', '2026-06-05 13:20:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74450.00, 53, '2026-06-05 16:40:00+03', 'AVAILABLE', '2026-06-05 16:40:00+03'),
 
     -- Повторяющийся блок для Ноутбуков (SKU 2)
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.10, 2, 120500.00, 54, '2026-06-01 10:15:00+03', 'AVAILABLE', '2026-06-01 10:15:00+03'),
@@ -330,7 +330,7 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
     (20, 'https://mongodb.internal/storage/docs/img_3345.jpg', 'Компактный складной зонт', 'OTHER', 0.40, 20, 2250.00, 45, '2026-06-10 18:00:00+03', 'AVAILABLE', '2026-06-10 18:00:00+03'),
 
     -- Оставшиеся 110 записей для создания массивного объема данных
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74900.00, 46, '2026-06-11 09:00:00+03', 'AVAILABLE', '2026-06-11 09:00:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 74900.00, 46, '2026-06-11 09:00:00+03', 'AVAILABLE', '2026-06-11 09:00:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.10, 2, 119200.00, 47, '2026-06-11 09:05:00+03', 'AVAILABLE', '2026-06-11 09:05:00+03'),
     (3, 'https://mongodb.internal/storage/docs/img_4412.jpg', 'Беспроводные наушники', 'ELECTRONICS', 0.05, 3, 12450.00, 48, '2026-06-11 09:10:00+03', 'AVAILABLE', '2026-06-11 09:10:00+03'),
     (4, 'https://mongodb.internal/storage/docs/img_7011.jpg', 'Умные часы', 'ELECTRONICS', 0.08, 4, 25100.00, 49, '2026-06-11 09:15:00+03', 'AVAILABLE', '2026-06-11 09:15:00+03'),
@@ -352,7 +352,7 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
     (20, 'https://mongodb.internal/storage/docs/img_3345.jpg', 'Компактный складной зонт', 'OTHER', 0.40, 20, 2180.00, 65, '2026-06-11 10:35:00+03', 'AVAILABLE', '2026-06-11 10:35:00+03'),
 
     -- Повторение массивов для глубокой генерации
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75300.00, 66, '2026-06-11 11:00:00+03', 'AVAILABLE', '2026-06-11 11:00:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75300.00, 66, '2026-06-11 11:00:00+03', 'AVAILABLE', '2026-06-11 11:00:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.10, 2, 120400.00, 67, '2026-06-11 11:05:00+03', 'AVAILABLE', '2026-06-11 11:05:00+03'),
     (3, 'https://mongodb.internal/storage/docs/img_4412.jpg', 'Беспроводные наушники', 'ELECTRONICS', 0.05, 3, 12550.00, 68, '2026-06-11 11:10:00+03', 'AVAILABLE', '2026-06-11 11:10:00+03'),
     (4, 'https://mongodb.internal/storage/docs/img_7011.jpg', 'Умные часы', 'ELECTRONICS', 0.08, 4, 24950.00, 69, '2026-06-11 11:15:00+03', 'AVAILABLE', '2026-06-11 11:15:00+03'),
@@ -374,7 +374,7 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
     (20, 'https://mongodb.internal/storage/docs/img_3345.jpg', 'Компактный складной зонт', 'OTHER', 0.40, 20, 2210.00, 85, '2026-06-11 12:35:00+03', 'AVAILABLE', '2026-06-11 12:35:00+03'),
 
     -- Еще один цикл (1-20) для плотности
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75100.00, 86, '2026-06-11 14:00:00+03', 'AVAILABLE', '2026-06-11 14:00:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75100.00, 86, '2026-06-11 14:00:00+03', 'AVAILABLE', '2026-06-11 14:00:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.10, 2, 119700.00, 87, '2026-06-11 14:05:00+03', 'AVAILABLE', '2026-06-11 14:05:00+03'),
     (3, 'https://mongodb.internal/storage/docs/img_4412.jpg', 'Беспроводные наушники', 'ELECTRONICS', 0.05, 3, 12400.00, 88, '2026-06-11 14:10:00+03', 'AVAILABLE', '2026-06-11 14:10:00+03'),
     (4, 'https://mongodb.internal/storage/docs/img_7011.jpg', 'Умные часы', 'ELECTRONICS', 0.08, 4, 25050.00, 89, '2026-06-11 14:15:00+03', 'AVAILABLE', '2026-06-11 14:15:00+03'),
@@ -396,7 +396,7 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
     (20, 'https://mongodb.internal/storage/docs/img_3345.jpg', 'Компактный складной зонт', 'OTHER', 0.40, 20, 2195.00, 5, '2026-06-11 15:35:00+03', 'AVAILABLE', '2026-06-11 15:35:00+03'),
 
     -- Повторение циклов 1-20 до полного набора в 200 строк
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75220.00, 6, '2026-06-12 10:00:00+03', 'AVAILABLE', '2026-06-12 10:00:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75220.00, 6, '2026-06-12 10:00:00+03', 'AVAILABLE', '2026-06-12 10:00:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.10, 2, 120100.00, 7, '2026-06-12 10:05:00+03', 'AVAILABLE', '2026-06-12 10:05:00+03'),
     (3, 'https://mongodb.internal/storage/docs/img_4412.jpg', 'Беспроводные наушники', 'ELECTRONICS', 0.05, 3, 12480.00, 8, '2026-06-12 10:10:00+03', 'AVAILABLE', '2026-06-12 10:10:00+03'),
     (4, 'https://mongodb.internal/storage/docs/img_7011.jpg', 'Умные часы', 'ELECTRONICS', 0.08, 4, 25020.00, 9, '2026-06-12 10:15:00+03', 'AVAILABLE', '2026-06-12 10:15:00+03'),
@@ -417,7 +417,7 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
     (19, 'https://mongodb.internal/storage/docs/img_1290.jpg', 'Термокружка вакуумная', 'OTHER', 0.35, 19, 1785.00, 24, '2026-06-12 11:30:00+03', 'AVAILABLE', '2026-06-12 11:30:00+03'),
     (20, 'https://mongodb.internal/storage/docs/img_3345.jpg', 'Компактный складной зонт', 'OTHER', 0.40, 20, 2185.00, 25, '2026-06-12 11:35:00+03', 'AVAILABLE', '2026-06-12 11:35:00+03'),
 
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75450.00, 26, '2026-06-12 12:00:00+03', 'AVAILABLE', '2026-06-12 12:00:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75450.00, 26, '2026-06-12 12:00:00+03', 'AVAILABLE', '2026-06-12 12:00:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.10, 2, 120650.00, 27, '2026-06-12 12:05:00+03', 'AVAILABLE', '2026-06-12 12:05:00+03'),
     (3, 'https://mongodb.internal/storage/docs/img_4412.jpg', 'Беспроводные наушники', 'ELECTRONICS', 0.05, 3, 12520.00, 28, '2026-06-12 12:10:00+03', 'AVAILABLE', '2026-06-12 12:10:00+03'),
     (4, 'https://mongodb.internal/storage/docs/img_7011.jpg', 'Умные часы', 'ELECTRONICS', 0.08, 4, 25150.00, 29, '2026-06-12 12:15:00+03', 'AVAILABLE', '2026-06-12 12:15:00+03'),
@@ -438,7 +438,7 @@ INSERT INTO cargos (sku_id, mongo_doc_id, name, cargo_category, weight, dimensio
     (19, 'https://mongodb.internal/storage/docs/img_1290.jpg', 'Термокружка вакуумная', 'OTHER', 0.35, 19, 1792.00, 44, '2026-06-12 13:30:00+03', 'AVAILABLE', '2026-06-12 13:30:00+03'),
     (20, 'https://mongodb.internal/storage/docs/img_3345.jpg', 'Компактный складной зонт', 'OTHER', 0.40, 20, 2192.00, 45, '2026-06-12 13:35:00+03', 'AVAILABLE', '2026-06-12 13:35:00+03'),
 
-    (1, 'https://mongodb.internal/storage/docs/img_1024.jpg', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75550.00, 46, '2026-06-12 14:00:00+03', 'AVAILABLE', '2026-06-12 14:00:00+03'),
+    (1, 'http://localhost:8085/api/v1/catalog/images/6a3157811c03442507e3cedf', 'Смартфон премиум', 'ELECTRONICS', 0.18, 1, 75550.00, 46, '2026-06-12 14:00:00+03', 'AVAILABLE', '2026-06-12 14:00:00+03'),
     (2, 'https://mongodb.internal/storage/docs/img_0892.jpg', 'Ноутбук рабочий', 'ELECTRONICS', 2.10, 2, 120750.00, 47, '2026-06-12 14:05:00+03', 'AVAILABLE', '2026-06-12 14:05:00+03'),
     (3, 'https://mongodb.internal/storage/docs/img_4412.jpg', 'Беспроводные наушники', 'ELECTRONICS', 0.05, 3, 12530.00, 48, '2026-06-12 14:10:00+03', 'AVAILABLE', '2026-06-12 14:10:00+03'),
     (4, 'https://mongodb.internal/storage/docs/img_7011.jpg', 'Умные часы', 'ELECTRONICS', 0.08, 4, 25160.00, 49, '2026-06-12 14:15:00+03', 'AVAILABLE', '2026-06-12 14:15:00+03'),
