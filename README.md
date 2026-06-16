@@ -4,19 +4,19 @@
 ### Порт приложения: **`8085`**
 
 >### Подключение к `Postgres`
-> - Hosh: **`localhost`**
+> - Host: **`localhost`**
 > - Port: **`5439`**
 > - User: **`postgres`**
 > - Password: **`postgres`**
-> - Databade: **`logistics_platform_db`**
+> - Database: **`logistics_platform_db`**
 > - URL: **`jdbc:postgresql://localhost:5439/logistics_platform_db`**
 
 > ### Подключение к `Mongo`
-> - Hosh: **`localhost`**
+> - Host: **`localhost`**
 > - Port: **`27020`**
 > - User: **`admin`** - НЕ НУЖНО! 
 > - Password: **`pass`** - НЕ НУЖНО!
-> - Databade: **`logistics_cargo_mongo_db`**
+> - Database: **`logistics_cargo_mongo_db`**
 > - URL: **`mongodb://localhost:27017/logistics_cargo_mongo_db`**
 >
 > Порт со стандартного `27017` на нестандартный `27020`
