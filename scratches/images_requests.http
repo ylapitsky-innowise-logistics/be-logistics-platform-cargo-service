@@ -2,7 +2,43 @@
 @host = http://localhost:8085
 @base_path = /api/v1/catalog/images
 
-### 1. Загрузить картинку на сервер (Форма отправки файла)
+### 1. Загрузить картинку 1 на сервер - Беспроводные_наушники (Форма отправки файла)
+POST {{host}}{{base_path}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Беспроводные_наушники.png"
+Content-Type: image/png
+
+< ./pictures/Беспроводные_наушники.png
+--boundary--
+
+
+### 2. Загрузить картинку 2 на сервер - Книга_Философия_Java
+POST {{host}}{{base_path}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Книга_Философия_Java.png"
+Content-Type: image/png
+
+< ./pictures/Книга_Философия_Java.png
+--boundary--
+
+
+### 3. Загрузить картинку 3 на сервер - Ноутбук_рабочий
+POST {{host}}{{base_path}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Ноутбук_рабочий.png"
+Content-Type: image/png
+
+< ./pictures/Ноутбук_рабочий.png
+--boundary--
+
+
+### 4. Загрузить картинку 4 на сервер - Смартфон_премиум
 POST {{host}}{{base_path}}
 Content-Type: multipart/form-data; boundary=boundary
 
@@ -13,6 +49,25 @@ Content-Type: image/png
 < ./pictures/Смартфон_премиум.png
 --boundary--
 
+
+### 5. Загрузить картинку 5: Умные_часы
+POST {{host}}{{base_path}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Умные_часы.png"
+Content-Type: image/png
+
+< ./pictures/Умные_часы.png
+--boundary--
+
+
+
+
+
+
+
+### ====================================================================
 ### 2. Просмотр/стриминг картинки в браузере (Замени ID на тот, что придет из первого запроса)
 GET {{host}}{{base_path}}/6a3157811c03442507e3cedf
 Accept: image/*
