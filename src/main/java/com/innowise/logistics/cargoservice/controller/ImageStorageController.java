@@ -1,9 +1,11 @@
 package com.innowise.logistics.cargoservice.controller;
 
+import com.innowise.logistics.cargoservice.dto.request.ImageMetadataUploadRequest;
 import com.innowise.logistics.cargoservice.dto.response.ImageUploadResponse;
-import com.innowise.logistics.cargoservice.mongo.service.ImageStorageService;
+import com.innowise.logistics.cargoservice.mongo.service.ImageSkuService;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.model.GridFSFile;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
@@ -19,16 +21,20 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class ImageStorageController {
 
-    private final ImageStorageService imageStorageService;
+    private final ImageSkuService imageSkuService;
     private final GridFSBucket gridFSBucket;
 
     /**
      * 1️⃣ POST /api/v1/catalog/images
      * Загрузить картинку через форму (multipart/form-data)
      */
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ImageUploadResponse> uploadImage(@RequestParam("file") MultipartFile file) {
-        ImageUploadResponse response = imageStorageService.uploadImage(file);
+//    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ImageUploadResponse> uploadImage(
+            @RequestParam("file") MultipartFile file,
+            @RequestPart @Valid ImageMetadataUploadRequest metadataRequest // 🟢 @Valid активирует проверку skuId
+    ) {
+        ImageUploadResponse response = imageSkuService.uploadImage(file, metadataRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -39,7 +45,7 @@ public class ImageStorageController {
     @GetMapping("/{id}")
     public ResponseEntity<Resource> getImageById(@PathVariable("id") String id) {
         // 1. Получаем файл из сервиса
-        GridFSFile fileMetadata = imageStorageService.getImageFile(id);
+        GridFSFile fileMetadata = imageSkuService.getImageFile(id);
 
         // 2. Безопасно вытаскиваем Content-Type (Провайдеры Mongo пишут его либо в метаданные, либо в корень)
         String contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;

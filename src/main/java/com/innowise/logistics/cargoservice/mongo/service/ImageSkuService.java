@@ -1,7 +1,9 @@
 package com.innowise.logistics.cargoservice.mongo.service;
 
+import com.innowise.logistics.cargoservice.dto.request.ImageMetadataUploadRequest;
 import com.innowise.logistics.cargoservice.dto.response.ImageUploadResponse;
-import com.innowise.logistics.cargoservice.mongo.repository.ImageMetadataRepository;
+import com.innowise.logistics.cargoservice.mongo.entity.ImageSkuMetadata;
+import com.innowise.logistics.cargoservice.mongo.repository.ImageSkuMetadataRepository;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import lombok.RequiredArgsConstructor;
@@ -22,17 +24,18 @@ import java.io.InputStream;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ImageStorageService {
+public class ImageSkuService {
 
     private final GridFsTemplate gridFsTemplate;
     private final GridFSBucket gridFSBucket;
-    private final ImageMetadataRepository imageMetadataRepository;
+    private final ImageSkuMetadataRepository imageSkuMetadataRepository;
 
     /**
      * 1️⃣ Загрузка изображения в MongoDB GridFS + Регистрация в image_metadata
      */
-    public ImageUploadResponse uploadImage(MultipartFile file) {
-        log.info("Попытка загрузки файла в MongoDB: {}, размер: {} байт", file.getOriginalFilename(), file.getSize());
+    public ImageUploadResponse uploadImage(MultipartFile file, ImageMetadataUploadRequest metadataRequest) {
+        log.info("Попытка загрузки файла в MongoDB: {}, размер: {} байт, атрибуты: {}",
+                file.getOriginalFilename(), file.getSize(), metadataRequest);
 
         // Валидация на пустой файл
         if (file.isEmpty()) {
@@ -40,16 +43,29 @@ public class ImageStorageService {
         }
 
         try (InputStream inputStream = file.getInputStream()) {
-            // Сохраняем файл в GridFS. Он вернет уникальный ObjectId
+            // 1. Сохраняем физический файл в GridFS. Он вернет уникальный ObjectId
             ObjectId fileId = gridFsTemplate.store(
                     inputStream,
                     file.getOriginalFilename(),
                     file.getContentType()
             );
 
-            log.info("Файл успешно сохранен в Mongo. Назначен ID: {}", fileId);
+            log.info("Физический файл успешно сохранен в GridFS. Назначен ID: {}", fileId);
 
-            // Формируем красивый внутренний линк для сущности Cargo
+            // 2. Создаем и сохраняем бизнес-паспорт файла
+            ImageSkuMetadata metadata = new ImageSkuMetadata();
+            metadata.setGridFsFileId(fileId.toHexString());
+            metadata.setSkuId(metadataRequest.getSkuId());
+            metadata.setSkuName(metadataRequest.getSkuName());
+            metadata.setCargoName(metadataRequest.getCargoName());
+            metadata.setCargoCategory(metadataRequest.getCargoCategory());
+            metadata.setDescription(metadataRequest.getDescription());
+            // Поле uploadedAt заполнится автоматически благодаря @CreatedDate в сущности
+
+            ImageSkuMetadata savedMetadata = imageSkuMetadataRepository.save(metadata);
+            log.info("Бизнес-метаданные фотографии успешно сохранены с Mongo-ID документа: {}", savedMetadata.getId());
+
+            // 3. Формируем эндпоинт для скачивания (отдаем ID из GridFS, так как контроллер ищет по нему)
             String fileUrl = "/api/v1/catalog/images/" + fileId.toHexString();
 
             return new ImageUploadResponse(fileId.toHexString(), fileUrl);
@@ -57,8 +73,7 @@ public class ImageStorageService {
         } catch (IOException e) {
             log.error("Критическая ошибка ввода-вывода при сохранении файла", e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Не удалось сохранить изображение");
-        }
-    }
+        }    }
 
     /**
      * 2️⃣ Скачивание / Просмотр изображения по его ID

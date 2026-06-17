@@ -2,46 +2,22 @@
 @host = http://localhost:8085
 @base_path = /api/v1/catalog/images
 
-### 1. Загрузить картинку 1 на сервер - Беспроводные_наушники (Форма отправки файла)
-POST {{host}}{{base_path}}
+
+### 01. Загрузить картинку 01 - Смартфон премиум
+POST {{host}}{{base_path}}/upload
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
-Content-Disposition: form-data; name="file"; filename="Беспроводные_наушники.png"
-Content-Type: image/png
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
 
-< ./pictures/Беспроводные_наушники.png
---boundary--
-
-
-### 2. Загрузить картинку 2 на сервер - Книга_Философия_Java
-POST {{host}}{{base_path}}
-Content-Type: multipart/form-data; boundary=boundary
-
---boundary
-Content-Disposition: form-data; name="file"; filename="Книга_Философия_Java.png"
-Content-Type: image/png
-
-< ./pictures/Книга_Философия_Java.png
---boundary--
-
-
-### 3. Загрузить картинку 3 на сервер - Ноутбук_рабочий
-POST {{host}}{{base_path}}
-Content-Type: multipart/form-data; boundary=boundary
-
---boundary
-Content-Disposition: form-data; name="file"; filename="Ноутбук_рабочий.png"
-Content-Type: image/png
-
-< ./pictures/Ноутбук_рабочий.png
---boundary--
-
-
-### 4. Загрузить картинку 4 на сервер - Смартфон_премиум
-POST {{host}}{{base_path}}
-Content-Type: multipart/form-data; boundary=boundary
-
+{
+  "skuId": 1,
+  "skuName": "E-1024-2026",
+  "cargoName": "Товар: Смартфон премиум",
+  "cargoCategory": "ELECTRONICS",
+  "description": "Фотография эталонного товара"
+}
 --boundary
 Content-Disposition: form-data; name="file"; filename="Смартфон_премиум.png"
 Content-Type: image/png
@@ -50,10 +26,67 @@ Content-Type: image/png
 --boundary--
 
 
-### 5. Загрузить картинку 5: Умные_часы
-POST {{host}}{{base_path}}
+### 02. Загрузить картинку 02 - Ноутбук рабочий
+POST {{host}}{{base_path}}/upload
 Content-Type: multipart/form-data; boundary=boundary
 
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 2,
+  "skuName": "E-0892-2025",
+  "cargoName": "Товар: Ноутбук рабочий",
+  "cargoCategory": "ELECTRONICS",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Ноутбук_рабочий.png"
+Content-Type: image/png
+
+< ./pictures/Ноутбук_рабочий.png
+--boundary--
+
+
+### 03. Загрузить картинку 03 - Беспроводные наушники
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 3,
+  "skuName": "E-4412-2026",
+  "cargoName": "Товар: Беспроводные наушники",
+  "cargoCategory": "ELECTRONICS",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Беспроводные_наушники.png"
+Content-Type: image/png
+
+< ./pictures/Беспроводные_наушники.png
+--boundary--
+
+
+### 04. Загрузить картинку 04 - Умные часы
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 4,
+  "skuName": "E-7011-2024",
+  "cargoName": "Товар: Умные часы",
+  "cargoCategory": "ELECTRONICS",
+  "description": "Фотография эталонного товара"
+}
 --boundary
 Content-Disposition: form-data; name="file"; filename="Умные_часы.png"
 Content-Type: image/png
@@ -62,12 +95,369 @@ Content-Type: image/png
 --boundary--
 
 
+### 05. Загрузить картинку 05 - Книга: Философия Java
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 5,
+  "skuName": "B-0012-2021",
+  "cargoName": "Товар: Книга: Философия Java",
+  "cargoCategory": "BOOKS",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Книга_Философия_Java.png"
+Content-Type: image/png
+
+< ./pictures/Книга_Философия_Java.png
+--boundary--
 
 
+### 06. Загрузить картинку 06 - Книга: Чистая Архитектура
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 6,
+  "skuName": "B-0541-2025",
+  "cargoName": "Товар: Книга: Чистая Архитектура",
+  "cargoCategory": "BOOKS",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Книга_Чистая_Архитектура.png"
+Content-Type: image/png
+
+< ./pictures/Книга_Чистая_Архитектура.png
+--boundary--
 
 
+### 07. Загрузить картинку 07 - Книга: Паттерны проектирования Enterprise-приложений
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
 
-### ====================================================================
-### 2. Просмотр/стриминг картинки в браузере (Замени ID на тот, что придет из первого запроса)
-GET {{host}}{{base_path}}/6a3157811c03442507e3cedf
-Accept: image/*
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 7,
+  "skuName": "B-1109-2026",
+  "cargoName": "Товар: Книга: Паттерны проектирования Enterprise-приложений",
+  "cargoCategory": "BOOKS",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Книга_Паттерны_проектирования_Enterprise-приложений.png"
+Content-Type: image/png
+
+< ./pictures/Книга_Паттерны_проектирования_Enterprise-приложений.png
+--boundary--
+
+
+### 08. Загрузить картинку 08 - Книга: Руководство по Spring Boot 3
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 8,
+  "skuName": "B-0084-2023",
+  "cargoName": "Товар: Книга: Руководство по Spring Boot 3",
+  "cargoCategory": "BOOKS",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Книга_Руководство_по_Spring_Boot_3.png"
+Content-Type: image/png
+
+< ./pictures/Книга_Руководство_по_Spring_Boot_3.png
+--boundary--
+
+
+### 09. Загрузить картинку 09 - Футбольный мяч турнирный
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 9,
+  "skuName": "S-9912-2025",
+  "cargoName": "Товар: Футбольный мяч турнирный",
+  "cargoCategory": "SPORTS",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Футбольный_мяч_турнирный.png"
+Content-Type: image/png
+
+< ./pictures/Футбольный_мяч_турнирный.png
+--boundary--
+
+
+### 10. Загрузить картинку 10 - Коврик для йоги нескользящий
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 10,
+  "skuName": "S-3411-2026",
+  "cargoName": "Товар: Коврик для йоги нескользящий",
+  "cargoCategory": "SPORTS",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Коврик_для_йоги_нескользящий.png"
+Content-Type: image/png
+
+< ./pictures/Коврик_для_йоги_нескользящий.png
+--boundary--
+
+
+### 11. Загрузить картинку 11 - Набор разборных гантелей
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 11,
+  "skuName": "S-2204-2024",
+  "cargoName": "Товар: Набор разборных гантелей",
+  "cargoCategory": "SPORTS",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Набор_разборных_гантелей.png"
+Content-Type: image/png
+
+< ./pictures/Набор_разборных_гантелей.png
+--boundary--
+
+
+### 12. Загрузить картинку 12 - Спортивный рюкзак водонепроницаемый
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 12,
+  "skuName": "S-0056-2026",
+  "cargoName": "Товар: Спортивный рюкзак водонепроницаемый",
+  "cargoCategory": "SPORTS",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Спортивный_рюкзак_водонепроницаемый.png"
+Content-Type: image/png
+
+< ./pictures/Спортивный_рюкзак_водонепроницаемый.png
+--boundary--
+
+
+### 13. Загрузить картинку 13 - Стол письменный эргономичный
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 13,
+  "skuName": "M-0451-2026",
+  "cargoName": "Товар: Стол письменный эргономичный",
+  "cargoCategory": "OTHER",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Стол_письменный_эргономичный.png"
+Content-Type: image/png
+
+< ./pictures/Стол_письменный_эргономичный.png
+--boundary--
+
+
+### 14. Загрузить картинку 14 - Кресло офисное анатомическое
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 14,
+  "skuName": "M-1120-2025",
+  "cargoName": "Товар: Кресло офисное анатомическое",
+  "cargoCategory": "OTHER",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Кресло_офисное_анатомическое.png"
+Content-Type: image/png
+
+< ./pictures/Кресло_офисное_анатомическое.png
+--boundary--
+
+
+### 15. Загрузить картинку 15 - Стеллаж металлический складской
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 15,
+  "skuName": "M-0089-2024",
+  "cargoName": "Товар: Стеллаж металлический складской",
+  "cargoCategory": "OTHER",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Стеллаж_металлический_складской.png"
+Content-Type: image/png
+
+< ./pictures/Стеллаж_металлический_складской.png
+--boundary--
+
+
+### 16. Загрузить картинку 16 - Настольная лампа светодиодная
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 16,
+  "skuName": "O-5511-2026",
+  "cargoName": "Товар: Настольная лампа светодиодная",
+  "cargoCategory": "OTHER",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Настольная_лампа_светодиодная.png"
+Content-Type: image/png
+
+< ./pictures/Настольная_лампа_светодиодная.png
+--boundary--
+
+
+### 17. Загрузить картинку 17 - Канцелярский набор премиум
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 17,
+  "skuName": "O-0023-2025",
+  "cargoName": "Товар: Канцелярский набор премиум",
+  "cargoCategory": "OTHER",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Канцелярский_набор_премиум.png"
+Content-Type: image/png
+
+< ./pictures/Канцелярский_набор_премиум.png
+--boundary--
+
+
+### 18. Загрузить картинку 18 - Увлажнитель воздуха ультразвуковой
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 18,
+  "skuName": "O-8841-2026",
+  "cargoName": "Товар: Увлажнитель воздуха ультразвуковой",
+  "cargoCategory": "OTHER",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Увлажнитель_воздуха_ультразвуковой.png"
+Content-Type: image/png
+
+< ./pictures/Увлажнитель_воздуха_ультразвуковой.png
+--boundary--
+
+
+### 19. Загрузить картинку 19 - Термокружка вакуумная
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 19,
+  "skuName": "O-1290-2024",
+  "cargoName": "Товар: Термокружка вакуумная",
+  "cargoCategory": "OTHER",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Термокружка_вакуумная.png"
+Content-Type: image/png
+
+< ./pictures/Термокружка_вакуумная.png
+--boundary--
+
+
+### 20. Загрузить картинку 20 - Компактный складной зонт
+POST {{host}}{{base_path}}/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadataRequest"
+Content-Type: application/json
+
+{
+  "skuId": 20,
+  "skuName": "O-3345-2026",
+  "cargoName": "Товар: Компактный складной зонт",
+  "cargoCategory": "OTHER",
+  "description": "Фотография эталонного товара"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="Компактный_складной_зонт.png"
+Content-Type: image/png
+
+< ./pictures/Компактный_складной_зонт.png
+--boundary--
