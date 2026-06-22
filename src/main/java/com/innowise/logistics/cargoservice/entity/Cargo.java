@@ -125,4 +125,3 @@ public class Cargo {
         this.statusAt = Instant.now();
     }
 }
-
