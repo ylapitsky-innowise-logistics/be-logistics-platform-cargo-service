@@ -9,7 +9,7 @@ spring:
 
   # DataSource для PostgreSQL (Единая общеплатформенная БД)
   datasource:
-    url: jdbc:postgresql://localhost:5439/logistics_platform_db?currentSchema=cargo_schema # 👈 Изменили порт на 5439, база данных и схема сохранены прежние
+    url: jdbc:postgresql://localhost:5433/logistics_platform_db?currentSchema=cargo_schema # 👈 Изменили порт на 5433, база данных и схема сохранены прежние
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -51,7 +51,7 @@ spring:
   data:
     mongodb:
       # 👈 Внедряем специфичную переменную с дефолтным значением для логистики грузов
-      uri: ${LOGISTICS_CARGO_MONGO_URI:mongodb://localhost:27020/logistics_cargo_mongo_db}
+      uri: ${LOGISTICS_CARGO_MONGO_URI:mongodb://localhost:27018/logistics_cargo_mongo_db}
 
   security:
     oauth2:

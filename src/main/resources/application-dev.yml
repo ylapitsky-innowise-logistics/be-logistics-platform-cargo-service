@@ -3,7 +3,7 @@
 spring:
   datasource:
     # 🟢 ИСПРАВЛЕНО: Теперь dev-режим смотрит на правильный выделенный порт платформы и общую базу
-    url: jdbc:postgresql://localhost:5439/logistics_platform_db?currentSchema=cargo_schema
+    url: jdbc:postgresql://localhost:5433/logistics_platform_db?currentSchema=cargo_schema
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
 

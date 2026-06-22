@@ -8,22 +8,36 @@
 
 >### Подключение к **`Postgres`**
 > - Host: **`localhost`**
-> - Port: **`5439`**
+> - Port: **`5433`**
 > - User: **`postgres`**
 > - Password: **`postgres`**
 > - Database: **`logistics_platform_db`**
-> - URL: **`jdbc:postgresql://localhost:5439/logistics_platform_db`**
+> - URL: **`jdbc:postgresql://localhost:5433/logistics_platform_db`**
 
 > ### Подключение к **`Mongo`**
 > - Host: **`localhost`**
-> - Port: **`27020`**
-> - User: **`admin`** - НЕ НУЖНО! // _(по умолчанию зашито в образе)_ 
-> - Password: **`pass`** - НЕ НУЖНО! // _(по умолчанию зашито в образе)_
+> - Port: **`27018`**
 > - Database: **`logistics_cargo_mongo_db`**
-> - URL: **`mongodb://localhost:27017/logistics_cargo_mongo_db`**
+> - URL: **`mongodb://localhost:27018/logistics_cargo_mongo_db`**
+> 
+>> Аутентификация: **отключена** (для локальной разработки)
+>> - User: **`admin`** - НЕ НУЖНО! // _(по умолчанию зашито в образе)_
+>> - Password: **`pass`** - НЕ НУЖНО! // _(по умолчанию зашито в образе)_
 >
-> Порт со стандартного `27017` на нестандартный `27020`;  
-> **Web**-версия, ссылка на вход: http://localhost:8081/  
+> Порт со стандартного `27017` на нестандартный `27018`;  
+> **Web**-версия, ссылка на вход: http://localhost:8888/  
+
+---
+## Порты сервиса:
+
+| Сервис                            | Внешний порт |
+|:----------------------------------|:-------------|
+| PostgreSQL                        | `5433`       |
+| PostgreSQL для Keycloak           | `5434`       |
+| MongoDB                           | `27018`      |
+| Mongo Express                     | `8888`       |
+| Keycloak                          | `8080`       |
+| Cargo Service (в application.yml) | `8085`       |
 
 ---
 ```text
@@ -36,4 +50,3 @@ cargo_storage_db (MongoDB)
 ```
 
 ---
-
