@@ -16,9 +16,10 @@ import org.springframework.data.mongodb.core.mapping.FieldType;
 import java.time.Instant;
 
 /**
- * Паспорт на картинку для артикула товара
+ * Паспорт на картинку для артикула товара (на каждую картинку)
+ * У одного SKU может быть МНОГО картинок (галерея)
  */
-@Document(collection = "image_metadata") // 🟢 Говорим Спрингу, что это документ коллекции в MongoDB
+@Document(collection = "image_sku_metadata") // 🟢 Говорим Спрингу, что это документ коллекции в MongoDB
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,31 +29,61 @@ public class ImageSkuMetadata {
     @Id                         // Системный уникальный ID документа в MongoDB
     private String id;
 
-    @Indexed(unique = true)     // 🎯 Индекс: связь 1-к-1 с физическим файлом в GridFS
+
+    // ===== СВЯЗЬ С ФАЙЛОМ =====
+    @Indexed(unique = true)
     @Field("gridfs_file_id")
     private String gridFsFileId;
 
-    @Indexed(unique = true)     // 🎯 Обычный индекс для точного поиска / Индекс: связь 1-к-1; только одно изображение на артикул
-    @Field("sku_id")            // id артикула товара, к которому относится данное изображение
+
+    // ===== СВЯЗЬ С SKU (бизнес-ключ) =====
+    @Indexed(name = "idx_image_sku_id")     // 🎯 Обычный индекс для точного поиска
+    @Field("sku_id")
     private Long skuId;
 
-    @Indexed(name = "idx_sku_name") // Обычный индекс для точного поиска, сортировки и regex-запросов    @Field("sku_name")          // наименование артикула товара, к которому относится данное изображение
+
+    // ===== ТЕХНИЧЕСКИЕ МЕТАДАННЫЕ ФАЙЛА =====
+    @Field("file_name")
+    private String fileName;           // Оригинальное имя файла
+
+    @Field("file_size")
+    private Long fileSize;             // Размер в байтах
+
+    @Field("mime_type")
+    private String mimeType;           // image/jpeg, image/png, image/webp
+
+    @Field("width")
+    private Integer width;             // Ширина в пикселях
+
+    @Field("height")
+    private Integer height;            // Высота в пикселях
+
+
+    // ===== БИЗНЕС-ПОЛЯ (дублируем из Sku для независимости) =====
+    @Indexed(name = "idx_image_sku_name")
     @Field("sku_name")
     private String skuName;
 
-    @Indexed(name = "idx_cargo_name")   // Обычный индекс для точного поиска
-    @Field("cargo_name")                // наименование самого товара, к которому относится данное изображение
-    private String cargoName;
+    @Indexed(name = "idx_image_sku_category")
+    @Field("sku_category")
+    private Category category;      // категория самого артикула
 
-    @Field("cargo_category")    // К какой категории товаров относится сам товар, отображенный на картинке
-    private Category cargoCategory;
 
-    @Field("description")       // Комментарий по данному изображению товара
-    private String description;
+    // ===== КОНТЕНТ-МЕНЕДЖМЕНТ =====
+    @Field("description")
+    private String description;        // Комментарий по изображению
 
-    @Setter(AccessLevel.NONE)   // Отмен. Lombok сеттер.
-    @CreatedDate                // 🟢 Автоматический аудит: Spring Data Mongo сам проставит дату при save()
-    @Indexed(name = "idx_uploaded_at") // Индекс для сортировки по дате загрузки
+    @Field("sort_order")
+    private Integer sortOrder = 0;     // 0 — главная, 1, 2, 3 — остальные
+
+    @Field("is_primary")
+    private Boolean isPrimary = false; // Флаг главного изображения
+
+
+    // ===== АУДИТ =====
+    @Setter(AccessLevel.NONE)
+    @CreatedDate
+    @Indexed(name = "idx_image_sku_uploaded_at")
     @Field(value = "uploaded_at", targetType = FieldType.DATE_TIME)
     private Instant uploadedAt;
 }
