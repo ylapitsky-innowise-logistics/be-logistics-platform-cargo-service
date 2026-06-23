@@ -48,7 +48,6 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@EqualsAndHashCode(exclude = "id")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)   // Говорим Lombok: сравнивать ТОЛЬКО то, что помечено ниже
 public class Cargo {
 
