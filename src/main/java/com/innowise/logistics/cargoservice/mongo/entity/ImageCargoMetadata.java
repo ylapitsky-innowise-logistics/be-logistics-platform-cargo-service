@@ -17,6 +17,7 @@ import java.time.Instant;
 
 /**
  * Паспорт на картинку для самого товара (на каждую картинку)
+ * У одного СCargo может быть МНОГО картинок (галерея)
  */
 @Document(collection = "image_cargo_metadata") // 🟢 Говорим Спрингу, что это документ коллекции в MongoDB
 @Getter
@@ -52,13 +53,11 @@ public class ImageCargoMetadata {
     private String mimeType;           // image/jpeg, image/png, image/webp
 
     @Field("width")
-    private Integer width;             // Ширина в пикселях (опционально)
+    private Integer width;             // Ширина в пикселях
 
     @Field("height")
-    private Integer height;            // Высота в пикселях (опционально)
+    private Integer height;            // Высота в пикселях
 
-    @Field("alt_text")
-    private String altText;            // Alt-текст для SEO (опционально)
 
 
     // ===== БИЗНЕС-ПОЛЯ (дублируем из Cargo для независимости) =====
