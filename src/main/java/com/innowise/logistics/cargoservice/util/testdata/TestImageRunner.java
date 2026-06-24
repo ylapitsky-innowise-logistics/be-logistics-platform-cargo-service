@@ -1,8 +1,5 @@
 package com.innowise.logistics.cargoservice.util.testdata;
 
-import com.innowise.logistics.cargoservice.dto.request.ImageCargoUploadRequest;
-import com.innowise.logistics.cargoservice.mongo.service.ImageCargoService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 public class TestImageRunner {
