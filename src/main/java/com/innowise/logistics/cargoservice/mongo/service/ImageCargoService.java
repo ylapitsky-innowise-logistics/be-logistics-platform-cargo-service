@@ -4,9 +4,11 @@ import com.innowise.logistics.cargoservice.dto.request.ImageCargoUploadRequest;
 import com.innowise.logistics.cargoservice.dto.response.ImageUploadResponse;
 import com.innowise.logistics.cargoservice.dto.response.ImageViewResponse;
 import com.innowise.logistics.cargoservice.entity.Cargo;
+import com.innowise.logistics.cargoservice.entity.Sku;
 import com.innowise.logistics.cargoservice.mongo.entity.ImageCargoMetadata;
 import com.innowise.logistics.cargoservice.mongo.repository.ImageCargoMetadataRepository;
 import com.innowise.logistics.cargoservice.repository.CargoRepository;
+import com.innowise.logistics.cargoservice.repository.SkuRepository;
 import jakarta.persistence.EntityNotFoundException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -31,7 +33,9 @@ public class ImageCargoService {
     private final GridFsTemplate gridFsTemplate;
     private final ImageCargoMetadataRepository imageCargoMetadataRepository;
     private final CargoRepository cargoRepository; // 🎯 Подтягиваем для денормализации данных Cargo
+    private final SkuRepository skuRepository;
 
+//    @Transactional
     public ImageUploadResponse uploadCargoImage(MultipartFile file, ImageCargoUploadRequest request) {
         if (file.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл не может быть пустым");
@@ -39,6 +43,10 @@ public class ImageCargoService {
 
         Cargo cargo = cargoRepository.findById(request.getCargoId())
                 .orElseThrow(() -> new EntityNotFoundException("Груз (Cargo) с ID " + request.getCargoId() + " не найден"));
+
+        // 2. Загружаем Sku отдельно (чтобы избежать LazyInitializationException)
+        Sku sku = skuRepository.findById(cargo.getSku().getId())
+                .orElseThrow(() -> new EntityNotFoundException("SKU для груза не найден"));
 
         try (InputStream inputStream = file.getInputStream()) {
             int width = 0, height = 0;
@@ -53,7 +61,7 @@ public class ImageCargoService {
             metadata.setGridFsFileId(fileId.toHexString());
             metadata.setCargoId(cargo.getId());
             metadata.setCargoName(cargo.getName());
-            metadata.setSkuName(cargo.getSku().getName());
+            metadata.setSkuName(sku.getName());
             metadata.setCargoCategory(cargo.getCategory());
 
             metadata.setFileName(file.getOriginalFilename());
