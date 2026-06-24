@@ -9,6 +9,7 @@ import com.innowise.logistics.cargoservice.mongo.entity.ImageCargoMetadata;
 import com.innowise.logistics.cargoservice.mongo.repository.ImageCargoMetadataRepository;
 import com.innowise.logistics.cargoservice.repository.CargoRepository;
 import com.innowise.logistics.cargoservice.repository.SkuRepository;
+import com.innowise.logistics.cargoservice.util.testdata.TestImageRunner;
 import jakarta.persistence.EntityNotFoundException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -44,9 +45,8 @@ public class ImageCargoService {
         Cargo cargo = cargoRepository.findById(request.getCargoId())
                 .orElseThrow(() -> new EntityNotFoundException("Груз (Cargo) с ID " + request.getCargoId() + " не найден"));
 
-        // 2. Загружаем Sku отдельно (чтобы избежать LazyInitializationException)
-        Sku sku = skuRepository.findById(cargo.getSku().getId())
-                .orElseThrow(() -> new EntityNotFoundException("SKU для груза не найден"));
+        // 2. Вытаскиваем Sku отдельно (чтобы избежать LazyInitializationException)
+        Sku sku = cargo.getSku();
 
         try (InputStream inputStream = file.getInputStream()) {
             int width = 0, height = 0;
@@ -74,6 +74,10 @@ public class ImageCargoService {
             metadata.setIsPrimary(request.getIsPrimary());
 
             imageCargoMetadataRepository.save(metadata);
+
+//            testImageRunner.generateTestImage();
+//            new TestImageRunner().generateTestImage();
+
 
             return new ImageUploadResponse(fileId.toHexString(), "/api/v1/catalog/images/" + fileId.toHexString());
 

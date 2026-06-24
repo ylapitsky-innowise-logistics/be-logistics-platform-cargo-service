@@ -19,3 +19,15 @@
 ---
 
 
+```text
+be-logistics-platform-cargo-service/
+├── generated_images/          ← Создаётся автоматически
+│   ├── cargo_1_test_image.png
+│   ├── test_image_12345.png
+│   └── ...
+├── src/
+├── pictures/
+└── ...
+```
+
+
