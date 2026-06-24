@@ -28,10 +28,10 @@ Content-Type: application/json
   "isPrimary": true
 }
 --boundary
-Content-Displacement: form-data; name="file"; filename="smartphone.png"
+Content-Disposition: form-data; name="file"; filename="smartphone.png"
 Content-Type: image/png
 
-< ./pictures/smartphone.png
+< ./pictures/Смартфон_премиум.png
 --boundary--
 
 ### 02. Загрузить дополнительное фото для SKU ID=1 (вид сбоку)
@@ -49,10 +49,10 @@ Content-Type: application/json
   "isPrimary": false
 }
 --boundary
-Content-Displacement: form-data; name="file"; filename="smartphone_side.png"
+Content-Disposition: form-data; name="file"; filename="smartphone_side.png"
 Content-Type: image/png
 
-< ./pictures/smartphone_side.png
+< ./pictures/Ноутбук_рабочий.png
 --boundary--
 
 ### 03. Загрузить фото для SKU ID=2 (Ноутбук)
@@ -70,7 +70,7 @@ Content-Type: application/json
   "isPrimary": true
 }
 --boundary
-Content-Displacement: form-data; name="file"; filename="laptop.png"
+Content-Disposition: form-data; name="file"; filename="laptop.png"
 Content-Type: image/png
 
 < ./pictures/laptop.png
@@ -91,7 +91,7 @@ Content-Type: application/json
   "isPrimary": true
 }
 --boundary
-Content-Displacement: form-data; name="file"; filename="book.png"
+Content-Disposition: form-data; name="file"; filename="book.png"
 Content-Type: image/png
 
 < ./pictures/book.png
@@ -116,10 +116,10 @@ Content-Type: application/json
   "isPrimary": true
 }
 --boundary
-Content-Displacement: form-data; name="file"; filename="cargo_defect.png"
+Content-Disposition: form-data; name="file"; filename="cargo_defect.png"
 Content-Type: image/png
 
-< ./pictures/cargo_defect.png
+< ./pictures/Беспроводные_наушники.png
 --boundary--
 
 ### 06. Загрузить фото для CARGO ID=2 (состояние)
@@ -137,7 +137,7 @@ Content-Type: application/json
   "isPrimary": true
 }
 --boundary
-Content-Displacement: form-data; name="file"; filename="cargo_condition.png"
+Content-Disposition: form-data; name="file"; filename="cargo_condition.png"
 Content-Type: image/png
 
 < ./pictures/cargo_condition.png
@@ -201,7 +201,7 @@ Content-Type: application/json
   "isPrimary": true
 }
 --boundary
-Content-Displacement: form-data; name="file"; filename="test.png"
+Content-Disposition: form-data; name="file"; filename="test.png"
 Content-Type: image/png
 
 < ./pictures/test.png
@@ -222,7 +222,7 @@ Content-Type: application/json
   "isPrimary": true
 }
 --boundary
-Content-Displacement: form-data; name="file"; filename="empty.png"
+Content-Disposition: form-data; name="file"; filename="empty.png"
 Content-Type: image/png
 
 < ./pictures/empty.png
