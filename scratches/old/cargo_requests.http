@@ -1,0 +1,44 @@
+# Для встроенного HTTP-клиента IntelliJ IDEA
+@host = http://localhost:8085
+@base_path = /api/v1/catalog/cargos
+
+### 1. Получить первую страницу доступных грузов (По умолчанию 20 элементов, сортировка по id)
+GET {{host}}{{base_path}}
+Accept: application/json
+
+### 2. Получить доступные грузы с кастомной пагинацией и нативной сортировкой Spring Data
+GET {{host}}{{base_path}}?page=1&size=5&sort=price,desc
+Accept: application/json
+
+### 3. Получить конкретный товар по его ID
+GET {{host}}{{base_path}}/1
+Accept: application/json
+
+### 4. Расчет стоимости товаров в корзине (Успешный сценарий)
+POST {{host}}{{base_path}}/calculate-price
+Content-Type: application/json
+
+[
+  1, 2, 5
+]
+
+
+### ❌ ОШИБКА 404: Запрос несуществующего ID товара
+GET {{host}}{{base_path}}/999999
+Accept: application/json
+
+### ❌ ОШИБКА ВАЛИДАЦИИ: Передан пустой список для расчета цены (Trigger @NotEmpty)
+POST {{host}}{{base_path}}/calculate-price
+Content-Type: application/json
+
+[]
+
+### ❌ ОШИБКА ВАЛИДАЦИИ: Один из элементов списка является null (Trigger List<@NotNull Long>)
+POST {{host}}{{base_path}}/calculate-price
+Content-Type: application/json
+
+[
+  1,
+  null,
+  2
+]

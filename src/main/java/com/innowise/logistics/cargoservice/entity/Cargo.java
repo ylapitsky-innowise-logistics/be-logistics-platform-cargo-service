@@ -1,15 +1,6 @@
 package com.innowise.logistics.cargoservice.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -72,7 +63,9 @@ public class Cargo {
     private String name;
 
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "cargo_category", nullable = false)
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "cargo_category", nullable = false)
+    @Column(name = "cargo_category", nullable = false, columnDefinition = "cargo_category_enum")
     @Comment("Категория товара (электроника, книги, спорт...)")
     @EqualsAndHashCode.Include                      // Участвует в бизнес-ключе
     private Category category;
@@ -109,10 +102,11 @@ public class Cargo {
     private Instant createdAt;
 
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+//    @Enumerated(EnumType.STRING)
     @Column(
             name = "status",
             nullable = false,
-            columnDefinition = "cargo_schema.cargo_status_enum" // Явно указываем схему и имя типа в Postgres
+            columnDefinition = "cargo_status_enum" // Явно указываем схему и имя типа в Postgres
     )
     @Setter(AccessLevel.NONE)                       // Отмен. Lombok сеттер. Только через updateStatus(..)
     @Comment("Текущий статус")

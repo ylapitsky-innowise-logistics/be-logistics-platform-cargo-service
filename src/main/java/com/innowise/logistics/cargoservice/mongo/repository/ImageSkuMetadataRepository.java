@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ImageSkuMetadataRepository extends MongoRepository<ImageSkuMetadata, String> {
-//    List<ImageSkuMetadata> findBySkuId(Long skuId);
+    List<ImageSkuMetadata> findBySkuId(Long skuId); // 🟢 Находим галерею артикула
 }

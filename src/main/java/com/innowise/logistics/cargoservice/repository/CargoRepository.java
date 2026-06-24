@@ -54,7 +54,6 @@ public interface CargoRepository extends JpaRepository<Cargo, Long> {
     @Query(value = """
             SELECT new com.innowise.logistics.cargoservice.dto.response.SkuAvailabilityResponse(
                 c.sku,
-                MIN(c.mongoDocId),
                 MIN(c.name),
                 MIN(c.category),
                 MIN(c.weight),

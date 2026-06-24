@@ -1,0 +1,169 @@
+# Для встроенного HTTP-клиента IntelliJ IDEA
+@host = http://localhost:8085
+@base_path = /api/v1/catalog/addresses
+
+### ============================================================
+### 1. C - CREATE: Создание 5 новых адресов
+### ============================================================
+
+### 01. Создать адрес (Склад в Минске)
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "country": "Беларусь",
+  "zipCode": "220000",
+  "city": "Минск",
+  "microdistrict": "Новая Боровая",
+  "street": "ул. Центральная",
+  "house": 15,
+  "block": "А",
+  "apartment": "12"
+}
+
+### 02. Создать адрес (Офис в Москве)
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "country": "Россия",
+  "zipCode": "101000",
+  "city": "Москва",
+  "microdistrict": "Тверской",
+  "street": "ул. Тверская",
+  "house": 7,
+  "block": null,
+  "apartment": "5"
+}
+
+### 03. Создать адрес (Склад в Варшаве)
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "country": "Польша",
+  "zipCode": "00-001",
+  "city": "Варшава",
+  "microdistrict": "Средместье",
+  "street": "ул. Маршалковская",
+  "house": 34,
+  "block": null,
+  "apartment": null
+}
+
+### 04. Создать адрес (Склад в Лондоне)
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "country": "Великобритания",
+  "zipCode": "SW1A 1AA",
+  "city": "Лондон",
+  "microdistrict": "Вестминстер",
+  "street": "Парк-лейн",
+  "house": 112,
+  "block": "B",
+  "apartment": "7"
+}
+
+### 05. Создать адрес (Офис в Нью-Йорке)
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "country": "США",
+  "zipCode": "10001",
+  "city": "Нью-Йорк",
+  "microdistrict": "Манхэттен",
+  "street": "5-я Авеню",
+  "house": 89,
+  "block": null,
+  "apartment": "2B"
+}
+
+### ============================================================
+### 2. R - READ: Получение адресов
+### ============================================================
+
+### 06. Получить все адреса (с пагинацией, 20 элементов на странице)
+GET {{host}}{{base_path}}
+Accept: application/json
+
+### 07. Получить адрес по его ID (например, id=1)
+GET {{host}}{{base_path}}/1
+Accept: application/json
+
+### ============================================================
+### 3. U - UPDATE: Обновление существующего адреса
+### ============================================================
+
+### 08. Полное обновление адреса (например, id=1)
+PUT {{host}}{{base_path}}/1
+Content-Type: application/json
+
+{
+  "country": "Беларусь",
+  "zipCode": "220000",
+  "city": "Минск",
+  "microdistrict": "Новая Боровая",
+  "street": "ул. Центральная",
+  "house": 15,
+  "block": "Б",
+  "apartment": "55"
+}
+
+### ============================================================
+### 4. D - DELETE: Удаление адреса
+### ============================================================
+
+### 09. Удалить адрес по ID (например, id=2)
+DELETE {{host}}{{base_path}}/2
+
+### ============================================================
+### 5. ❌ ТЕСТЫ НА ОШИБКИ (Валидация)
+### ============================================================
+
+### 10. ❌ ОШИБКА 404: Получение несуществующего адреса (например, id=99999)
+GET {{host}}{{base_path}}/99999
+Accept: application/json
+
+### 11. ❌ ОШИБКА ВАЛИДАЦИИ: Обновление несуществующего адреса (id=99999)
+PUT {{host}}{{base_path}}/99999
+Content-Type: application/json
+
+{
+  "country": "Россия",
+  "zipCode": "101000",
+  "city": "Москва",
+  "microdistrict": "Тверской",
+  "street": "ул. Тверская",
+  "house": 7,
+  "block": "B",
+  "apartment": "10"
+}
+
+### 12. ❌ ОШИБКА ВАЛИДАЦИИ: Создание адреса без обязательного поля "country"
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "zipCode": "220000",
+  "city": "Минск",
+  "street": "ул. Центральная",
+  "house": 15
+}
+
+### 13. ❌ ОШИБКА ВАЛИДАЦИИ: Создание адреса с пустым "city"
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "country": "Беларусь",
+  "zipCode": "220000",
+  "city": "",
+  "street": "ул. Центральная",
+  "house": 15
+}
+
+### 14. ❌ ОШИБКА ВАЛИДАЦИИ: Удаление адреса, который используется в Locations (если есть внешний ключ)
+DELETE {{host}}{{base_path}}/1

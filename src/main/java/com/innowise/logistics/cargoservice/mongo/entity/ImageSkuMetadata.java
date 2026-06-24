@@ -21,17 +21,17 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class ImageSkuMetadata extends BaseImageMetadata {
 
     // ===== СВЯЗЬ С SKU (бизнес-ключ) =====
-    @Indexed(name = "idx_image_sku_id")     // 🎯 Обычный индекс для точного поиска
+    @Indexed(name = "idx_ism_sku_id")     // 🎯 Обычный индекс для точного поиска
     @Field("sku_id")
     private Long skuId;
 
 
     // ===== БИЗНЕС-ПОЛЯ (дублируем из Sku для независимости) =====
-    @Indexed(name = "idx_image_sku_name")
+    @Indexed(name = "idx_ism_sku_name")
     @Field("sku_name")
     private String skuName;
 
-    @Indexed(name = "idx_image_sku_category")
+    @Indexed(name = "idx_ism_sku_category")
     @Field("sku_category")
     private Category category;      // категория самого артикула
 }

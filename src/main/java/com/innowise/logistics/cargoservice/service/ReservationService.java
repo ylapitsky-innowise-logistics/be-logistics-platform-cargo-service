@@ -1,6 +1,5 @@
 package com.innowise.logistics.cargoservice.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.innowise.logistics.cargoservice.dto.request.CargoReservationRequest;
 import com.innowise.logistics.cargoservice.dto.response.CargoReservationResponse;
 import com.innowise.logistics.cargoservice.entity.Cargo;
@@ -27,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.innowise.logistics.cargoservice.constant.Constants.CYRRENCY;
+import static com.innowise.logistics.cargoservice.constant.Constants.CURRENCY;
 
 @Slf4j
 @Service
@@ -112,7 +111,7 @@ public class ReservationService {
         reservation.setTotalPrice(totalPrice);
         reservation.setTotalWeight(totalWeight);
         reservation.setTotalQuantity(reservationCargos.size());
-        reservation.setCurrency(CYRRENCY);
+        reservation.setCurrency(CURRENCY);
         Reservation savedReservation = reservationRepository.save(reservation);
         log.info("Закончено резервирование {} товаров. id={}", reservation.getCargoIds().size(), reservation.getId());
 
@@ -122,7 +121,7 @@ public class ReservationService {
                 savedReservation.getTotalPrice(),
                 savedReservation.getTotalWeight(),
                 savedReservation.getTotalQuantity(),
-                CYRRENCY);
+                CURRENCY);
     }
 
     /**

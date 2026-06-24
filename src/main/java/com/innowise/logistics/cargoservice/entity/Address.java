@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
 @Entity
 @Table(name = "addresses")
@@ -18,7 +19,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = "id")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true) // Строгий контроль бизнес-ключа
 public class Address {
 
     @Id
@@ -26,27 +27,43 @@ public class Address {
     @Column(name = "address_id")
     private Long id;
 
-    @Column(name = "country", nullable = false)
-    private String country;         // Страна
+    @Column(name = "country", nullable = false, length = 50)
+    @Comment("Страна")
+    @EqualsAndHashCode.Include
+    private String country;
 
-    @Column(name = "zip_code", nullable = false)
-    private String zipCode;         // Почтовый индекс
+    @Column(name = "zip_code", nullable = false, length = 10)
+    @Comment("Почтовый индекс")
+    @EqualsAndHashCode.Include
+    private String zipCode;
 
-    @Column(name = "city", nullable = false)
-    private String city;            // Город
+    @Column(name = "city", nullable = false, length = 50)
+    @Comment("Город")
+    @EqualsAndHashCode.Include
+    private String city;
 
-    @Column(name = "microdistrict")
-    private String microdistrict;   // Микрорайон
+    @Column(name = "microdistrict", length = 100)
+    @Comment("Микрорайон")
+    @EqualsAndHashCode.Include
+    private String microdistrict;
 
-    @Column(name = "street")
-    private String street;          // Улица
+    @Column(name = "street", length = 150)
+    @Comment("Улица")
+    @EqualsAndHashCode.Include
+    private String street;
 
     @Column(name = "house", nullable = false)
-    private Integer house;          // Номер дома
+    @Comment("Номер дома")
+    @EqualsAndHashCode.Include
+    private Integer house;
 
-    @Column(name = "block")
-    private String block;           // Корпус
+    @Column(name = "block", length = 20)
+    @Comment("Корпус")
+    @EqualsAndHashCode.Include
+    private String block;
 
-    @Column(name = "apartment")
-    private String apartment;       // Квартира
+    @Column(name = "apartment", length = 20)
+    @Comment("Квартира")
+    @EqualsAndHashCode.Include
+    private String apartment;
 }

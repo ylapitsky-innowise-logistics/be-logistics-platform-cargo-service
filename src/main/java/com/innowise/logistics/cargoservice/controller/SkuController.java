@@ -1,11 +1,10 @@
 package com.innowise.logistics.cargoservice.controller;
 
-import com.innowise.logistics.cargoservice.dto.response.CargoViewResponse;
-import com.innowise.logistics.cargoservice.dto.response.PageResponse;
-import com.innowise.logistics.cargoservice.dto.response.SkuAvailabilityResponse;
-import com.innowise.logistics.cargoservice.dto.response.SkuResponse;
-import com.innowise.logistics.cargoservice.service.CargoService;
+import com.innowise.logistics.cargoservice.dto.request.SkuCreatingRequest;
+import com.innowise.logistics.cargoservice.dto.request.SkuUpdateRequest;
+import com.innowise.logistics.cargoservice.dto.response.*;
 import com.innowise.logistics.cargoservice.service.SkuService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
@@ -16,11 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -29,27 +24,80 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class SkuController {
 
-    private final CargoService cargoService;
     private final SkuService skuService;
 
+    // =========================================================
+    // CRUD ОПЕРАЦИИ (В едином стиле архитектуры платформы)
+    // =========================================================
+
     /**
-     * 1️⃣ GET /api/v1/catalog/skus
-     * Просмотр агрегированной статистики по всем УНИКАЛЬНЫХ доступным SKU.
-     * (просмотр уникальных товаров)
+     * 1️⃣ POST /api/v1/catalog/skus
+     * C - Create: Заведение нового артикула (SKU) в каталог.
+     */
+    @PostMapping
+    public ResponseEntity<SkuCreatingResponse> createSku(
+            @RequestBody @Valid SkuCreatingRequest request) {
+        log.info("REST запрос на создание SKU: {}", request);
+        SkuCreatingResponse response = skuService.createSku(request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 2️⃣ GET /api/v1/catalog/skus/{id}
+     * R - Read: Получение полной карточки артикула по его ID.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<SkuViewResponse> getSkuById(
+            @PathVariable @Positive(message = "ID артикула должен быть положительным числом") Long id) {
+        log.info("REST запрос на получение полной карточки SKU ID: {}", id);
+        SkuViewResponse response = skuService.getSkuById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 3️⃣ PUT /api/v1/catalog/skus/{id}
+     * U - Update: Изменение параметров существующего артикула по его ID.
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<SkuViewResponse> updateSku(
+            @PathVariable @Positive(message = "ID артикула должен быть положительным числом") Long id,
+            @RequestBody @Valid SkuUpdateRequest request) {
+        log.info("REST запрос на обновление SKU ID: {}, данные: {}", id, request);
+        SkuViewResponse response = skuService.updateSku(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 4️⃣ DELETE /api/v1/catalog/skus/{id}
+     * D - Delete: Полное удаление артикула по его ID из системы.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSku(
+            @PathVariable @Positive(message = "ID артикула должен быть положительным числом") Long id) {
+        log.warn("REST запрос на удаление SKU ID: {}", id);
+        skuService.deleteSku(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // =========================================================
+    // СПЕЦИАЛЬНЫЕ БИЗНЕС-ЭНДПОИНТЫ (СОХРАНЕНЫ ДЛЯ ФРОНТЕНДА)
+    // =========================================================
+
+    /**
+     * 5️⃣ GET /api/v1/catalog/skus
+     * Просмотр агрегированной статистики по всем доступным уникальным артикулам (остатки на складе).
      */
     @GetMapping
     public ResponseEntity<PageResponse<SkuAvailabilityResponse>> getAvailableSkus(
             @PageableDefault(page = 0, size = 10, sort = "sku.id") Pageable pageable) {
-
-        log.info("REST запрос на получение агрегированной статистики SKU. Пагинация: {}", pageable);
+        log.info("REST запрос на агрегированную статистику SKU. Пагинация: {}", pageable);
         Page<SkuAvailabilityResponse> response = skuService.getAvailableSkus(pageable);
         return ResponseEntity.ok(PageResponse.from(response));
     }
 
     /**
-     * 2️⃣ GET /api/v1/catalog/skus/{skuId}/items
-     * Получить детальный пагинированный список конкретных доступных грузов по ID артикула.
-     * Поддерживает гибкую кастомною сортировку (8 видов) через текстовый параметр sortBy.
+     * 6️⃣ GET /api/v1/catalog/skus/{skuId}/items
+     * Получить детальный пагинированный список конкретных грузов, принадлежащих этому артикулу.
      */
     @GetMapping("/{skuId}/items")
     public ResponseEntity<PageResponse<CargoViewResponse>> getAvailableItemsBySku(
@@ -61,19 +109,17 @@ public class SkuController {
 
         log.info("REST запрос на детальные товары для SKU ID: {}. Страница: {}, Размер: {}, Сортировка: {}",
                 skuId, page, size, sortBy);
-
         Page<CargoViewResponse> response = skuService.getAvailableItemsBySku(skuId, page, size, sortBy);
         return ResponseEntity.ok(PageResponse.from(response));
     }
 
     /**
-     * 3️⃣ GET /api/v1/catalog/skus/base
-     * Получить плоский пагинированный список абсолютно всех зарегистрированных в системе SKU (артикулов).
+     * 7️⃣ GET /api/v1/catalog/skus/base
+     * Получить плоский базовый пагинированный список абсолютно всех артикулов системы.
      */
     @GetMapping("/base")
     public ResponseEntity<PageResponse<SkuResponse>> getSkus(
             @PageableDefault(page = 0, size = 10, sort = "id") Pageable pageable) {
-
         log.info("REST запрос на получение базового списка SKU. Пагинация: {}", pageable);
         Page<SkuResponse> response = skuService.getSkus(pageable);
         return ResponseEntity.ok(PageResponse.from(response));

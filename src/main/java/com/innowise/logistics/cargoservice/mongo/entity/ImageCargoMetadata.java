@@ -27,15 +27,15 @@ public class ImageCargoMetadata extends BaseImageMetadata {
 
 
     // ===== БИЗНЕС-ПОЛЯ (дублируем из Cargo для независимости) =====
-    @Indexed(name = "idx_image_sku_name")
+    @Indexed(name = "idx_icm_sku_name")
     @Field("sku_name")
     private String skuName;
 
-    @Indexed(name = "idx_image_cargo_name")
+    @Indexed(name = "idx_icm_cargo_name")
     @Field("cargo_name")
     private String cargoName;
 
-    @Indexed(name = "idx_image_cargo_category")
+    @Indexed(name = "idx_icm_cargo_category")
     @Field("cargo_category")
     private Category cargoCategory;
 }

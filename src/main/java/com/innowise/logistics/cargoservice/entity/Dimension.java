@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
 @Entity
 @Table(name = "dimensions")
@@ -18,7 +19,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = "id")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true) // Исключаем ID из сравнения намертво
 public class Dimension {
 
     @Id
@@ -27,11 +28,17 @@ public class Dimension {
     private Long id;
 
     @Column(name = "length", nullable = false)
+    @Comment("Длина товара")
+    @EqualsAndHashCode.Include
     private Double length;
 
     @Column(name = "width", nullable = false)
+    @Comment("Ширина товара")
+    @EqualsAndHashCode.Include
     private Double width;
 
     @Column(name = "height", nullable = false)
+    @Comment("Высота товара")
+    @EqualsAndHashCode.Include
     private Double height;
 }
