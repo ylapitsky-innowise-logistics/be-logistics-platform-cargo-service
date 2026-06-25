@@ -1,5 +1,7 @@
 package com.innowise.logistics.cargoservice.util.testdata;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -19,9 +21,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
+ * 🖼️ Генератор Картинок
  * Утилита для генерации тестовых изображений с текстом.
  */
-public class ImageGenerator {
+@Slf4j
+@RequiredArgsConstructor
+public class ImageGenerator implements Generator<MultipartFile>{
+
+    @Override
+    public MultipartFile[] generate(int quantity) {
+        return new MultipartFile[0];
+    }
 
     /**
      * Генерирует изображение с текстом, занимающим максимальную площадь,

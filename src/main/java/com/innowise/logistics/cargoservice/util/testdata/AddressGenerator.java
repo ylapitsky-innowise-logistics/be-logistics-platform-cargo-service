@@ -1,66 +1,81 @@
 package com.innowise.logistics.cargoservice.util.testdata;
 
 import com.innowise.logistics.cargoservice.entity.Address;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
-import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * 🌍 Генератор Адресов
+ * Чистый класс. Аннотация @PostConstruct сработает штатно, так как объект будет управляться Spring через конфигурационный класс
+ */
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class AddressGenerator implements Generator<Address> {
 
-    private final Faker faker = new Faker(new Locale("ru")); // Русская локализация
+    // Массив доступных стран
+    private final String[] countries = {"Беларусь", "Россия", "Польша", "Литва", "Украина"};
+
+    // Пул Фейкеров под каждую страну, чтобы не плодить тяжелые объекты в цикле
+    private final Map<String, Faker> fakerPool = new HashMap<>();
+
+
+    @PostConstruct
+    public void init() {
+        log.info("Инициализация пула локализованных Faker для генерации адресов");
+        fakerPool.put("Беларусь", new Faker(new Locale("be"))); // или "ru" для русскоязычной РБ
+        fakerPool.put("Россия", new Faker(new Locale("ru")));
+        fakerPool.put("Польша", new Faker(new Locale("pl")));
+        fakerPool.put("Литва", new Faker(new Locale("lt")));
+        fakerPool.put("Украина", new Faker(new Locale("uk")));
+    }
 
     @Override
     public Address[] generate(int quantity) {
-        log.info("Генерация {} адресов", quantity);
+        log.info("Генерация {} валидных адресов", quantity);
         if (quantity <= 0) {
             throw new IllegalArgumentException(
                     "Количество генерируемых адресов должно быть целым положительным числом. Введено: " + quantity);
         }
 
         Address[] addresses = new Address[quantity];
-
         for (int i = 0; i < quantity; i++) {
             addresses[i] = generateSingleAddress();
         }
-
         return addresses;
     }
 
-
-    /**
-     * Генерирует один случайный адрес.
-     */
     private Address generateSingleAddress() {
         Address address = new Address();
 
-        // Страна (чаще всего Беларусь, иногда другие)
-        String[] countries = {"Беларусь", "Россия", "Польша", "Литва", "Украина"};
-        address.setCountry(countries[ThreadLocalRandom.current().nextInt(countries.length)]);
+        // 1. Случайно выбираем страну из списка
+        String country = countries[ThreadLocalRandom.current().nextInt(countries.length)];
+        address.setCountry(country);
 
-        // Город
-        address.setCity(faker.address().city());
+        // 2. Достаем из пула соответствующий этой стране Faker
+        Faker countryFaker = fakerPool.get(country);
 
-        // Улица
-        address.setStreet(faker.address().streetName());
+        // 3. Генерируем контекстно-зависимые данные (они строго соответствуют выбранной стране!)
+        address.setCity(countryFaker.address().city());
 
-        // Почтовый индекс (формат: 123456 или 123456-7890)
-        String zip = faker.address().zipCode();
-        // Обрезаем до 10 символов (как в БД)
+        address.setStreet(countryFaker.address().streetName());
+
+        // Почтовый индекс (будет в формате выбранной страны, например 00-001 для Польши)
+        String zip = countryFaker.address().zipCode();
         address.setZipCode(zip.length() > 10 ? zip.substring(0, 10) : zip);
 
-        // Номер дома (от 1 до 100)
-        address.setHouse(faker.number().numberBetween(1, 100));
+        // Номер дома
+        address.setHouse(countryFaker.number().numberBetween(1, 100));
 
-        // Микрорайон (только если город большой)
-        if (ThreadLocalRandom.current().nextBoolean()) {
-            address.setMicrodistrict(faker.address().cityPrefix() + " " + faker.address().citySuffix());
+        // Микрорайон (генерируем только для СНГ-региона, так как в pl/lt локалях префиксы могут отработать некрасиво)
+        if (("Россия".equals(country) || "Беларусь".equals(country)) && ThreadLocalRandom.current().nextBoolean()) {
+            address.setMicrodistrict(countryFaker.address().cityPrefix() + " " + countryFaker.address().citySuffix());
         }
 
         // Корпус (иногда)
@@ -70,56 +85,18 @@ public class AddressGenerator implements Generator<Address> {
 
         // Квартира (иногда)
         if (ThreadLocalRandom.current().nextBoolean()) {
-            address.setApartment(String.valueOf(faker.number().numberBetween(1, 160)));
+            address.setApartment(String.valueOf(countryFaker.number().numberBetween(1, 160)));
         }
 
         return address;
     }
 
-    /**
-     * Генерирует случайный корпус: буква или буква с номером.
-     */
     private String generateBlock() {
-        String[] blocks = {"А", "Б", "В", "Г", "Д", "Е", "1", "2", "3"};
+        String[] blocks = {"А", "Б", "В", "1", "2"};
         String block = blocks[ThreadLocalRandom.current().nextInt(blocks.length)];
-
-        // Иногда добавляем номер к букве (например, "А1", "Б2")
         if (ThreadLocalRandom.current().nextBoolean()) {
-            block += ThreadLocalRandom.current().nextInt(1, 10);
+            block += ThreadLocalRandom.current().nextInt(1, 5);
         }
-
         return block;
-    }
-
-    /**
-     * Генерирует адрес с заданными параметрами (для тестов).
-     */
-    public Address generateCustomAddress(String country, String city, String street, int house) {
-        Address address = new Address();
-        address.setCountry(country);
-        address.setCity(city);
-        address.setStreet(street);
-        address.setHouse(house);
-        address.setZipCode(faker.address().zipCode().substring(0, Math.min(10, faker.address().zipCode().length())));
-        return address;
-    }
-
-    /**
-     * Генерирует адрес для конкретной страны.
-     */
-    public Address[] generateForCountry(int quantity, String country) {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Количество адресов должно быть положительным числом");
-        }
-
-        Address[] addresses = new Address[quantity];
-
-        for (int i = 0; i < quantity; i++) {
-            Address address = generateSingleAddress();
-            address.setCountry(country);
-            addresses[i] = address;
-        }
-
-        return addresses;
     }
 }

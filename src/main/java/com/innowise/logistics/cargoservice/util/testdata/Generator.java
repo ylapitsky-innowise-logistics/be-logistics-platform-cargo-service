@@ -1,6 +1,10 @@
 package com.innowise.logistics.cargoservice.util.testdata;
 
+/**
+ * Базовый контракт для фабрик генерации тестовых данных.
+ */
 public interface Generator<T> {
 
-    public T[] generate(int quantity);
+    T[] generate(int quantity);
+
 }
