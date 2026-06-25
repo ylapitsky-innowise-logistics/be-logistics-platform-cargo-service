@@ -92,7 +92,7 @@ GET {{host}}{{base_path}}
 Accept: application/json
 
 ### 07. Получить груз по его ID (например, id=1)
-GET {{host}}{{base_path}}/1
+GET {{host}}{{base_path}}/34879
 Accept: application/json
 
 ### ============================================================

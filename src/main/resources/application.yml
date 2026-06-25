@@ -26,7 +26,7 @@ spring:
   jackson:
     serialization: # чтобы Jackson правильно сериализует/десериализует.
       write-dates-as-timestamps: false
-    time-zone: UTC
+    time-zone: Europe/Moscow
 
   # JPA / Hibernate базовые настройки
   jpa:
@@ -65,5 +65,5 @@ spring:
 
 logging:
   level:
-    com.innowise.logistics.platform.user: DEBUG
+    com.innowise.logistics.cargoservice: DEBUG
     liquibase: INFO
