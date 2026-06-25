@@ -31,12 +31,15 @@ public class TestDataController {
     public ResponseEntity<Void> generateTestData(
             @RequestParam(name = "cargos", required = false, defaultValue = "20")
             @Positive(message = "Количество генерируемых товаров должно быть целым положительным числом")
-            int cargosQuantity) {
+            int cargosQuantity,
+
+            @RequestParam(name = "pre-clean", required = false, defaultValue = "false")
+            Boolean isCleanUp) {
 
         log.info("REST запрос на комплексную генерацию тестовой матрицы данных. Целевое количество Cargo: {}", cargosQuantity);
 
         // Запускаем конвейер оркестрации и каскадного сохранения в СУБД
-        testDataSeeder.seedAllTestData(cargosQuantity);
+        testDataSeeder.seedAllTestData(cargosQuantity, isCleanUp);
 
         log.info("Генерация и сохранение {} товаров успешно завершены.", cargosQuantity);
 
