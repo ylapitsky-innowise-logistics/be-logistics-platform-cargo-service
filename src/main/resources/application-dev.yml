@@ -13,4 +13,7 @@ spring:
 
 logging:
   level:
-    com.innowise.logistics.cargoservice: DEBUG
+    root: INFO                                        # Системные логи Спринга — только INFO
+    com.innowise.logistics.cargoservice: DEBUG       # Весь твой сервис целиком переводим в DEBUG
+    com.innowise.logistics.cargoservice.controller: DEBUG # 🎯 Жестко и принудительно включаем DEBUG для контроллеров
+    org.springframework.web: DEBUG                   # Позволит увидеть сам факт прихода Multipart-запроса
