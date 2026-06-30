@@ -1,6 +1,6 @@
 package com.innowise.logistics.cargoservice.mongo.service;
 
-import com.innowise.logistics.cargoservice.dto.request.ImageCargoUploadRequest;
+import com.innowise.logistics.cargoservice.dto.request.ImageUploadRequest;
 import com.innowise.logistics.cargoservice.dto.response.ImageUploadResponse;
 import com.innowise.logistics.cargoservice.dto.response.ImageViewResponse;
 import com.innowise.logistics.cargoservice.entity.Cargo;
@@ -10,9 +10,6 @@ import com.innowise.logistics.cargoservice.mongo.repository.ImageCargoMetadataRe
 import com.innowise.logistics.cargoservice.repository.CargoRepository;
 import com.innowise.logistics.cargoservice.repository.SkuRepository;
 import jakarta.persistence.EntityNotFoundException;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -23,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -38,13 +37,13 @@ public class ImageCargoService {
     private final SkuRepository skuRepository;
 
     @Transactional
-    public ImageUploadResponse uploadCargoImage(MultipartFile file, ImageCargoUploadRequest request) {
+    public ImageUploadResponse uploadCargoImage(MultipartFile file, ImageUploadRequest request) {
         if (file.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл не может быть пустым");
         }
 
-        Cargo cargo = cargoRepository.findById(request.getCargoId())
-                .orElseThrow(() -> new EntityNotFoundException("Груз (Cargo) с ID " + request.getCargoId() + " не найден"));
+        Cargo cargo = cargoRepository.findById(request.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Груз (Cargo) с ID " + request.getId() + " не найден"));
 
         // 2. Вытаскиваем Sku отдельно (чтобы избежать LazyInitializationException)
         Sku sku = cargo.getSku();

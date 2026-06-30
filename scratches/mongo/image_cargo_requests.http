@@ -17,7 +17,7 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "cargoId": 1,
+  "id": 1,
   "description": "Внешний вид товара при приемке (коробка без повреждений)",
   "sortOrder": 0,
   "isPrimary": true
@@ -38,7 +38,7 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "cargoId": 1,
+  "id": 1,
   "description": "Выявленный дефект: повреждение угла коробки",
   "sortOrder": 1,
   "isPrimary": false
@@ -59,7 +59,7 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "cargoId": 2,
+  "id": 2,
   "description": "Товары для спорта",
   "sortOrder": 0,
   "isPrimary": true
@@ -80,7 +80,7 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "cargoId": 2,
+  "id": 2,
   "description": "Дополнительное оборудование (коврик для йоги)",
   "sortOrder": 1,
   "isPrimary": false

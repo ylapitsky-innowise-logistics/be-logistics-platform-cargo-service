@@ -22,7 +22,7 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "skuId": 1,
+  "id": 1,
   "description": "Каталожное фото смартфона премиум-класса",
   "sortOrder": 0,
   "isPrimary": true
@@ -43,7 +43,7 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "skuId": 1,
+  "id": 1,
   "description": "Каталожное фото смартфона (сравнение с рабочим местом)",
   "sortOrder": 1,
   "isPrimary": false
@@ -64,7 +64,7 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "skuId": 2,
+  "id": 2,
   "description": "Каталожное фото ноутбука",
   "sortOrder": 0,
   "isPrimary": true
@@ -85,7 +85,7 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "skuId": 3,
+  "id": 3,
   "description": "Книга: Руководство по Spring Boot 3",
   "sortOrder": 0,
   "isPrimary": true
@@ -112,7 +112,7 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "cargoId": 1,
+  "id": 1,
   "description": "Повреждение угла коробки при транспортировке книги",
   "sortOrder": 0,
   "isPrimary": true
@@ -133,7 +133,7 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "cargoId": 2,
+  "id": 2,
   "description": "Партия товара успешно размещена на стеллажах",
   "sortOrder": 0,
   "isPrimary": true

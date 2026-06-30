@@ -1,6 +1,6 @@
 package com.innowise.logistics.cargoservice.mongo.service;
 
-import com.innowise.logistics.cargoservice.dto.request.ImageSkuUploadRequest;
+import com.innowise.logistics.cargoservice.dto.request.ImageUploadRequest;
 import com.innowise.logistics.cargoservice.dto.response.ImageUploadResponse;
 import com.innowise.logistics.cargoservice.dto.response.ImageViewResponse;
 import com.innowise.logistics.cargoservice.entity.Sku;
@@ -38,14 +38,14 @@ public class ImageTestDataService {
     private final ImageSkuMetadataRepository imageSkuMetadataRepository;
     private final SkuRepository skuRepository; // 🎯 Подтягиваем для обогащения данных из Postgres
 
-    public ImageUploadResponse uploadSkuImage(MultipartFile file, ImageSkuUploadRequest request) {
+    public ImageUploadResponse uploadSkuImage(MultipartFile file, ImageUploadRequest request) {
         if (file.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл изображения не может быть пустым");
         }
 
         // 1. Идем в Postgres за железно верными метаданными артикула
-        Sku sku = skuRepository.findById(request.getSkuId())
-                .orElseThrow(() -> new EntityNotFoundException("Артикул (SKU) с ID " + request.getSkuId() + " не найден"));
+        Sku sku = skuRepository.findById(request.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Артикул (SKU) с ID " + request.getId() + " не найден"));
 
         try (InputStream inputStream = file.getInputStream()) {
             // 2. Считываем ширину и высоту изображения программно

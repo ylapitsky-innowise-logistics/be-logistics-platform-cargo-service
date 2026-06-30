@@ -1,6 +1,6 @@
 package com.innowise.logistics.cargoservice.controller;
 
-import com.innowise.logistics.cargoservice.dto.request.ImageSkuUploadRequest;
+import com.innowise.logistics.cargoservice.dto.request.ImageUploadRequest;
 import com.innowise.logistics.cargoservice.dto.response.ImageUploadResponse;
 import com.innowise.logistics.cargoservice.dto.response.ImageViewResponse;
 import com.innowise.logistics.cargoservice.mongo.service.ImageSkuService;
@@ -34,7 +34,8 @@ public class ImageSkuController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageUploadResponse> uploadSkuImage(
             @RequestPart("file") MultipartFile file,
-            @RequestPart("metadata") @Valid ImageSkuUploadRequest metadata) {
+            @RequestPart("metadata") @Valid ImageUploadRequest metadata) {
+
         log.debug("ImageSkuController.uploadSkuImage: Пришел запрос на 'POST /api/v1/catalog/images/skus', ImageSkuUploadRequest={}", metadata);
         return ResponseEntity.ok(imageSkuService.uploadSkuImage(file, metadata));
     }

@@ -1,22 +1,16 @@
 package com.innowise.logistics.cargoservice.controller;
 
-import com.innowise.logistics.cargoservice.dto.request.ImageCargoUploadRequest;
+import com.innowise.logistics.cargoservice.dto.request.ImageUploadRequest;
 import com.innowise.logistics.cargoservice.dto.response.ImageUploadResponse;
 import com.innowise.logistics.cargoservice.dto.response.ImageViewResponse;
 import com.innowise.logistics.cargoservice.mongo.service.ImageCargoService;
-import com.innowise.logistics.cargoservice.mongo.service.ImageSkuService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -37,7 +31,7 @@ public class ImageCargoController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageUploadResponse> uploadCargoImage(
             @RequestPart("file") MultipartFile file,
-            @RequestPart("metadata") @Valid ImageCargoUploadRequest metadata) {
+            @RequestPart("metadata") @Valid ImageUploadRequest metadata) {
         log.debug("ImageCargoController.uploadCargoImage: Пришел запрос на 'POST /api/v1/catalog/images/cargos', ImageCargoUploadRequest={}", metadata);
         return ResponseEntity.ok(imageCargoService.uploadCargoImage(file, metadata));
     }

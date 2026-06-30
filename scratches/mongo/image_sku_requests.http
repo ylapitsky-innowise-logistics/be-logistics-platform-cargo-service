@@ -17,7 +17,7 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "skuId": 1,
+  "id": 1,
   "description": "Каталожное фото смартфона премиум-класса",
   "sortOrder": 0,
   "isPrimary": true
@@ -38,7 +38,7 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "skuId": 1,
+  "id": 1,
   "description": "Аксессуар к смартфону на том же артикуле",
   "sortOrder": 1,
   "isPrimary": false
@@ -59,7 +59,7 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "skuId": 2,
+  "id": 2,
   "description": "Каталожное фото ноутбука",
   "sortOrder": 0,
   "isPrimary": true
@@ -80,7 +80,7 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "skuId": 3,
+  "id": 3,
   "description": "Книга: Паттерны проектирования",
   "sortOrder": 0,
   "isPrimary": true
