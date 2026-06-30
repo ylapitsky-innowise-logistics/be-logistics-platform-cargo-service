@@ -73,7 +73,7 @@ Content-Type: application/json
 Content-Disposition: form-data; name="file"; filename="laptop.png"
 Content-Type: image/png
 
-< ./pictures/laptop.png
+< ./pictures/Ноутбук_рабочий.png
 --boundary--
 
 ### 04. Загрузить фото для SKU ID=3 (Книга)
@@ -94,7 +94,7 @@ Content-Type: application/json
 Content-Disposition: form-data; name="file"; filename="book.png"
 Content-Type: image/png
 
-< ./pictures/book.png
+< ./pictures/Книга_Руководство_по_Spring_Boot_3.png
 --boundary--
 
 ### ============================================================
@@ -119,7 +119,7 @@ Content-Type: application/json
 Content-Disposition: form-data; name="file"; filename="cargo_defect.png"
 Content-Type: image/png
 
-< ./pictures/Беспроводные_наушники.png
+< ./pictures/Книга_Руководство_по_Spring_Boot_3.png
 --boundary--
 
 ### 06. Загрузить фото для CARGO ID=2 (состояние)

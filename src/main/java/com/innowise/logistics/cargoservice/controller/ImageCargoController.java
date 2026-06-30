@@ -7,6 +7,7 @@ import com.innowise.logistics.cargoservice.mongo.service.ImageCargoService;
 import com.innowise.logistics.cargoservice.mongo.service.ImageSkuService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/catalog/images/cargos")
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class ImageCargoController {
     public ResponseEntity<ImageUploadResponse> uploadCargoImage(
             @RequestPart("file") MultipartFile file,
             @RequestPart("metadata") @Valid ImageCargoUploadRequest metadata) {
+        log.debug("ImageCargoController.uploadCargoImage: Пришел запрос на 'POST /api/v1/catalog/images/cargos', ImageCargoUploadRequest={}", metadata);
         return ResponseEntity.ok(imageCargoService.uploadCargoImage(file, metadata));
     }
 
@@ -46,6 +49,7 @@ public class ImageCargoController {
     @GetMapping("/{cargoId}")
     public ResponseEntity<List<ImageViewResponse>> getCargoGallery(
             @PathVariable Long cargoId) {
+        log.debug("ImageCargoController.getCargoGallery: Пришел запрос на 'POST /api/v1/catalog/images/cargos/{cargoId}', ImageCargoUploadRequest={}", cargoId);
         return ResponseEntity.ok(imageCargoService.getImagesByCargoId(cargoId));
     }
 }
