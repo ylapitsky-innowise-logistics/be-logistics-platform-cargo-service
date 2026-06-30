@@ -9,16 +9,17 @@ import com.innowise.logistics.cargoservice.mongo.entity.ImageCargoMetadata;
 import com.innowise.logistics.cargoservice.mongo.repository.ImageCargoMetadataRepository;
 import com.innowise.logistics.cargoservice.repository.CargoRepository;
 import com.innowise.logistics.cargoservice.repository.SkuRepository;
-import com.innowise.logistics.cargoservice.util.testdata.TestImageRunner;
 import jakarta.persistence.EntityNotFoundException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -36,7 +37,7 @@ public class ImageCargoService {
     private final CargoRepository cargoRepository; // 🎯 Подтягиваем для денормализации данных Cargo
     private final SkuRepository skuRepository;
 
-//    @Transactional
+    @Transactional
     public ImageUploadResponse uploadCargoImage(MultipartFile file, ImageCargoUploadRequest request) {
         if (file.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл не может быть пустым");

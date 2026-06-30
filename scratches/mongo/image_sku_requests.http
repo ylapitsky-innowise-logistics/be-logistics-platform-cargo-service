@@ -1,0 +1,183 @@
+# Для встроенного HTTP-клиента IntelliJ IDEA
+@host = http://localhost:8085
+@base_path = /api/v1/catalog/images
+
+### ============================================================
+### ПОДГОТОВКА: Убедитесь, что у вас созданы:
+### 1. Хотя бы один SKU (используйте sku_requests.http)
+### 2. Хотя бы один Cargo (используйте cargo_requests.http)
+### 3. В папке проекта есть папка ./pictures с тестовыми изображениями
+### ============================================================
+
+### ============================================================
+### 1. ЗАГРУЗКА ИЗОБРАЖЕНИЙ ДЛЯ SKU (Артикулов)
+### ============================================================
+
+### 01. Загрузить фото для SKU ID=1 (Смартфон)
+POST {{host}}{{base_path}}/skus
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "skuId": 1,
+  "description": "Каталожное фото смартфона",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="smartphone.png"
+Content-Type: image/png
+
+< ./pictures/Смартфон_премиум.png
+--boundary--
+
+### 02. Загрузить дополнительное фото для SKU ID=1 (вид сбоку)
+POST {{host}}{{base_path}}/skus
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "skuId": 1,
+  "description": "Каталожное фото смартфона (вид сбоку)",
+  "sortOrder": 1,
+  "isPrimary": false
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="smartphone_side.png"
+Content-Type: image/png
+
+< ./pictures/Ноутбук_рабочий.png
+--boundary--
+
+### 03. Загрузить фото для SKU ID=2 (Ноутбук)
+POST {{host}}{{base_path}}/skus
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "skuId": 2,
+  "description": "Каталожное фото ноутбука",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="laptop.png"
+Content-Type: image/png
+
+< ./pictures/Ноутбук_рабочий.png
+--boundary--
+
+### 04. Загрузить фото для SKU ID=3 (Книга)
+POST {{host}}{{base_path}}/skus
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "skuId": 3,
+  "description": "Каталожное фото книги",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="book.png"
+Content-Type: image/png
+
+< ./pictures/Книга_Руководство_по_Spring_Boot_3.png
+--boundary--
+
+### ============================================================
+### 3. ПОЛУЧЕНИЕ ИЗОБРАЖЕНИЙ (ГАЛЕРЕИ)
+### ============================================================
+
+### 07. Получить галерею изображений для SKU ID=1
+GET {{host}}{{base_path}}/skus/1
+Accept: application/json
+
+### 08. Получить галерею изображений для SKU ID=2
+GET {{host}}{{base_path}}/skus/2
+Accept: application/json
+
+### 09. Получить галерею изображений для CARGO ID=1
+GET {{host}}{{base_path}}/cargos/1
+Accept: application/json
+
+### 10. Получить галерею изображений для CARGO ID=2
+GET {{host}}{{base_path}}/cargos/2
+Accept: application/json
+
+### ============================================================
+### 4. СКАЧИВАНИЕ / ПРОСМОТР КОНКРЕТНОГО ИЗОБРАЖЕНИЯ
+### ============================================================
+
+### 11. Скачать изображение по ID файла (замените {fileId} на реальный ID из GridFS)
+GET {{host}}{{base_path}}/{fileId}
+Accept: image/png
+
+### ============================================================
+### 5. ❌ ТЕСТЫ НА ОШИБКИ (Валидация)
+### ============================================================
+
+### 12. ❌ ОШИБКА 404: Получение галереи для несуществующего SKU (id=99999)
+GET {{host}}{{base_path}}/skus/99999
+Accept: application/json
+
+### 13. ❌ ОШИБКА 404: Получение галереи для несуществующего CARGO (id=99999)
+GET {{host}}{{base_path}}/cargos/99999
+Accept: application/json
+
+### 14. ❌ ОШИБКА 404: Скачивание несуществующего изображения (fileId=invalid_id)
+GET {{host}}{{base_path}}/invalid_id
+Accept: image/png
+
+### 15. ❌ ОШИБКА ВАЛИДАЦИИ: Загрузка фото для SKU без обязательного поля "skuId"
+POST {{host}}{{base_path}}/skus
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "description": "Фото без указания SKU ID",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="test.png"
+Content-Type: image/png
+
+< ./pictures/test.png
+--boundary--
+
+### 16. ❌ ОШИБКА ВАЛИДАЦИИ: Загрузка пустого файла
+POST {{host}}{{base_path}}/skus
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "skuId": 1,
+  "description": "Фото с пустым файлом",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="empty.png"
+Content-Type: image/png
+
+< ./pictures/empty.png
+--boundary--
