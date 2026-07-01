@@ -6,10 +6,6 @@ import com.innowise.logistics.cargoservice.dto.response.ImageViewResponse;
 import com.innowise.logistics.cargoservice.dto.response.PageResponse;
 import com.innowise.logistics.cargoservice.mongo.service.ImageSkuServiceImpl;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -19,14 +15,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/catalog/images/skus")
 @RequiredArgsConstructor
-@Validated
+@Validated // Оставляем для работы каскадной валидации @Valid
 public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadRequest> {
 
     private final ImageSkuServiceImpl imageSkuService;
@@ -37,7 +41,7 @@ public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadReq
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageUploadResponse> uploadImage(
             @RequestPart("file") MultipartFile file,
-            @RequestPart("metadata") @Valid ImageSkuUploadRequest metadata) {
+            @RequestPart("metadata") ImageSkuUploadRequest metadata) {
 
         log.debug("ImageSkuControllerImpl.uploadImage: Загрузка фото для SKU ID={}", metadata.getId());
 
@@ -65,7 +69,7 @@ public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadReq
     @Override
     @GetMapping("/gallery/{entityId}")
     public ResponseEntity<PageResponse<ImageViewResponse>> getGalleryByEntityId(
-            @PathVariable @Positive(message = "ID сущности должен быть положительным числом") Long entityId,
+            Long entityId,
             @PageableDefault(size = 10, sort = "sortOrder") Pageable pageable) {
 
         log.debug("ImageSkuControllerImpl.getGalleryByEntityId: Получение галереи для SKU ID={}", entityId);
@@ -77,11 +81,7 @@ public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadReq
     @Override
     @GetMapping("/{fileId}")
     public ResponseEntity<Resource> downloadImageByImageId(
-            @PathVariable @NotBlank(message = "ID изображения обязателен")
-            @Pattern(
-                    regexp = "^[a-fA-F0-9]{24}$",
-                    message = "ID изображения должен быть корректным ObjectId (24 шестнадцатеричных символа)"
-            ) String fileId) {
+            String fileId) {
 
         log.debug("ImageSkuControllerImpl.downloadImageByImageId: Скачивание файла ID={}", fileId);
         Resource resource = imageSkuService.downloadImageByImageId(fileId);
@@ -95,12 +95,8 @@ public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadReq
     @Override
     @PutMapping("/{fileId}")
     public ResponseEntity<ImageViewResponse> updateImageMetadata(
-            @PathVariable @NotBlank(message = "ID изображения обязателен")
-            @Pattern(
-                    regexp = "^[a-fA-F0-9]{24}$",
-                    message = "ID изображения должен быть корректным ObjectId (24 шестнадцатеричных символа)"
-            ) String fileId,
-            @Valid @RequestBody ImageSkuUploadRequest metadata) {
+            String fileId,
+            ImageSkuUploadRequest metadata) {
 
         log.debug("ImageSkuControllerImpl.updateImageMetadata: Обновление метаданных файла ID={}", fileId);
         return ResponseEntity.ok(imageSkuService.updateImageMetadata(fileId, metadata));
@@ -109,12 +105,7 @@ public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadReq
     // ===== 6️⃣ DELETE ONE =====
     @Override
     @DeleteMapping("/{fileId}")
-    public ResponseEntity<Void> deleteImage(
-            @PathVariable @NotBlank(message = "ID изображения обязателен")
-            @Pattern(
-                    regexp = "^[a-fA-F0-9]{24}$",
-                    message = "ID изображения должен быть корректным ObjectId (24 шестнадцатеричных символа)"
-            ) String fileId) {
+    public ResponseEntity<Void> deleteImage(String fileId) {
 
         log.debug("ImageSkuControllerImpl.deleteImage: Удаление файла ID={}", fileId);
         imageSkuService.deleteImage(fileId);
@@ -126,8 +117,6 @@ public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadReq
     @Override
     @DeleteMapping("/gallery/{entityId}")
     public ResponseEntity<Void> deleteImagesByEntityId(
-            @PathVariable @NotNull(message = "ID сущности обязателен")
-            @Positive(message = "ID сущности должен быть положительным числом")
             Long entityId) {
 
         log.debug("ImageSkuControllerImpl.deleteImagesByEntityId: Удаление всех фото для SKU ID={}", entityId);
@@ -139,9 +128,6 @@ public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadReq
     @Override
     @GetMapping("/gallery/{entityId}/primary")
     public ResponseEntity<ImageViewResponse> getPrimaryImageByEntityId(
-            @PathVariable
-            @NotNull(message = "ID сущности обязателен")
-            @Positive(message = "ID сущности должен быть положительным числом")
             Long entityId) {
 
         log.debug("ImageSkuControllerImpl.getPrimaryImageByEntityId: Получение главного фото для SKU ID={}", entityId);
