@@ -33,8 +33,9 @@ public interface ImageController<REQUEST> {
      * @param metadata метаданные изображения, JSON (связанные с SKU или Cargo)
      * @return созданный объект с ID и ссылкой на файл / ID и URL загруженного файла
      */
-    ResponseEntity<ImageUploadResponse> uploadImage(@RequestPart("file") MultipartFile file,
-                                                    @RequestPart("metadata") @Valid REQUEST metadata);
+    ResponseEntity<ImageUploadResponse> uploadImage(
+            @RequestPart("file") MultipartFile file,
+            @RequestPart("metadata") @Valid REQUEST metadata);
 
     /**
      * 2️⃣ READ ALL — Получить все изображения из БД с пагинацией.
@@ -42,7 +43,8 @@ public interface ImageController<REQUEST> {
      * @param pageable параметры пагинации и сортировки
      * @return страница с изображениями
      */
-    ResponseEntity<PageResponse<ImageViewResponse>> getAllImages(Pageable pageable);
+    ResponseEntity<PageResponse<ImageViewResponse>> getAllImages(
+            Pageable pageable);
 
     /**
      * 3️⃣ READ GALLERY — Получить галерею изображений по ID сущности из Postgres (SKU или Cargo).
@@ -56,6 +58,7 @@ public interface ImageController<REQUEST> {
             @NotNull(message = "ID сущности обязателен")
             @Positive(message = "ID сущности должен быть положительным числом")
             Long entityId,
+
             Pageable pageable);
 
     /**
