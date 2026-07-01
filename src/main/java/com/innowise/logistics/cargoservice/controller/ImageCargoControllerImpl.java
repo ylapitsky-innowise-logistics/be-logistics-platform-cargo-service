@@ -36,7 +36,7 @@ public class ImageCargoControllerImpl implements ImageController<ImageCargoUploa
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageUploadResponse> uploadImage(
             @RequestPart("file") MultipartFile file,
-            @RequestPart("metadata") @Valid ImageCargoUploadRequest metadata) {
+            @RequestPart("metadata") ImageCargoUploadRequest metadata) {
 
         log.debug("ImageCargoControllerImpl.uploadImage: Загрузка фото для Cargo ID={}", metadata.getId());
 
@@ -62,7 +62,7 @@ public class ImageCargoControllerImpl implements ImageController<ImageCargoUploa
     @Override
     @GetMapping("/gallery/{entityId}")
     public ResponseEntity<PageResponse<ImageViewResponse>> getGalleryByEntityId(
-            @PathVariable @Positive(message = "ID сущности должен быть положительным числом") Long entityId,
+            Long entityId,
             @PageableDefault(size = 10, sort = "sortOrder") Pageable pageable) {
 
         log.debug("ImageCargoControllerImpl.getGalleryByEntityId: Получение галереи для Cargo ID={}", entityId);
@@ -73,9 +73,6 @@ public class ImageCargoControllerImpl implements ImageController<ImageCargoUploa
     @Override
     @GetMapping("/{fileId}")
     public ResponseEntity<Resource> downloadImageByImageId(
-            @PathVariable
-            @NotBlank(message = "ID изображения обязателен")
-            @Pattern(regexp = "^[a-fA-F0-9]{24}$", message = "ID изображения должен быть корректным ObjectId")
             String fileId) {
 
         log.debug("ImageCargoControllerImpl.downloadImageByImageId: Скачивание файла ID={}", fileId);
@@ -89,11 +86,8 @@ public class ImageCargoControllerImpl implements ImageController<ImageCargoUploa
     @Override
     @PutMapping("/{fileId}")
     public ResponseEntity<ImageViewResponse> updateImageMetadata(
-            @PathVariable
-            @NotBlank(message = "ID изображения обязателен")
-            @Pattern(regexp = "^[a-fA-F0-9]{24}$", message = "ID изображения должен быть корректным ObjectId")
             String fileId,
-            @Valid @RequestBody ImageCargoUploadRequest metadata) {
+            ImageCargoUploadRequest metadata) {
 
         log.debug("ImageCargoControllerImpl.updateImageMetadata: Обновление метаданных файла ID={}", fileId);
         return ResponseEntity.ok(imageCargoService.updateImageMetadata(fileId, metadata));
@@ -103,9 +97,6 @@ public class ImageCargoControllerImpl implements ImageController<ImageCargoUploa
     @Override
     @DeleteMapping("/{fileId}")
     public ResponseEntity<Void> deleteImage(
-            @PathVariable
-            @NotBlank(message = "ID изображения обязателен")
-            @Pattern(regexp = "^[a-fA-F0-9]{24}$", message = "ID изображения должен быть корректным ObjectId")
             String fileId) {
 
         log.debug("ImageCargoControllerImpl.deleteImage: Удаление файла ID={}", fileId);
@@ -117,9 +108,6 @@ public class ImageCargoControllerImpl implements ImageController<ImageCargoUploa
     @Override
     @DeleteMapping("/gallery/{entityId}")
     public ResponseEntity<Void> deleteImagesByEntityId(
-            @PathVariable
-            @NotNull(message = "ID сущности обязателен")
-            @Positive(message = "ID сущности должен быть положительным числом")
             Long entityId) {
 
         log.debug("ImageCargoControllerImpl.deleteImagesByEntityId: Удаление всех фото для Cargo ID={}", entityId);
@@ -131,9 +119,6 @@ public class ImageCargoControllerImpl implements ImageController<ImageCargoUploa
     @Override
     @GetMapping("/gallery/{entityId}/primary")
     public ResponseEntity<ImageViewResponse> getPrimaryImageByEntityId(
-            @PathVariable
-            @NotNull(message = "ID сущности обязателен")
-            @Positive(message = "ID сущности должен быть положительным числом")
             Long entityId) {
 
         log.debug("ImageCargoControllerImpl.getPrimaryImageByEntityId: Получение главного фото для Cargo ID={}", entityId);
