@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class ImageMetadataUploadCargoRequest {
+public class ImageCargoUploadRequest {
 
     @NotNull(message = "ID артикула товара (skuId) является обязательным полем")
     private Long skuId;

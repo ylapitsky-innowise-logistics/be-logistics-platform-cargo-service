@@ -91,19 +91,19 @@ public class ImageTestDataService {
         }
     }
 
-    public List<ImageViewResponse> getImagesBySkuId(Long skuId) {
-        return imageSkuMetadataRepository.findBySkuId(skuId).stream()
-                .map(meta -> new ImageViewResponse(
-                        meta.getGridFsFileId(),
-                        "/api/v1/catalog/images/" + meta.getGridFsFileId(),
-                        meta.getFileName(),
-                        meta.getMimeType(),
-                        meta.getFileSize(),
-                        meta.getDescription(),
-                        meta.getSortOrder(),
-                        meta.getIsPrimary()
-                )).toList();
-    }
+//    public List<ImageViewResponse> getImagesBySkuId(Long skuId) {
+//        return imageSkuMetadataRepository.findBySkuId(skuId).stream()
+//                .map(meta -> new ImageViewResponse(
+//                        meta.getGridFsFileId(),
+//                        "/api/v1/catalog/images/" + meta.getGridFsFileId(),
+//                        meta.getFileName(),
+//                        meta.getMimeType(),
+//                        meta.getFileSize(),
+//                        meta.getDescription(),
+//                        meta.getSortOrder(),
+//                        meta.getIsPrimary()
+//                )).toList();
+//    }
 
     // Универсальный метод скачивания из GridFS (используется общим контроллером)
     public GridFsResource downloadImage(String fileId) {

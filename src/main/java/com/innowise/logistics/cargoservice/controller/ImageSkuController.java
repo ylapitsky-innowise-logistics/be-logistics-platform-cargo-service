@@ -25,43 +25,44 @@ import java.util.List;
 @Validated
 public class ImageSkuController {
 
-    private final ImageSkuService imageSkuService;
-
-    /**
-     * 1️⃣ POST /api/v1/catalog/images/skus
-     * Загрузка маркетинговой/каталожной фотографии для всей партии (артикула SKU)
-     */
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ImageUploadResponse> uploadImage(
-            @RequestPart("file") MultipartFile file,
-            @RequestPart("metadata") @Valid ImageUploadRequest metadata) {
-
-        log.debug("ImageSkuController.uploadSkuImage: Пришел запрос на 'POST /api/v1/catalog/images/skus', ImageSkuUploadRequest={}", metadata);
-        return ResponseEntity.ok(imageSkuService.uploadSkuImage(file, metadata));
-    }
-
-    /**
-     * 3️⃣ GET /api/v1/catalog/images/{fileId}
-     * Стриминг бинарных чанков картинки из GridFS прямо в HTTP-ответ (просмотр/скачивание)
-     */
-    @GetMapping("/{fileId}")
-    public ResponseEntity<Resource> downloadImage(
-            @PathVariable String fileId) {
-        log.debug("ImageSkuController.downloadImage: Пришел запрос на 'GET /api/v1/catalog/images/skus/{fileId}', fileId={}", fileId);
-        GridFsResource resource = imageSkuService.downloadImage(fileId);
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(resource.getContentType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
-    }
-
-    /**
-     * 4️⃣ GET /api/v1/catalog/images/skus/{skuId}
-     * Получение метаданных галереи для артикула
-     */
-    @GetMapping("/gallery/{id}")
-    public ResponseEntity<List<ImageViewResponse>> getGalleryByItemId(
-            @PathVariable Long id) {
-        log.debug("ImageSkuController.getSkuGallery: Пришел запрос на 'GET /api/v1/catalog/images/skus/gallery/{skuId}, skuId={}'", id);        return ResponseEntity.ok(imageSkuService.getImagesBySkuId(id));
-    }
+//    private final ImageSkuService imageSkuService;
+//
+//    /**
+//     * 1️⃣ POST /api/v1/catalog/images/skus
+//     * Загрузка маркетинговой/каталожной фотографии для всей партии (артикула SKU)
+//     */
+//    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<ImageUploadResponse> uploadImage(
+//            @RequestPart("file") MultipartFile file,
+//            @RequestPart("metadata") @Valid ImageUploadRequest metadata) {
+//
+//        log.debug("ImageSkuController.uploadSkuImage: Пришел запрос на 'POST /api/v1/catalog/images/skus', ImageSkuUploadRequest={}", metadata);
+//        return ResponseEntity.ok(imageSkuService.uploadSkuImage(file, metadata));
+//    }
+//
+//    /**
+//     * 3️⃣ GET /api/v1/catalog/images/{fileId}
+//     * Стриминг бинарных чанков картинки из GridFS прямо в HTTP-ответ (просмотр/скачивание)
+//     */
+//    @GetMapping("/{fileId}")
+//    public ResponseEntity<Resource> downloadImage(
+//            @PathVariable String fileId) {
+//        log.debug("ImageSkuController.downloadImage: Пришел запрос на 'GET /api/v1/catalog/images/skus/{fileId}', fileId={}", fileId);
+//        GridFsResource resource = imageSkuService.downloadImage(fileId);
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.parseMediaType(resource.getContentType()))
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+//                .body(resource);
+//    }
+//
+//    /**
+//     * 4️⃣ GET /api/v1/catalog/images/skus/{skuId}
+//     * Получение метаданных галереи для артикула
+//     */
+//    @GetMapping("/gallery/{id}")
+//    public ResponseEntity<List<ImageViewResponse>> getGalleryByItemId(
+//            @PathVariable Long id) {
+//        log.debug("ImageSkuController.getSkuGallery: Пришел запрос на 'GET /api/v1/catalog/images/skus/gallery/{skuId}, skuId={}'", id);
+//        return ResponseEntity.ok(imageSkuService.getImagesBySkuId(id));
+//    }
 }

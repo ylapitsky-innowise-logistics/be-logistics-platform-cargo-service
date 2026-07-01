@@ -3,46 +3,30 @@ package com.innowise.logistics.cargoservice.controller;
 import com.innowise.logistics.cargoservice.dto.response.ImageUploadResponse;
 import com.innowise.logistics.cargoservice.dto.response.ImageViewResponse;
 import com.innowise.logistics.cargoservice.dto.response.PageResponse;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-/**
+//
+/** -= Интерфейс должен описывать что, реализация — как. =-
  * Базовый интерфейс для контроллеров управления изображениями.
  * Поддерживает CRUD операции с пагинацией для SKU и Cargo.
  *
  * @param <REQUEST> тип DTO для запроса загрузки/обновления (ImageSkuUploadRequest или ImageCargoUploadRequest)
  */
-//@RestController   - ставим на реализацию!
-//@Validated        - ставим на реализацию!
 public interface ImageController<REQUEST> {
 
     /**
      * 1️⃣ CREATE — Загрузить новое изображение.
      *
-     * @param file     файл изображения
-     * @param metadata метаданные изображения (связанные с SKU или Cargo)
-     * @return созданный объект с ID и ссылкой на файл
+     * @param file     файл изображения (multipart)
+     * @param metadata метаданные изображения, JSON (связанные с SKU или Cargo)
+     * @return созданный объект с ID и ссылкой на файл / ID и URL загруженного файла
      */
-    ResponseEntity<ImageUploadResponse> uploadImage(
-            @RequestPart("file")
-            MultipartFile file,
-
-            @RequestPart("metadata")
-            @Valid
-            REQUEST metadata);
+    ResponseEntity<ImageUploadResponse> uploadImage(MultipartFile file, REQUEST metadata);
 
     /**
      * 2️⃣ READ ALL — Получить все изображения из БД с пагинацией.
@@ -50,9 +34,7 @@ public interface ImageController<REQUEST> {
      * @param pageable параметры пагинации и сортировки
      * @return страница с изображениями
      */
-    ResponseEntity<PageResponse<ImageViewResponse>> getAllImages(
-            @PageableDefault(size = 5, sort = "uploadedAt")
-            Pageable pageable);
+    ResponseEntity<PageResponse<ImageViewResponse>> getAllImages(Pageable pageable);
 
     /**
      * 3️⃣ READ GALLERY — Получить галерею изображений по ID сущности из Postgres (SKU или Cargo).
@@ -61,63 +43,32 @@ public interface ImageController<REQUEST> {
      * @param pageable параметры пагинации и сортировки
      * @return страница с изображениями для указанной сущности
      */
-    ResponseEntity<PageResponse<ImageViewResponse>> getGalleryByEntityId(
-            @PathVariable
-            @Positive(message = "ID сущности должен быть положительным числом")
-            Long entityId,
-
-            @PageableDefault(size = 5, sort = "sortOrder")
-            Pageable pageable);
+    ResponseEntity<PageResponse<ImageViewResponse>> getGalleryByEntityId(Long entityId, Pageable pageable);
 
     /**
      * 4️⃣ READ ONE — Скачать конкретное изображение по ID файла этого изображения.
      *
      * @param fileId ID файла в GridFS (MongoDB ObjectId — 24 символа)
-     * @return ресурс изображения
+     * @return бинарный поток/ ресурс изображения
      */
-    ResponseEntity<Resource> downloadImageByImageId(
-            @PathVariable
-            @NotBlank(message = "ID изображения обязателен")
-            @Pattern(
-                    regexp = "^[a-fA-F0-9]{24}$",
-                    message = "ID изображения должен быть корректным ObjectId (24 шестнадцатеричных символа)"
-            )
-            String fileId);
+    ResponseEntity<Resource> downloadImageByImageId(String fileId);
 
     /**
-     * 5️⃣ UPDATE — Обновить метаданные изображения.
+     * 5️⃣ UPDATE — Обновить метаданные изображения (описание, порядок, флаг главного).
      *
      * @param fileId   ID файла в GridFS
      * @param metadata новые метаданные
      * @return обновлённый объект с информацией об изображении
      */
-    ResponseEntity<ImageViewResponse> updateImageMetadata(
-            @PathVariable
-            @NotBlank(message = "ID изображения обязателен")
-            @Pattern(
-                    regexp = "^[a-fA-F0-9]{24}$",
-                    message = "ID изображения должен быть корректным ObjectId (24 шестнадцатеричных символа)"
-            )
-            String fileId,
-
-            @Valid
-            @RequestBody
-            REQUEST metadata);
+    ResponseEntity<ImageViewResponse> updateImageMetadata(String fileId, REQUEST metadata);
 
     /**
-     * 6️⃣ DELETE ONE — Удалить конкретное изображение по ID файла.
+     * 6️⃣ DELETE ONE — Удалить одно конкретное изображение по ID файла.
      *
      * @param fileId ID файла в GridFS
      * @return HTTP 204 No Content
      */
-    ResponseEntity<Void> deleteImage(
-            @PathVariable
-            @NotBlank(message = "ID изображения обязателен")
-            @Pattern(
-                    regexp = "^[a-fA-F0-9]{24}$",
-                    message = "ID изображения должен быть корректным ObjectId (24 шестнадцатеричных символа)"
-            )
-            String fileId);
+    ResponseEntity<Void> deleteImage(String fileId);
 
     /**
      * 7️⃣ DELETE ALL — Удалить все изображения для конкретной сущности (SKU или Cargo).
@@ -125,24 +76,17 @@ public interface ImageController<REQUEST> {
      * @param entityId ID сущности (SKU или Cargo)
      * @return HTTP 204 No Content
      */
-    ResponseEntity<Void> deleteImagesByEntityId(
-            @PathVariable
-            @NotNull(message = "ID сущности обязателен")
-            @Positive(message = "ID сущности должен быть положительным числом")
-            Long entityId);
+    ResponseEntity<Void> deleteImagesByEntityId(Long entityId);
 
     /**
-     * 8️⃣ GET PRIMARY — Получить главное изображение для сущности.
+     * 8️⃣ GET PRIMARY — Получить главное изображение для артикула (SKU).
      *
      * @param entityId ID сущности (SKU или Cargo)
      * @return главное изображение
      */
-    ResponseEntity<ImageViewResponse> getPrimaryImageByEntityId(
-            @PathVariable
-            @NotNull(message = "ID сущности обязателен")
-            @Positive(message = "ID сущности должен быть положительным числом")
-            Long entityId);
+    ResponseEntity<ImageViewResponse> getPrimaryImageByEntityId(Long entityId);
 
+    // =============================================
     // ===== Default методы для проверки файла =====
 
     //❗ПРОВЕРКА: Не пустой ли файл?
