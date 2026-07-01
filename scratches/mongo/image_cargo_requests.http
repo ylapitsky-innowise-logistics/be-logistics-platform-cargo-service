@@ -2,13 +2,13 @@
 @host = http://localhost:8085
 
 ### ============================================================
-### ПОДГОТОВКА: Убедитесь, что созданы Cargo с ID=1, ID=2
+### ПОДГОТОВКА: Убедитесь, что созданы Cargo с ID=1, ID=2, ID=3, ID=4
 ### ============================================================
 
-### 1. ЗАГРУЗКА ФОТО ДЛЯ CARGO (Физических коробок)
+### 1. ЗАГРУЗКА ФОТО ДЛЯ CARGO (Физических коробок на складе)
 ### Базовый путь: /api/v1/catalog/images/cargos
 
-### 01. Загрузить фото для CARGO ID=1 (Фиксация состояния)
+### 01. Загрузить фото для CARGO ID=1 (Фиксация состояния при приёмке)
 POST {{host}}/api/v1/catalog/images/cargos
 Content-Type: multipart/form-data; boundary=boundary
 
@@ -18,7 +18,7 @@ Content-Type: application/json
 
 {
   "id": 1,
-  "description": "Внешний вид товара при приемке (коробка без повреждений)",
+  "description": "Внешний вид товара при приёмке (коробка без повреждений)",
   "sortOrder": 0,
   "isPrimary": true
 }
@@ -29,7 +29,7 @@ Content-Type: image/png
 < ./pictures/Книга_Руководство_по_Spring_Boot_3.png
 --boundary--
 
-### 02. Загрузить дополнительное фото для CARGO ID=1 (Дефект)
+### 02. Загрузить дополнительное фото для CARGO ID=1 (Фиксация дефекта)
 POST {{host}}/api/v1/catalog/images/cargos
 Content-Type: multipart/form-data; boundary=boundary
 
@@ -39,7 +39,7 @@ Content-Type: application/json
 
 {
   "id": 1,
-  "description": "Выявленный дефект: повреждение угла коробки",
+  "description": "Выявленный дефект: повреждение угла коробки при транспортировке",
   "sortOrder": 1,
   "isPrimary": false
 }
@@ -50,7 +50,7 @@ Content-Type: image/png
 < ./pictures/Книга_Философия_Java.png
 --boundary--
 
-### 03. Загрузить фото для CARGO ID=2 (Спортивный инвентарь)
+### 03. Загрузить фото для CARGO ID=2 (Спортивный инвентарь — мяч)
 POST {{host}}/api/v1/catalog/images/cargos
 Content-Type: multipart/form-data; boundary=boundary
 
@@ -60,18 +60,18 @@ Content-Type: application/json
 
 {
   "id": 2,
-  "description": "Товары для спорта",
+  "description": "Товары для спорта: турнирный футбольный мяч",
   "sortOrder": 0,
   "isPrimary": true
 }
 --boundary
-Content-Disposition: form-data; name="file"; filename="sports.png"
+Content-Disposition: form-data; name="file"; filename="football.png"
 Content-Type: image/png
 
 < ./pictures/Футбольный_мяч_турнирный.png
 --boundary--
 
-### 04. Загрузить второе фото для CARGO ID=2 (Коврик)
+### 04. Загрузить дополнительное фото для CARGO ID=2 (Коврик для йоги)
 POST {{host}}/api/v1/catalog/images/cargos
 Content-Type: multipart/form-data; boundary=boundary
 
@@ -81,7 +81,7 @@ Content-Type: application/json
 
 {
   "id": 2,
-  "description": "Дополнительное оборудование (коврик для йоги)",
+  "description": "Дополнительное оборудование: нескользящий коврик для йоги",
   "sortOrder": 1,
   "isPrimary": false
 }
@@ -92,26 +92,7 @@ Content-Type: image/png
 < ./pictures/Коврик_для_йоги_нескользящий.png
 --boundary--
 
-
-### 2. ПОЛУЧЕНИЕ ГАЛЕРЕИ ИЗОБРАЖЕНИЙ
-### Путь: GET /api/v1/catalog/images/cargos/{cargoId}
-
-### 05. Получить галерею для CARGO ID=1 (должно быть 2 фото)
-GET {{host}}/api/v1/catalog/images/cargos/1
-Accept: application/json
-
-### 06. Получить галерею для CARGO ID=2 (должно быть 2 фото)
-GET {{host}}/api/v1/catalog/images/cargos/2
-Accept: application/json
-
-
-### 3. ❌ ТЕСТЫ НА ОШИБКИ
-
-### 07. ❌ ОШИБКА 404: Несуществующий CARGO
-GET {{host}}/api/v1/catalog/images/cargos/99999
-Accept: application/json
-
-### 08. ❌ ОШИБКА ВАЛИДАЦИИ: Загрузка без обязательного поля "cargoId"
+### 05. Загрузить фото для CARGO ID=3 (Беспроводные наушники)
 POST {{host}}/api/v1/catalog/images/cargos
 Content-Type: multipart/form-data; boundary=boundary
 
@@ -120,7 +101,147 @@ Content-Disposition: form-data; name="metadata"
 Content-Type: application/json
 
 {
-  "description": "Фото-сирота без CARGO ID"
+  "id": 3,
+  "description": "Аудиотехника: беспроводные наушники",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="headphones.png"
+Content-Type: image/png
+
+< ./pictures/Беспроводные_наушники.png
+--boundary--
+
+### 06. Загрузить фото для CARGO ID=4 (Эргономичное кресло)
+POST {{host}}/api/v1/catalog/images/cargos
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 4,
+  "description": "Офисная мебель: анатомическое кресло",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="chair.png"
+Content-Type: image/png
+
+< ./pictures/Кресло_офисное_анатомическое.png
+--boundary--
+
+### 07. Загрузить дополнительное фото для CARGO ID=4 (Стол)
+POST {{host}}/api/v1/catalog/images/cargos
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 4,
+  "description": "Эргономичный письменный стол в комплекте с креслом",
+  "sortOrder": 1,
+  "isPrimary": false
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="desk.png"
+Content-Type: image/png
+
+< ./pictures/Стол_письменный_эргономичный.png
+--boundary--
+
+
+### 2. ПОЛУЧЕНИЕ ГАЛЕРЕИ ИЗОБРАЖЕНИЙ
+### Путь: GET /api/v1/catalog/images/cargos/gallery/{cargoId}
+
+### 08. Получить галерею для CARGO ID=1 (2 фото)
+GET {{host}}/api/v1/catalog/images/cargos/gallery/1
+Accept: application/json
+
+### 09. Получить галерею для CARGO ID=2 (2 фото)
+GET {{host}}/api/v1/catalog/images/cargos/gallery/2
+Accept: application/json
+
+### 10. Получить галерею для CARGO ID=3 (1 фото)
+GET {{host}}/api/v1/catalog/images/cargos/gallery/3
+Accept: application/json
+
+### 11. Получить галерею для CARGO ID=4 (2 фото)
+GET {{host}}/api/v1/catalog/images/cargos/gallery/4
+Accept: application/json
+
+
+### 3. ПОЛУЧЕНИЕ ВСЕХ ИЗОБРАЖЕНИЙ (с пагинацией)
+### Путь: GET /api/v1/catalog/images/cargos
+
+### 12. Получить все Cargo-изображения (страница 0, размер 10)
+GET {{host}}/api/v1/catalog/images/cargos?page=0&size=10
+Accept: application/json
+
+### 13. Получить все Cargo-изображения (страница 1, размер 5)
+GET {{host}}/api/v1/catalog/images/cargos?page=1&size=5
+Accept: application/json
+
+
+### 4. СКАЧИВАНИЕ КОНКРЕТНОГО ИЗОБРАЖЕНИЯ
+### Путь: GET /api/v1/catalog/images/cargos/{fileId}
+### (Подставьте реальный ID из ответов выше)
+
+### 14. Скачать изображение (пример)
+GET {{host}}/api/v1/catalog/images/cargos/PLACE_YOUR_REAL_GRIDFS_ID_HERE
+Accept: image/png
+
+
+### 5. ПОЛУЧЕНИЕ ГЛАВНОГО ИЗОБРАЖЕНИЯ
+### Путь: GET /api/v1/catalog/images/cargos/gallery/{cargoId}/primary
+
+### 15. Получить главное фото для CARGO ID=1
+GET {{host}}/api/v1/catalog/images/cargos/gallery/1/primary
+Accept: application/json
+
+
+### 6. ОБНОВЛЕНИЕ МЕТАДАННЫХ
+### Путь: PUT /api/v1/catalog/images/cargos/{fileId}
+
+### 16. Обновить описание у файла (подставьте реальный fileId)
+PUT {{host}}/api/v1/catalog/images/cargos/PLACE_YOUR_REAL_GRIDFS_ID_HERE
+Content-Type: application/json
+
+{
+  "id": 1,
+  "description": "НОВОЕ ОПИСАНИЕ: Дефект упаковки — вмятина на углу, зафиксирована при приёмке",
+  "sortOrder": 1,
+  "isPrimary": false
+}
+
+
+### 7. ❌ ТЕСТЫ НА ОШИБКИ
+
+### 17. ❌ ОШИБКА 404: Несуществующий CARGO
+GET {{host}}/api/v1/catalog/images/cargos/gallery/99999
+Accept: application/json
+
+### 18. ❌ ОШИБКА 404: Несуществующий файл
+GET {{host}}/api/v1/catalog/images/cargos/660000000000000000000000
+Accept: image/png
+
+### 19. ❌ ОШИБКА ВАЛИДАЦИИ: Загрузка без обязательного поля "id"
+POST {{host}}/api/v1/catalog/images/cargos
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "description": "Фото-сирота без CARGO ID",
+  "sortOrder": 0,
+  "isPrimary": true
 }
 --boundary
 Content-Disposition: form-data; name="file"; filename="test.png"
@@ -128,3 +249,9 @@ Content-Type: image/png
 
 < ./pictures/Компактный_складной_зонт.png
 --boundary--
+
+### 20. ❌ УДАЛЕНИЕ: Удалить изображение (подставьте реальный fileId)
+DELETE {{host}}/api/v1/catalog/images/cargos/PLACE_YOUR_REAL_GRIDFS_ID_HERE
+
+### 21. ❌ УДАЛЕНИЕ ГАЛЕРЕИ: Удалить все фото для CARGO ID=4
+DELETE {{host}}/api/v1/catalog/images/cargos/gallery/4

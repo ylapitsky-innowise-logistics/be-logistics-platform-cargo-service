@@ -1,0 +1,129 @@
+# Для встроенного HTTP-клиента IntelliJ IDEA
+@host = http://localhost:8085
+
+### ============================================================
+### ПОДГОТОВКА: Убедитесь, что созданы SKU с ID=1, ID=2, ID=3
+### ============================================================
+
+### 1. ЗАГРУЗКА ФОТО ДЛЯ SKU (Артикулов)
+### Базовый путь: /api/v1/catalog/images/skus
+
+### 01. Загрузить основное фото для SKU ID=1 (Смартфон)
+POST {{host}}/api/v1/catalog/images/skus
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 1,
+  "description": "Каталожное фото смартфона премиум-класса",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="smartphone.png"
+Content-Type: image/png
+
+< ./pictures/Смартфон_премиум.png
+--boundary--
+
+### 02. Загрузить дополнительное фото для SKU ID=1 (Умные часы)
+POST {{host}}/api/v1/catalog/images/skus
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 1,
+  "description": "Аксессуар к смартфону на том же артикуле",
+  "sortOrder": 1,
+  "isPrimary": false
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="smart_watch.png"
+Content-Type: image/png
+
+< ./pictures/Умные_часы.png
+--boundary--
+
+### 03. Загрузить фото для SKU ID=2 (Ноутбук)
+POST {{host}}/api/v1/catalog/images/skus
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 2,
+  "description": "Каталожное фото ноутбука",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="laptop.png"
+Content-Type: image/png
+
+< ./pictures/Ноутбук_рабочий.png
+--boundary--
+
+### 04. Загрузить фото для SKU ID=3 (Книги)
+POST {{host}}/api/v1/catalog/images/skus
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 3,
+  "description": "Книга: Паттерны проектирования",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="design_patterns.png"
+Content-Type: image/png
+
+< ./pictures/Книга_Паттерны_проектирования_Enterprise-приложений.png
+--boundary--
+
+
+### 2. ПОЛУЧЕНИЕ ГАЛЕРЕИ ИЗОБРАЖЕНИЙ
+### Путь: GET /api/v1/catalog/images/skus/gallery/{skuId}
+
+### 05. Получить галерею для SKU ID=1 (должно быть 2 фото)
+GET {{host}}/api/v1/catalog/images/skus/gallery/1
+Accept: application/json
+
+### 06. Получить галерею для SKU ID=2 (1 фото)
+GET {{host}}/api/v1/catalog/images/skus/gallery/2
+Accept: application/json
+
+### 07. Получить галерею для SKU ID=3 (1 фото)
+GET {{host}}/api/v1/catalog/images/skus/gallery/3
+Accept: application/json
+
+
+### 3. СКАЧИВАНИЕ КОНКРЕТНОГО ИЗОБРАЖЕНИЯ
+### Путь: GET /api/v1/catalog/images/skus/{fileId}
+### (Подставьте реальный ID из ответов выше)
+
+### 08. Скачать изображение (пример)
+GET {{host}}/api/v1/catalog/images/skus/PLACE_YOUR_REAL_GRIDFS_ID_HERE
+Accept: image/png
+
+
+### 4. ❌ ТЕСТЫ НА ОШИБКИ
+
+### 09. ❌ ОШИБКА 404: Несуществующий SKU
+GET {{host}}/api/v1/catalog/images/skus/gallery/99999
+Accept: application/json
+
+### 10. ❌ ОШИБКА 404: Несуществующий файл
+GET {{host}}/api/v1/catalog/images/skus/660000000000000000000000
+Accept: image/png

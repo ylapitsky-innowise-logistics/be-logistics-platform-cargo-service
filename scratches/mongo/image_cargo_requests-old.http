@@ -1,0 +1,130 @@
+# Для встроенного HTTP-клиента IntelliJ IDEA
+@host = http://localhost:8085
+
+### ============================================================
+### ПОДГОТОВКА: Убедитесь, что созданы Cargo с ID=1, ID=2
+### ============================================================
+
+### 1. ЗАГРУЗКА ФОТО ДЛЯ CARGO (Физических коробок)
+### Базовый путь: /api/v1/catalog/images/cargos
+
+### 01. Загрузить фото для CARGO ID=1 (Фиксация состояния)
+POST {{host}}/api/v1/catalog/images/cargos
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 1,
+  "description": "Внешний вид товара при приемке (коробка без повреждений)",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="box_good.png"
+Content-Type: image/png
+
+< ./pictures/Книга_Руководство_по_Spring_Boot_3.png
+--boundary--
+
+### 02. Загрузить дополнительное фото для CARGO ID=1 (Дефект)
+POST {{host}}/api/v1/catalog/images/cargos
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 1,
+  "description": "Выявленный дефект: повреждение угла коробки",
+  "sortOrder": 1,
+  "isPrimary": false
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="box_damaged.png"
+Content-Type: image/png
+
+< ./pictures/Книга_Философия_Java.png
+--boundary--
+
+### 03. Загрузить фото для CARGO ID=2 (Спортивный инвентарь)
+POST {{host}}/api/v1/catalog/images/cargos
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 2,
+  "description": "Товары для спорта",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="sports.png"
+Content-Type: image/png
+
+< ./pictures/Футбольный_мяч_турнирный.png
+--boundary--
+
+### 04. Загрузить второе фото для CARGO ID=2 (Коврик)
+POST {{host}}/api/v1/catalog/images/cargos
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 2,
+  "description": "Дополнительное оборудование (коврик для йоги)",
+  "sortOrder": 1,
+  "isPrimary": false
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="yoga_mat.png"
+Content-Type: image/png
+
+< ./pictures/Коврик_для_йоги_нескользящий.png
+--boundary--
+
+
+### 2. ПОЛУЧЕНИЕ ГАЛЕРЕИ ИЗОБРАЖЕНИЙ
+### Путь: GET /api/v1/catalog/images/cargos/{cargoId}
+
+### 05. Получить галерею для CARGO ID=1 (должно быть 2 фото)
+GET {{host}}/api/v1/catalog/images/cargos/1
+Accept: application/json
+
+### 06. Получить галерею для CARGO ID=2 (должно быть 2 фото)
+GET {{host}}/api/v1/catalog/images/cargos/2
+Accept: application/json
+
+
+### 3. ❌ ТЕСТЫ НА ОШИБКИ
+
+### 07. ❌ ОШИБКА 404: Несуществующий CARGO
+GET {{host}}/api/v1/catalog/images/cargos/99999
+Accept: application/json
+
+### 08. ❌ ОШИБКА ВАЛИДАЦИИ: Загрузка без обязательного поля "cargoId"
+POST {{host}}/api/v1/catalog/images/cargos
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "description": "Фото-сирота без CARGO ID"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="test.png"
+Content-Type: image/png
+
+< ./pictures/Компактный_складной_зонт.png
+--boundary--
