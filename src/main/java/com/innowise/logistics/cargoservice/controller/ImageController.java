@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-//
 /** -= Интерфейс должен описывать что, реализация — как. =-
  * Базовый интерфейс для контроллеров управления изображениями.
  * Поддерживает CRUD операции с пагинацией для SKU и Cargo.

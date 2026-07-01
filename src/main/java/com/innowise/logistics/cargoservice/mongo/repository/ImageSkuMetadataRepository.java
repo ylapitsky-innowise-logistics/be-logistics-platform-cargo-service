@@ -6,14 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface ImageSkuMetadataRepository extends MongoRepository<ImageSkuMetadata, String> {
-
-//    List<ImageSkuMetadata> findBySkuId(Long skuId); // 🟢 Находим галерею артикула
-
 
     // 📖 Получить все изображения для SKU (с пагинацией)
     Page<ImageSkuMetadata> findBySkuId(Long skuId, Pageable pageable);

@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-
 @Slf4j
 @Service
 public class ImageSkuServiceImpl extends ImageAbstractService<
