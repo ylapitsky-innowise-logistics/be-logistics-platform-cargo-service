@@ -2,38 +2,44 @@ package com.innowise.logistics.cargoservice.mongo.service;
 
 import com.innowise.logistics.cargoservice.dto.request.ImageUploadRequest;
 import com.innowise.logistics.cargoservice.dto.response.ImageUploadResponse;
-import com.innowise.logistics.cargoservice.entity.Sku;
-import com.innowise.logistics.cargoservice.mongo.entity.ImageSkuMetadata;
+import com.innowise.logistics.cargoservice.dto.response.ImageViewResponse;
+import com.innowise.logistics.cargoservice.dto.response.PageResponse;
 import com.mongodb.client.gridfs.GridFSBucket;
-import jakarta.persistence.EntityNotFoundException;
+import com.mongodb.client.gridfs.model.GridFSFile;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-
-@Slf4j
-@Setter(onMethod_ = @Autowired) // 🎯 Внедрение зависимостей через сеттеры, без конструкторов!
+// Сюда переедет общая логика для downloadImage, getAllImages и deleteImage!
 /**
- * T — Тип метаданных Mongo (ImageSkuMetadata или ImageCargoMetadata).
- * R — Тип репозитория метаданных Mongo (ImageSkuMetadataRepository или ImageCargoMetadataRepository).
- * P — Тип репозитория Postgres для проверки данных (SkuRepository или CargoRepository).
+ * Базовый абстрактный сервис со сквозной параметризацией для управления медиа-контентом.
+ *
+ * @param <T>       Тип сущности метаданных Mongo (ImageSkuMetadata или ImageCargoMetadata)
+ * @param <R>       Тип репозитория метаданных Mongo (ImageSkuMetadataRepository или ImageCargoMetadataRepository)
+ * @param <E>       Тип сущности Postgres (Sku или Cargo)
+ * @param <P>       Тип репозитория Postgres (SkuRepository или CargoRepository)
+ * @param <REQUEST> Тип DTO запроса (ImageSkuUploadRequest или ImageCargoUploadRequest)
  */
+@Slf4j
+@Setter(onMethod_ = @Autowired) // 🎯 Setter Injection — чистый DI для абстрактных классов
 public abstract class ImageAbstractService<
         T,
         R extends MongoRepository<T, String>,
-        P extends JpaRepository<?, Long>
-        > {
+        E,
+        P extends JpaRepository<E, Long>,
+        REQUEST
+        > implements ImageService<REQUEST> {
 
     protected GridFsTemplate gridFsTemplate;
     protected GridFSBucket gridFSBucket;
@@ -44,6 +50,51 @@ public abstract class ImageAbstractService<
     // 🐘 Автоматически типизируемый репозиторий Postgres (SkuRepository или CargoRepository)
     protected P postgresRepository;
 
+
+    /**
+     * 1️⃣ CREATE — Специфичен для каждого сервиса, так как маппинг полей Sku и Cargo отличается.
+     */
+    @Override
+    public abstract ImageUploadResponse uploadImage(MultipartFile file, REQUEST metadata);
+
+    /**
+     * 3️⃣ READ GALLERY — Специфичен для каждого сервиса, так как методы репозиториев Mongo
+     * называются по-разному (findBySkuId и findByCargoId).
+     */
+    @Override
+    public abstract PageResponse<ImageViewResponse> getGalleryByEntityId(Long entityId, Pageable pageable);
+
+    /**
+     * 4️⃣ READ ONE — Универсальный стриминг бинарных файлов из GridFS для SKU и Cargo на базе общего fileId.
+     */
+    @Override
+    public Resource downloadImageByImageId(String fileId) {
+        log.debug("ImageAbstractService: Извлечение бинарного файла из GridFS, fileId={}", fileId);
+
+        GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(fileId)));
+        if (gridFSFile == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Изображение с ID " + fileId + " не найдено в GridFS");
+        }
+
+        return new GridFsResource(gridFSFile, gridFSBucket.openDownloadStream(gridFSFile.getObjectId()));
+    }
+
+    /**
+     * 6️⃣ DELETE ONE — Каноничное удаление из GridFS и синхронное удаление паспорта метаданных из Mongo.
+     */
+    @Override
+    public void deleteImage(String fileId) {
+        log.debug("ImageAbstractService: Каскадное удаление изображения, fileId={}", fileId);
+
+        if (!metadataRepository.existsById(fileId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Метаданные изображения с ID " + fileId + " не найдены");
+        }
+
+        // Сначала зачищаем метаданные
+        metadataRepository.deleteById(fileId);
+        // Затем удаляем сам бинарный файл из чанков GridFS
+        gridFsTemplate.delete(new Query(Criteria.where("_id").is(fileId)));
+    }
 
     protected ImageUploadResponse uploadImage(MultipartFile file, ImageUploadRequest request) {
 //        if (file.isEmpty()) {

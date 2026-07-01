@@ -31,6 +31,16 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/*
+public class ImageSkuService extends ImageAbstractService<
+        ImageSkuMetadata,
+        ImageSkuMetadataRepository,
+        Sku,
+        SkuRepository,
+        ImageSkuUploadRequest> {
+
+    // Переопределяешь только uploadImage и getGalleryByEntityId!
+ */
 public class ImageSkuService {
 
     private final GridFsTemplate gridFsTemplate;

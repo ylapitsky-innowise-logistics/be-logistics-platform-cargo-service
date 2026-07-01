@@ -29,6 +29,18 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/*
+@Service
+public class ImageCargoService extends ImageAbstractService<
+        ImageCargoMetadata,
+        ImageCargoMetadataRepository,
+        Cargo,
+        CargoRepository,
+        ImageCargoUploadRequest> {
+
+    // Переопределяешь только uploadImage и getGalleryByEntityId!
+}
+ */
 public class ImageCargoService {
 
     private final GridFsTemplate gridFsTemplate;

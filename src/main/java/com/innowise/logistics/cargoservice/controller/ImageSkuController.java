@@ -32,7 +32,7 @@ public class ImageSkuController {
      * Загрузка маркетинговой/каталожной фотографии для всей партии (артикула SKU)
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ImageUploadResponse> uploadSkuImage(
+    public ResponseEntity<ImageUploadResponse> uploadImage(
             @RequestPart("file") MultipartFile file,
             @RequestPart("metadata") @Valid ImageUploadRequest metadata) {
 
@@ -59,9 +59,9 @@ public class ImageSkuController {
      * 4️⃣ GET /api/v1/catalog/images/skus/{skuId}
      * Получение метаданных галереи для артикула
      */
-    @GetMapping("/gallery/{skuId}")
-    public ResponseEntity<List<ImageViewResponse>> getSkuGallery(
-            @PathVariable Long skuId) {
-        log.debug("ImageSkuController.getSkuGallery: Пришел запрос на 'GET /api/v1/catalog/images/skus/gallery/{skuId}, skuId={}'", skuId);        return ResponseEntity.ok(imageSkuService.getImagesBySkuId(skuId));
+    @GetMapping("/gallery/{id}")
+    public ResponseEntity<List<ImageViewResponse>> getGalleryByItemId(
+            @PathVariable Long id) {
+        log.debug("ImageSkuController.getSkuGallery: Пришел запрос на 'GET /api/v1/catalog/images/skus/gallery/{skuId}, skuId={}'", id);        return ResponseEntity.ok(imageSkuService.getImagesBySkuId(id));
     }
 }

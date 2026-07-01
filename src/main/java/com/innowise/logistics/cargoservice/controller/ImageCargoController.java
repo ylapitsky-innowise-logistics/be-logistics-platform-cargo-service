@@ -29,7 +29,7 @@ public class ImageCargoController {
      * Загрузка уникального фото конкретной единицы груза (например, фиксация брака/дефекта коробки)
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ImageUploadResponse> uploadCargoImage(
+    public ResponseEntity<ImageUploadResponse> uploadImage(
             @RequestPart("file") MultipartFile file,
             @RequestPart("metadata") @Valid ImageUploadRequest metadata) {
         log.debug("ImageCargoController.uploadCargoImage: Пришел запрос на 'POST /api/v1/catalog/images/cargos', ImageCargoUploadRequest={}", metadata);
@@ -40,10 +40,10 @@ public class ImageCargoController {
      * 5️⃣ GET /api/v1/catalog/images/cargos/{cargoId}
      * Получение уникальных метаданных картинок для конкретной коробки
      */
-    @GetMapping("/{cargoId}")
-    public ResponseEntity<List<ImageViewResponse>> getCargoGallery(
-            @PathVariable Long cargoId) {
-        log.debug("ImageCargoController.getCargoGallery: Пришел запрос на 'POST /api/v1/catalog/images/cargos/{cargoId}', ImageCargoUploadRequest={}", cargoId);
-        return ResponseEntity.ok(imageCargoService.getImagesByCargoId(cargoId));
+    @GetMapping("/{id}")
+    public ResponseEntity<List<ImageViewResponse>> getGalleryByItemId(
+            @PathVariable Long id) {
+        log.debug("ImageCargoController.getCargoGallery: Пришел запрос на 'POST /api/v1/catalog/images/cargos/{cargoId}', ImageCargoUploadRequest={}", id);
+        return ResponseEntity.ok(imageCargoService.getImagesByCargoId(id));
     }
 }
