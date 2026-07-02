@@ -1,6 +1,6 @@
 package com.innowise.logistics.cargoservice.mongo.service;
 
-import com.innowise.logistics.cargoservice.dto.response.ImageSkuUploadRequest;
+import com.innowise.logistics.cargoservice.dto.request.ImageSkuUploadRequest;
 import com.innowise.logistics.cargoservice.dto.response.ImageViewResponse;
 import com.innowise.logistics.cargoservice.entity.Sku;
 import com.innowise.logistics.cargoservice.mongo.entity.ImageSkuMetadata;

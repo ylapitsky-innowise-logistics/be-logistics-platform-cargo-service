@@ -1,6 +1,8 @@
 package com.innowise.logistics.cargoservice.config;
 
 import com.innowise.logistics.cargoservice.controller.TestDataController;
+import com.innowise.logistics.cargoservice.mongo.service.ImageCargoServiceImpl;
+import com.innowise.logistics.cargoservice.mongo.service.ImageSkuServiceImpl;
 import com.innowise.logistics.cargoservice.repository.*;
 import com.innowise.logistics.cargoservice.util.testdata.*;
 import org.springframework.context.annotation.Bean;
@@ -60,7 +62,10 @@ public class TestDataConfiguration {
             SkuRepository skuRepository,
             DimensionRepository dimensionRepository,
             LocationRepository locationRepository,
-            CargoRepository cargoRepository) {
+            CargoRepository cargoRepository,
+            ImageSkuServiceImpl imageSkuService,
+            ImageCargoServiceImpl imageCargoService
+            ) {
 
         return new TestDataSeeder(
                 addressGenerator,
@@ -72,7 +77,9 @@ public class TestDataConfiguration {
                 skuRepository,
                 dimensionRepository,
                 locationRepository,
-                cargoRepository
+                cargoRepository,
+                imageSkuService,
+                imageCargoService
         );
     }
 

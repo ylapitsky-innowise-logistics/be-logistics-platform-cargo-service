@@ -1,6 +1,6 @@
 package com.innowise.logistics.cargoservice.controller;
 
-import com.innowise.logistics.cargoservice.dto.response.ImageSkuUploadRequest;
+import com.innowise.logistics.cargoservice.dto.request.ImageSkuUploadRequest;
 import com.innowise.logistics.cargoservice.dto.response.ImageUploadResponse;
 import com.innowise.logistics.cargoservice.dto.response.ImageViewResponse;
 import com.innowise.logistics.cargoservice.dto.response.PageResponse;

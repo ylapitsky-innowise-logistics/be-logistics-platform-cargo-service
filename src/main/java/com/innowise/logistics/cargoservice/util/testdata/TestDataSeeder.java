@@ -1,14 +1,21 @@
 package com.innowise.logistics.cargoservice.util.testdata;
 
+import com.innowise.logistics.cargoservice.dto.request.ImageUploadRequest;
+import com.innowise.logistics.cargoservice.dto.request.ImageSkuUploadRequest;
 import com.innowise.logistics.cargoservice.entity.*;
+import com.innowise.logistics.cargoservice.mongo.repository.ImageCargoMetadataRepository;
+import com.innowise.logistics.cargoservice.mongo.repository.ImageSkuMetadataRepository;
+import com.innowise.logistics.cargoservice.mongo.service.ImageCargoServiceImpl;
+import com.innowise.logistics.cargoservice.mongo.service.ImageSkuServiceImpl;
 import com.innowise.logistics.cargoservice.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -36,6 +43,11 @@ public class TestDataSeeder {
     private final DimensionRepository dimensionRepository;
     private final LocationRepository locationRepository;
     private final CargoRepository cargoRepository;
+
+    private final ImageSkuServiceImpl imageSkuService;
+    private final ImageCargoServiceImpl imageCargoService;
+
+    private final Random random = new Random();
 
     /**
      * Заполняет базу данных PostgreSQL сбалансированным графом связанных сущностей.
@@ -81,6 +93,23 @@ public class TestDataSeeder {
             } else {
                 // Если артикул новый — сохраняем в базу
                 savedSkus.add(skuRepository.save(rawSku));
+
+
+                // === теперь сделаем картинки для Sku ===
+                String messageSku =
+                        "\nSku.id: " + rawSku.getId() +
+                        "\nSku.name: " + rawSku.getName() +
+                        "\nSku.description: " + rawSku.getDescription() +
+                        "\nSku.createdAt: " + rawSku.getCreatedAt();
+                MultipartFile[] images = generateImages(random.nextInt(10), messageSku);
+
+                ImageSkuUploadRequest imageUploadRequest = ImageSkuUploadRequest.builder()
+                        .id(rawSku.getId())
+                        .description(rawSku.getDescription())
+                        .sortOrder(random.nextInt(3))
+                        .isPrimary(random.nextBoolean())
+                        .build();
+                Arrays.stream(images).forEach(img -> imageSkuService.uploadImage(img, imageUploadRequest));
             }
         }
         log.info("✓ Обработано каталожных артикулов (SKU). Итого в обойме: {}", savedSkus.size());
@@ -94,6 +123,10 @@ public class TestDataSeeder {
         );
 
         List<Cargo> savedCargos = cargoRepository.saveAll(List.of(rawCargos));
+        log.info("=== Postgres: УСПЕШНО ЗАВЕРШЕНО. Физических товаров (Cargo) добавлено в DB: {} ===", savedCargos.size());
+
+
+
         log.info("=== УСПЕШНО ЗАВЕРШЕНО. Физических товаров (Cargo) добавлено в DB: {} ===", savedCargos.size());
     }
 
@@ -104,4 +137,48 @@ public class TestDataSeeder {
         skuRepository.deleteAll();
         dimensionRepository.deleteAll();
     }
+
+    /**
+     * Генерирует коллекцию картинок
+     */
+    private MultipartFile[] generateImages(int quantity, String message) {
+        MultipartFile[] images = new MultipartFile[quantity];
+        for (int i = 0; i < quantity; i++) {
+
+            // 1. Получаем текущую дату-время с миллисекундами
+            LocalDateTime now = LocalDateTime.now();
+
+            // 2. Создаём форматтер с миллисекундами (3 знака)
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss_SSS");
+
+            // 3. Форматируем в строку
+            String formattedDate = now.format(formatter);
+
+            // Вывод в виде: 2026-07-02_15-30-45_123
+            String text = "Изображение \n" + formattedDate + "\n" + message;
+
+            try {
+                MultipartFile file = ImageGenerator.generateImage(
+                        800, 600,
+                        text,                           // это пойдет в отрисовку картинки
+                        formattedDate + ".png"          // это будет имя файла
+                );
+                log.debug("✅ Изображение сгенерировано: " + file.getOriginalFilename() + ", 📏 Размер: " + file.getSize() + " байт");
+
+            } catch (Exception e) {
+                log.error("""
+                        \nОшибка при генерации изображения № {} для message = {} при попытке сгенрировать {} картинок\n
+                        """, i, message, quantity);
+                e.printStackTrace();
+            }
+        }
+
+        return images;
+    }
+
+    /**
+     * Засовывает в указанный репозиторий коллекцию картинок
+     */
+
+
 }

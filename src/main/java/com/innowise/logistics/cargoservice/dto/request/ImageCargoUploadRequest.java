@@ -1,12 +1,8 @@
 package com.innowise.logistics.cargoservice.dto.request;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@SuperBuilder
 public class ImageCargoUploadRequest extends ImageUploadRequest {
     // Пустой, все поля наследуются от ImageUploadRequest
     // Можно добавить специфичные поля для Cargo, если понадобятся

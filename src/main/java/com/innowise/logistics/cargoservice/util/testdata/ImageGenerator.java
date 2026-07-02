@@ -250,4 +250,3 @@ public class ImageGenerator implements Generator<MultipartFile>{
         }
     }
 }
-
