@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import static com.innowise.logistics.cargoservice.constant.ApiConstants.*;
+import static com.innowise.logistics.cargoservice.constant.ApiImageConstants.*;
 
 @Slf4j
 @Validated // Оставляем для работы каскадной валидации @Valid

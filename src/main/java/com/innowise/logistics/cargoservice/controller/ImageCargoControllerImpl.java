@@ -5,11 +5,6 @@ import com.innowise.logistics.cargoservice.dto.response.ImageUploadResponse;
 import com.innowise.logistics.cargoservice.dto.response.ImageViewResponse;
 import com.innowise.logistics.cargoservice.dto.response.PageResponse;
 import com.innowise.logistics.cargoservice.mongo.service.ImageCargoServiceImpl;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -19,10 +14,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import static com.innowise.logistics.cargoservice.constant.ApiConstants.*;
+import static com.innowise.logistics.cargoservice.constant.ApiImageConstants.*;
 
 @Slf4j
 @RestController

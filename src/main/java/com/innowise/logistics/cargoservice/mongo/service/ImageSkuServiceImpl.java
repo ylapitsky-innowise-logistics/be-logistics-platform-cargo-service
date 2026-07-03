@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import static com.innowise.logistics.cargoservice.constant.ApiConstants.IMAGE_SKU_BASE_URL;
+import static com.innowise.logistics.cargoservice.constant.ApiImageConstants.IMAGE_SKU_BASE_URL;
 
 @Slf4j
 @Service

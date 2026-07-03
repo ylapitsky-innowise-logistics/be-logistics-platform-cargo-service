@@ -3,12 +3,12 @@ package com.innowise.logistics.cargoservice.constant;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class ApiConstants {
+public class ApiImageConstants {
 
-    // Общие для всех (Sku и Cargo)
+    // Общие для всех изображений (Sku и Cargo)
     public static final String IMAGE_DOWNLOAD_URL = "/{fileId}";
-    public static final String IMAGE_GALLERY_URL =  "/gallery/{entityId}";
-    public static final String IMAGE_PRIMARY_URL =  "/gallery/{entityId}/primary";
+    public static final String IMAGE_GALLERY_URL = "/gallery/{entityId}";
+    public static final String IMAGE_PRIMARY_URL = IMAGE_GALLERY_URL + "/primary";
 
     // для Sku - изображений
     public static final String IMAGE_SKU_BASE_URL = "/api/v1/catalog/images/skus";
@@ -19,5 +19,4 @@ public class ApiConstants {
 //    public static final String IMAGE_CARGO_DOWNLOAD_URL =  "/{fileId}";
 //    public static final String IMAGE_CARGO_GALLERY_URL =  "/gallery/{entityId}";
 //    public static final String IMAGE_CARGO_PRIMARY_URL =  "/gallery/{entityId}/primary";
-
 }
