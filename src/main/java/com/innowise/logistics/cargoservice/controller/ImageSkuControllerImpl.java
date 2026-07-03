@@ -23,10 +23,12 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import static com.innowise.logistics.cargoservice.constant.ApiConstants.*;
+
 @Slf4j
 @Validated // Оставляем для работы каскадной валидации @Valid
 @RestController
-@RequestMapping("/api/v1/catalog/images/skus")
+@RequestMapping(IMAGE_SKU_BASE_URL)
 @RequiredArgsConstructor
 public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadRequest> {
 
@@ -64,7 +66,7 @@ public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadReq
 
     // ===== 3️⃣ READ GALLERY =====
     @Override
-    @GetMapping("/gallery/{entityId}")
+    @GetMapping(IMAGE_GALLERY_URL)
     public ResponseEntity<PageResponse<ImageViewResponse>> getGalleryByEntityId(
             Long entityId,
             @PageableDefault(size = 10, sort = "sortOrder") Pageable pageable) {
@@ -76,7 +78,7 @@ public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadReq
 
     // ===== 4️⃣ READ ONE =====
     @Override
-    @GetMapping("/{fileId}")
+    @GetMapping(IMAGE_DOWNLOAD_URL)
     public ResponseEntity<Resource> downloadImageByImageId(
             String fileId) {
 
@@ -90,7 +92,7 @@ public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadReq
 
     // ===== 5️⃣ UPDATE =====
     @Override
-    @PutMapping("/{fileId}")
+    @PutMapping(IMAGE_DOWNLOAD_URL)
     public ResponseEntity<ImageViewResponse> updateImageMetadata(
             String fileId,
             ImageSkuUploadRequest metadata) {
@@ -101,7 +103,7 @@ public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadReq
 
     // ===== 6️⃣ DELETE ONE =====
     @Override
-    @DeleteMapping("/{fileId}")
+    @DeleteMapping(IMAGE_DOWNLOAD_URL)
     public ResponseEntity<Void> deleteImage(
             String fileId) {
 
@@ -113,7 +115,7 @@ public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadReq
 
     // ===== 7️⃣ DELETE ALL =====
     @Override
-    @DeleteMapping("/gallery/{entityId}")
+    @DeleteMapping(IMAGE_GALLERY_URL)
     public ResponseEntity<Void> deleteImagesByEntityId(
             Long entityId) {
 
@@ -124,7 +126,7 @@ public class ImageSkuControllerImpl implements ImageController<ImageSkuUploadReq
 
     // ===== 8️⃣ GET PRIMARY =====
     @Override
-    @GetMapping("/gallery/{entityId}/primary")
+    @GetMapping(IMAGE_PRIMARY_URL)
     public ResponseEntity<ImageViewResponse> getPrimaryImageByEntityId(
             Long entityId) {
 

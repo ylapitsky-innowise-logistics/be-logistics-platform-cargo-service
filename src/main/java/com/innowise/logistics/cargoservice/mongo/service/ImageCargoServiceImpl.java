@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import static com.innowise.logistics.cargoservice.constant.ApiConstants.IMAGE_CARGO_BASE_URL;
+
 @Slf4j
 @Service
 public class ImageCargoServiceImpl extends ImageAbstractService<
@@ -110,5 +112,10 @@ public class ImageCargoServiceImpl extends ImageAbstractService<
                         HttpStatus.NOT_FOUND,
                         "Главное изображение для Cargo ID " + entityId + " не найдено"
                 ));
+    }
+
+    @Override
+    protected String buildFileUrl(String fileId) {
+        return IMAGE_CARGO_BASE_URL + '/' + fileId;
     }
 }

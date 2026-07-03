@@ -270,9 +270,7 @@ public abstract class ImageAbstractService<
 //        }
 //    }
 
-    protected String buildFileUrl(String fileId) {
-        return "/api/v1/catalog/images/" + fileId;
-    }
+    protected abstract String buildFileUrl(String fileId);
 
     protected ImageViewResponse toImageViewResponse(T metadata) {
         return new ImageViewResponse(

@@ -23,7 +23,7 @@ Accept: application/json
 
 ### 03. Масштабное заполнение базы данных (cargos = 1000)
 # Наполняет СУБД промышленным объемом данных для тестирования пагинации и сортировок
-POST {{host}}{{base_path}}/cargos?cargos=1000
+POST {{host}}{{base_path}}/cargos?cargos=1
 Accept: application/json
 
 

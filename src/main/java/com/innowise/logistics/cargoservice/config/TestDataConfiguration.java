@@ -1,13 +1,18 @@
 package com.innowise.logistics.cargoservice.config;
 
 import com.innowise.logistics.cargoservice.controller.TestDataController;
+import com.innowise.logistics.cargoservice.mongo.repository.ImageCargoMetadataRepository;
+import com.innowise.logistics.cargoservice.mongo.repository.ImageSkuMetadataRepository;
 import com.innowise.logistics.cargoservice.mongo.service.ImageCargoServiceImpl;
 import com.innowise.logistics.cargoservice.mongo.service.ImageSkuServiceImpl;
 import com.innowise.logistics.cargoservice.repository.*;
 import com.innowise.logistics.cargoservice.util.testdata.*;
+import org.antlr.v4.runtime.TokenStreamRewriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
 @Configuration
 @Profile({"dev", "test"}) // 🟢 ОДИН РАЗ намертво закрываем абсолютно всю фабрику тестовых данных от Production
@@ -63,8 +68,12 @@ public class TestDataConfiguration {
             DimensionRepository dimensionRepository,
             LocationRepository locationRepository,
             CargoRepository cargoRepository,
+            ImageSkuMetadataRepository imageSkuMetadataRepository,
+            ImageCargoMetadataRepository imageCargoMetadataRepository,
             ImageSkuServiceImpl imageSkuService,
-            ImageCargoServiceImpl imageCargoService
+            ImageCargoServiceImpl imageCargoService,
+            GridFsTemplate gridFsTemplate,
+            MongoTemplate mongoTemplate
             ) {
 
         return new TestDataSeeder(
@@ -78,8 +87,12 @@ public class TestDataConfiguration {
                 dimensionRepository,
                 locationRepository,
                 cargoRepository,
+                imageSkuMetadataRepository,
+                imageCargoMetadataRepository,
                 imageSkuService,
-                imageCargoService
+                imageCargoService,
+                gridFsTemplate,
+                mongoTemplate
         );
     }
 

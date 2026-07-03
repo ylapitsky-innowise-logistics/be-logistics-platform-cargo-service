@@ -22,9 +22,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import static com.innowise.logistics.cargoservice.constant.ApiConstants.*;
+
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/catalog/images/cargos")
+@RequestMapping(IMAGE_CARGO_BASE_URL)
 @RequiredArgsConstructor
 @Validated
 public class ImageCargoControllerImpl implements ImageController<ImageCargoUploadRequest> {
@@ -60,7 +62,7 @@ public class ImageCargoControllerImpl implements ImageController<ImageCargoUploa
 
     // ===== 3️⃣ READ GALLERY =====
     @Override
-    @GetMapping("/gallery/{entityId}")
+    @GetMapping(IMAGE_GALLERY_URL)
     public ResponseEntity<PageResponse<ImageViewResponse>> getGalleryByEntityId(
             Long entityId,
             @PageableDefault(size = 10, sort = "sortOrder") Pageable pageable) {
@@ -71,7 +73,7 @@ public class ImageCargoControllerImpl implements ImageController<ImageCargoUploa
 
     // ===== 4️⃣ READ ONE =====
     @Override
-    @GetMapping("/{fileId}")
+    @GetMapping(IMAGE_DOWNLOAD_URL)
     public ResponseEntity<Resource> downloadImageByImageId(
             String fileId) {
 
@@ -84,7 +86,7 @@ public class ImageCargoControllerImpl implements ImageController<ImageCargoUploa
 
     // ===== 5️⃣ UPDATE =====
     @Override
-    @PutMapping("/{fileId}")
+    @PutMapping(IMAGE_DOWNLOAD_URL)
     public ResponseEntity<ImageViewResponse> updateImageMetadata(
             String fileId,
             ImageCargoUploadRequest metadata) {
@@ -95,7 +97,7 @@ public class ImageCargoControllerImpl implements ImageController<ImageCargoUploa
 
     // ===== 6️⃣ DELETE ONE =====
     @Override
-    @DeleteMapping("/{fileId}")
+    @DeleteMapping(IMAGE_DOWNLOAD_URL)
     public ResponseEntity<Void> deleteImage(
             String fileId) {
 
@@ -106,7 +108,7 @@ public class ImageCargoControllerImpl implements ImageController<ImageCargoUploa
 
     // ===== 7️⃣ DELETE ALL =====
     @Override
-    @DeleteMapping("/gallery/{entityId}")
+    @DeleteMapping(IMAGE_GALLERY_URL)
     public ResponseEntity<Void> deleteImagesByEntityId(
             Long entityId) {
 
@@ -117,7 +119,7 @@ public class ImageCargoControllerImpl implements ImageController<ImageCargoUploa
 
     // ===== 8️⃣ GET PRIMARY =====
     @Override
-    @GetMapping("/gallery/{entityId}/primary")
+    @GetMapping(IMAGE_PRIMARY_URL)
     public ResponseEntity<ImageViewResponse> getPrimaryImageByEntityId(
             Long entityId) {
 

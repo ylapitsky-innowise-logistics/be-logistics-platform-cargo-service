@@ -1,21 +1,37 @@
 package com.innowise.logistics.cargoservice.util.testdata;
 
-import com.innowise.logistics.cargoservice.dto.request.ImageUploadRequest;
 import com.innowise.logistics.cargoservice.dto.request.ImageSkuUploadRequest;
-import com.innowise.logistics.cargoservice.entity.*;
+import com.innowise.logistics.cargoservice.entity.Address;
+import com.innowise.logistics.cargoservice.entity.Cargo;
+import com.innowise.logistics.cargoservice.entity.Dimension;
+import com.innowise.logistics.cargoservice.entity.Location;
+import com.innowise.logistics.cargoservice.entity.Sku;
 import com.innowise.logistics.cargoservice.mongo.repository.ImageCargoMetadataRepository;
 import com.innowise.logistics.cargoservice.mongo.repository.ImageSkuMetadataRepository;
 import com.innowise.logistics.cargoservice.mongo.service.ImageCargoServiceImpl;
 import com.innowise.logistics.cargoservice.mongo.service.ImageSkuServiceImpl;
-import com.innowise.logistics.cargoservice.repository.*;
+import com.innowise.logistics.cargoservice.repository.AddressRepository;
+import com.innowise.logistics.cargoservice.repository.CargoRepository;
+import com.innowise.logistics.cargoservice.repository.DimensionRepository;
+import com.innowise.logistics.cargoservice.repository.LocationRepository;
+import com.innowise.logistics.cargoservice.repository.SkuRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -44,22 +60,29 @@ public class TestDataSeeder {
     private final LocationRepository locationRepository;
     private final CargoRepository cargoRepository;
 
+    // Репозитории JPA для сохранения в MongoDB
+    private final ImageSkuMetadataRepository imageSkuMetadataRepository;
+    private final ImageCargoMetadataRepository imageCargoMetadataRepository;
+
     private final ImageSkuServiceImpl imageSkuService;
     private final ImageCargoServiceImpl imageCargoService;
+
+    private final GridFsTemplate gridFsTemplate;
+    private final MongoTemplate mongoTemplate;
 
     private final Random random = new Random();
 
     /**
      * Заполняет базу данных PostgreSQL сбалансированным графом связанных сущностей.
      * Метод полностью безопасен для повторных вызовов.
-     * @param cargoQuantity желаемое количество физических коробок на складе
+     * @param imageQuantity желаемое количество физических коробок на складе
      */
     @Transactional
-    public void seedAllTestData(int cargoQuantity, Boolean isCleanUp) {
+    public void seedAllTestData(int imageQuantity, Boolean isCleanUp) {
         log.info("=== НАЧАЛО СИНХРОННОЙ ГЕНЕРАЦИИ И СОХРАНЕНИЯ ТЕСТОВЫХ ДАННЫХ ===");
 
-        if (isCleanUp) {  // нужно ли предварительно очищать всю БД
-            cleanDatabase();
+        if (isCleanUp) {  // нужно ли предварительно очищать все БД
+            cleanDatabases();
         }
 
         // 1. Генерируем и сохраняем базовые адреса складов
@@ -68,7 +91,7 @@ public class TestDataSeeder {
         log.info("✓ Успешно сохранено адресов складов в DB: {}", savedAddresses.size());
 
         // 2. Генерируем ячейки хранения на базе сохраненных адресов
-        int locationCount = Math.max(20, cargoQuantity / 10);
+        int locationCount = Math.max(20, imageQuantity / 10);
         Location[] rawLocations = locationGenerator.generateForAddresses(locationCount, savedAddresses.toArray(new Address[0]));
         List<Location> savedLocations = locationRepository.saveAll(List.of(rawLocations));
         log.info("✓ Успешно сохранено складских ячеек в DB: {}", savedLocations.size());
@@ -97,11 +120,15 @@ public class TestDataSeeder {
 
                 // === теперь сделаем картинки для Sku ===
                 String messageSku =
-                        "\nSku.id: " + rawSku.getId() +
-                        "\nSku.name: " + rawSku.getName() +
-                        "\nSku.description: " + rawSku.getDescription() +
-                        "\nSku.createdAt: " + rawSku.getCreatedAt();
-                MultipartFile[] images = generateImages(random.nextInt(10), messageSku);
+//                        "\nSku.id: " + rawSku.getId() +
+                        " SKU: " + rawSku.getName()
+//                        "\nSku.description: " + rawSku.getDescription() +
+//                        "\nSku.createdAt: " + rawSku.getCreatedAt()
+                        ;
+//                MultipartFile[] images = generateImages(random.nextInt(10), messageSku);
+                MultipartFile[] images = generateImages(ThreadLocalRandom.current().nextInt(1, 10), messageSku);
+                log.info("_сгенерировано: {} изображений", images.length);
+
 
                 ImageSkuUploadRequest imageUploadRequest = ImageSkuUploadRequest.builder()
                         .id(rawSku.getId())
@@ -116,7 +143,7 @@ public class TestDataSeeder {
 
         // 5. Вызываем конвейер сборки Cargo на базе объектов, уже имеющих первичные ключи PostgreSQL
         Cargo[] rawCargos = cargoGenerator.generateWithSavedEntities(
-                cargoQuantity,
+                imageQuantity,
                 savedSkus.toArray(new Sku[0]),
                 savedDimensions.toArray(new Dimension[0]),
                 savedLocations.toArray(new Location[0])
@@ -130,12 +157,64 @@ public class TestDataSeeder {
         log.info("=== УСПЕШНО ЗАВЕРШЕНО. Физических товаров (Cargo) добавлено в DB: {} ===", savedCargos.size());
     }
 
-    private void cleanDatabase() {
+    /**
+     * Очищает репозитории Postgres и Mongo
+     */
+    private void cleanDatabases() {
         cargoRepository.deleteAll();
         locationRepository.deleteAll();
         addressRepository.deleteAll();
         skuRepository.deleteAll();
         dimensionRepository.deleteAll();
+        log.info("✅ Postgres очищен");
+
+        // Очистка метаданных
+        imageSkuMetadataRepository.deleteAll();
+        imageCargoMetadataRepository.deleteAll();
+        log.info("✅ Метаданные изображений удалены");
+
+        // 2. Удаляем все файлы из GridFS
+        gridFsTemplate.delete(new Query(Criteria.where("_id").exists(true)));
+        gridFsTemplate.delete(new Query());
+
+//        // ... очистка других коллекций
+//        mongoTemplate.dropCollection("fs.files");
+//        mongoTemplate.dropCollection("fs.chunks");
+//        // Или если бакет другой, то "my_bucket.files" и "my_bucket.chunks"
+//        log.info("✅ GridFS коллекции полностью удалены");
+
+
+
+
+        // Проверяем, есть ли коллекции перед удалением
+        boolean fsFilesExists = mongoTemplate.collectionExists("fs.files");
+        boolean fsChunksExists = mongoTemplate.collectionExists("fs.chunks");
+        log.info("До удаления: fs.files существует? {}, fs.chunks существует? {}", fsFilesExists, fsChunksExists);
+
+        // Удаляем коллекции
+        try {
+            mongoTemplate.dropCollection("fs.files");
+            log.info("✅ Коллекция fs.files удалена");
+        } catch (Exception e) {
+            log.error("❌ Ошибка при удалении fs.files: {}", e.getMessage());
+        }
+
+        try {
+            mongoTemplate.dropCollection("fs.chunks");
+            log.info("✅ Коллекция fs.chunks удалена");
+        } catch (Exception e) {
+            log.error("❌ Ошибка при удалении fs.chunks: {}", e.getMessage());
+        }
+
+        // Проверяем после удаления
+        fsFilesExists = mongoTemplate.collectionExists("fs.files");
+        fsChunksExists = mongoTemplate.collectionExists("fs.chunks");
+        log.info("После удаления: fs.files существует? {}, fs.chunks существует? {}", fsFilesExists, fsChunksExists);
+
+
+
+
+        log.info("✅ Все файлы удалены из GridFS");
     }
 
     /**
@@ -149,13 +228,15 @@ public class TestDataSeeder {
             LocalDateTime now = LocalDateTime.now();
 
             // 2. Создаём форматтер с миллисекундами (3 знака)
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss_SSS");
+//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss_SSS");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ss_SSS");
 
             // 3. Форматируем в строку
             String formattedDate = now.format(formatter);
 
             // Вывод в виде: 2026-07-02_15-30-45_123
-            String text = "Изображение \n" + formattedDate + "\n" + message;
+            // Вывод в виде: 45_123
+            String text = formattedDate + " " + message;
 
             try {
                 MultipartFile file = ImageGenerator.generateImage(
@@ -163,6 +244,7 @@ public class TestDataSeeder {
                         text,                           // это пойдет в отрисовку картинки
                         formattedDate + ".png"          // это будет имя файла
                 );
+                images[i] = file;
                 log.debug("✅ Изображение сгенерировано: " + file.getOriginalFilename() + ", 📏 Размер: " + file.getSize() + " байт");
 
             } catch (Exception e) {
@@ -171,14 +253,9 @@ public class TestDataSeeder {
                         """, i, message, quantity);
                 e.printStackTrace();
             }
+
         }
 
         return images;
     }
-
-    /**
-     * Засовывает в указанный репозиторий коллекцию картинок
-     */
-
-
 }
