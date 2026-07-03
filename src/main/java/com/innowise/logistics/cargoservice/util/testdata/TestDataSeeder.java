@@ -80,71 +80,72 @@ public class TestDataSeeder {
      */
     @Transactional
     public void seedAllTestData(int imageQuantity, Boolean isCleanUp) {
-        log.info("=== НАЧАЛО СИНХРОННОЙ ГЕНЕРАЦИИ И СОХРАНЕНИЯ ТЕСТОВЫХ ДАННЫХ ===");
+        log.debug("=== НАЧАЛО СИНХРОННОЙ ГЕНЕРАЦИИ И СОХРАНЕНИЯ ТЕСТОВЫХ ДАННЫХ ===");
 
-        if (isCleanUp) {  // нужно ли предварительно очищать все БД
+        if (isCleanUp) {
             cleanDatabases();
         }
 
-        // 1. Генерируем и сохраняем базовые адреса складов
+        List<Address> savedAddresses = seedAddresses();
+        List<Location> savedLocations = seedLocations(imageQuantity, savedAddresses);
+        List<Dimension> savedDimensions = seedDimensions();
+        List<Sku> savedSkus = seedSkusWithImages();
+        List<Cargo> savedCargos = seedCargos(imageQuantity, savedSkus, savedDimensions, savedLocations);
+
+        log.debug("=== УСПЕШНО ЗАВЕРШЕНО. Физических товаров (Cargo) добавлено в DB: {} ===", savedCargos.size());
+    }
+
+    // ==================== БЛОКИ СОХРАНЕНИЯ СУЩНОСТЕЙ ====================
+
+    // Генерируем и сохраняем базовые адреса складов
+    private List<Address> seedAddresses() {
         Address[] rawAddresses = addressGenerator.generate(10);
         List<Address> savedAddresses = addressRepository.saveAll(List.of(rawAddresses));
-        log.info("✓ Успешно сохранено адресов складов в DB: {}", savedAddresses.size());
+        log.debug("✓ Успешно сохранено адресов складов в DB: {}", savedAddresses.size());
+        return savedAddresses;
+    }
 
-        // 2. Генерируем ячейки хранения на базе сохраненных адресов
+    // Генерируем ячейки хранения на базе сохраненных адресов
+    private List<Location> seedLocations(int imageQuantity, List<Address> savedAddresses) {
         int locationCount = Math.max(20, imageQuantity / 10);
         Location[] rawLocations = locationGenerator.generateForAddresses(locationCount, savedAddresses.toArray(new Address[0]));
         List<Location> savedLocations = locationRepository.saveAll(List.of(rawLocations));
-        log.info("✓ Успешно сохранено складских ячеек в DB: {}", savedLocations.size());
+        log.debug("✓ Успешно сохранено складских ячеек в DB: {}", savedLocations.size());
+        return savedLocations;
+    }
 
-        // 3. Генерируем и сохраняем габариты упаковки
+    // Генерируем и сохраняем габариты упаковки
+    private List<Dimension> seedDimensions() {
         Dimension[] rawDimensions = dimensionGenerator.generate(15);
         List<Dimension> savedDimensions = dimensionRepository.saveAll(List.of(rawDimensions));
-        log.info("✓ Успешно сохранено физических типоразмеров коробок в DB: {}", savedDimensions.size());
+        log.debug("✓ Успешно сохранено физических типоразмеров коробок в DB: {}", savedDimensions.size());
+        return savedDimensions;
+    }
 
-        // 4. 🎯 УМНОЕ СОХРАНЕНИЕ SKU (Защита от uq_sku_name)
+    // Генерируем и сохраняем Sku (20шт.) + изображения (>1 на каждое Sku)
+    private List<Sku> seedSkusWithImages() {
         Sku[] rawSkus = skuGenerator.generate(20);
         List<Sku> savedSkus = new ArrayList<>();
 
-        // Достаем все существующие в базе SKU один раз, чтобы не спамить БД запросами в цикле
         Map<String, Sku> existingSkusMap = skuRepository.findAll().stream()
                 .collect(Collectors.toMap(Sku::getName, sku -> sku));
 
-
         for (Sku rawSku : rawSkus) {
             if (existingSkusMap.containsKey(rawSku.getName())) {
-                // Если артикул с таким кодом уже есть в Postgres — берем его из базы
                 savedSkus.add(existingSkusMap.get(rawSku.getName()));
             } else {
-                // Если артикул новый — сохраняем в базу
                 savedSkus.add(skuRepository.save(rawSku));
-
-
-                // === теперь сделаем картинки для Sku ===
-                String messageSku =
-//                        "\nSku.id: " + rawSku.getId() +
-                        " SKU: " + rawSku.getName()
-//                        "\nSku.description: " + rawSku.getDescription() +
-//                        "\nSku.createdAt: " + rawSku.getCreatedAt()
-                        ;
-//                MultipartFile[] images = generateImages(random.nextInt(10), messageSku);
-                MultipartFile[] images = generateImages(ThreadLocalRandom.current().nextInt(1, 10), messageSku);
-                log.info("_сгенерировано: {} Sku изображений", images.length);
-
-
-                ImageSkuUploadRequest imageUploadRequest = ImageSkuUploadRequest.builder()
-                        .id(rawSku.getId())
-                        .description(rawSku.getDescription())
-                        .sortOrder(random.nextInt(3))
-                        .isPrimary(random.nextBoolean())
-                        .build();
-                Arrays.stream(images).forEach(img -> imageSkuService.uploadImage(img, imageUploadRequest));
+                uploadImagesForSku(rawSku);
             }
         }
-        log.info("✓ Обработано каталожных артикулов (SKU). Итого в обойме: {}", savedSkus.size());
 
+        log.debug("✓ Обработано {} каталожных артикулов (SKU). Итого сейчас в работе: {} SKU",
+                rawSkus.length, savedSkus.size());
+        return savedSkus;
+    }
 
-        // 5. Вызываем конвейер сборки Cargo на базе объектов, уже имеющих первичные ключи PostgreSQL
+    private List<Cargo> seedCargos(
+            int imageQuantity, List<Sku> savedSkus, List<Dimension> savedDimensions, List<Location> savedLocations) {
         Cargo[] rawCargos = cargoGenerator.generateWithSavedEntities(
                 imageQuantity,
                 savedSkus.toArray(new Sku[0]),
@@ -153,165 +154,130 @@ public class TestDataSeeder {
         );
 
         List<Cargo> savedCargos = cargoRepository.saveAll(List.of(rawCargos));
-        log.info("=== Postgres: УСПЕШНО ЗАВЕРШЕНО. Физических товаров (Cargo) добавлено в DB: {} ===", savedCargos.size());
+        log.debug("=== Postgres: УСПЕХ. Физических товаров (Cargo) добавлено в DB: {} шт. ===", savedCargos.size());
 
+        savedCargos.forEach(this::uploadImagesForCargo);
 
-
-
-
-
-
-
-
-
-
-        for (Cargo cargo : savedCargos) {
-
-                // === теперь сделаем картинки для Cargo ===
-                String messageCargo =" Cargo: " + cargo.getName();
-                MultipartFile[] images = generateImages(ThreadLocalRandom.current().nextInt(1, 15), messageCargo);
-                log.info("_сгенерировано: {} Cargo изображений", images.length);
-
-                // Описание картинки, которое будет храниться в Mongo - метаданных картинки. Чисто информативное назначение.
-                StringBuilder cargoDescription = new StringBuilder("Изображение для товара Cargo");
-                cargoDescription.append(" с id=").append(cargo.getId());
-                cargoDescription.append("; наименование товара: ").append(cargo.getName());
-                cargoDescription.append("; категория товара: ").append(cargo.getCategory());
-                cargoDescription.append("; артикул товара: ").append(cargo.getSku().getName());
-                cargoDescription.append("; (id артикула товара: ").append(cargo.getSku().getId());
-                cargoDescription.append("); вес товара=").append(cargo.getWeight());
-                cargoDescription.append(" кг.; габариты упаковки товара: длинна=").append(cargo.getDimension().getLength());
-                cargoDescription.append(" м., ширина=").append(cargo.getDimension().getWidth());
-                cargoDescription.append(" м., высота=").append(cargo.getDimension().getHeight());
-                cargoDescription.append(" м.");
-
-                ImageCargoUploadRequest imageUploadRequest = ImageCargoUploadRequest.builder()
-                        .id(cargo.getId())
-                        .description(cargoDescription.toString())
-                        .sortOrder(random.nextInt(3))
-                        .isPrimary(random.nextBoolean())
-                        .build();
-                Arrays.stream(images).forEach(img -> imageCargoService.uploadImage(img, imageUploadRequest));
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        log.info("=== УСПЕШНО ЗАВЕРШЕНО. Физических товаров (Cargo) добавлено в DB: {} ===", savedCargos.size());
+        return savedCargos;
     }
 
-    /**
-     * Очищает репозитории Postgres и Mongo
-     */
-    private void cleanDatabases() {
-        cargoRepository.deleteAll();
-        locationRepository.deleteAll();
-        addressRepository.deleteAll();
-        skuRepository.deleteAll();
-        dimensionRepository.deleteAll();
-        log.info("✅ Postgres очищен");
+    // ==================== ЗАГРУЗКА ИЗОБРАЖЕНИЙ ====================
 
-        // Очистка метаданных
-        imageSkuMetadataRepository.deleteAll();
-        imageCargoMetadataRepository.deleteAll();
-        log.info("✅ Метаданные изображений удалены");
+    private void uploadImagesForSku(Sku sku) {
+        String messageSku = " SKU: " + sku.getName();
+        MultipartFile[] images = generateImages(random.nextInt(1, 10), messageSku);
+        log.debug("_сгенерировано: {} Sku изображений", images.length);
 
-        // 2. Удаляем все файлы из GridFS
-        gridFsTemplate.delete(new Query(Criteria.where("_id").exists(true)));
-        gridFsTemplate.delete(new Query());
+        ImageSkuUploadRequest imageUploadRequest = ImageSkuUploadRequest.builder()
+                .id(sku.getId())
+                .description(sku.getDescription())
+                .sortOrder(random.nextInt(3))
+                .isPrimary(random.nextBoolean())
+                .build();
 
-//        // ... очистка других коллекций
-//        mongoTemplate.dropCollection("fs.files");
-//        mongoTemplate.dropCollection("fs.chunks");
-//        // Или если бакет другой, то "my_bucket.files" и "my_bucket.chunks"
-//        log.info("✅ GridFS коллекции полностью удалены");
-
-
-
-
-        // Проверяем, есть ли коллекции перед удалением
-        boolean fsFilesExists = mongoTemplate.collectionExists("fs.files");
-        boolean fsChunksExists = mongoTemplate.collectionExists("fs.chunks");
-        log.info("До удаления: fs.files существует? {}, fs.chunks существует? {}", fsFilesExists, fsChunksExists);
-
-        // Удаляем коллекции
-        try {
-            mongoTemplate.dropCollection("fs.files");
-            log.info("✅ Коллекция fs.files удалена");
-        } catch (Exception e) {
-            log.error("❌ Ошибка при удалении fs.files: {}", e.getMessage());
-        }
-
-        try {
-            mongoTemplate.dropCollection("fs.chunks");
-            log.info("✅ Коллекция fs.chunks удалена");
-        } catch (Exception e) {
-            log.error("❌ Ошибка при удалении fs.chunks: {}", e.getMessage());
-        }
-
-        // Проверяем после удаления
-        fsFilesExists = mongoTemplate.collectionExists("fs.files");
-        fsChunksExists = mongoTemplate.collectionExists("fs.chunks");
-        log.info("После удаления: fs.files существует? {}, fs.chunks существует? {}", fsFilesExists, fsChunksExists);
-
-
-
-
-        log.info("✅ Все файлы удалены из GridFS");
+        Arrays.stream(images).forEach(img -> imageSkuService.uploadImage(img, imageUploadRequest));
     }
 
-    /**
-     * Генерирует коллекцию картинок
-     */
+    private void uploadImagesForCargo(Cargo cargo) {
+        String messageCargo = " Cargo: " + cargo.getName();
+        MultipartFile[] images = generateImages(random.nextInt(1, 15), messageCargo);
+        log.debug("_сгенерировано: {} Cargo изображений", images.length);
+
+        ImageCargoUploadRequest imageUploadRequest = ImageCargoUploadRequest.builder()
+                .id(cargo.getId())
+                .description(buildCargoDescription(cargo))
+                .sortOrder(random.nextInt(3))
+                .isPrimary(random.nextBoolean())
+                .build();
+
+        Arrays.stream(images).forEach(img -> imageCargoService.uploadImage(img, imageUploadRequest));
+    }
+
+    private String buildCargoDescription(Cargo cargo) {
+        return new StringBuilder("Изображение для товара Cargo")
+                .append(" с id=").append(cargo.getId())
+                .append("; наименование товара: ").append(cargo.getName())
+                .append("; категория товара: ").append(cargo.getCategory())
+                .append("; артикул товара: ").append(cargo.getSku().getName())
+                .append("; (id артикула товара: ").append(cargo.getSku().getId())
+                .append("); вес товара=").append(cargo.getWeight())
+                .append("кг.; габариты упаковки товара: длинна=").append(cargo.getDimension().getLength())
+                .append("см., ширина=").append(cargo.getDimension().getWidth())
+                .append("см., высота=").append(cargo.getDimension().getHeight())
+                .append("см.")
+                .toString();
+    }
+
+    // ==================== ГЕНЕРАЦИЯ ИЗОБРАЖЕНИЙ ====================
+
     private MultipartFile[] generateImages(int quantity, String message) {
         MultipartFile[] images = new MultipartFile[quantity];
         for (int i = 0; i < quantity; i++) {
-
-            // 1. Получаем текущую дату-время с миллисекундами
-            LocalDateTime now = LocalDateTime.now();
-
-            // 2. Создаём форматтер с миллисекундами (3 знака)
-//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss_SSS");
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ss_SSS");
-
-            // 3. Форматируем в строку
-            String formattedDate = now.format(formatter);
-
-            // Вывод в виде: 2026-07-02_15-30-45_123
-            // Вывод в виде: 45_123
+            String formattedDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("ss_SSS"));
             String text = formattedDate + " " + message;
 
             try {
                 MultipartFile file = ImageGenerator.generateImage(
                         800, 600,
-                        text,                           // это пойдет в отрисовку картинки
-                        formattedDate + ".png"          // это будет имя файла
+                        text,
+                        formattedDate + ".png"
                 );
                 images[i] = file;
                 log.debug("✅ Изображение сгенерировано: " + file.getOriginalFilename() + ", 📏 Размер: " + file.getSize() + " байт");
-
             } catch (Exception e) {
-                log.error("""
-                        \nОшибка при генерации изображения № {} для message = {} при попытке сгенрировать {} картинок\n
-                        """, i, message, quantity);
+                log.error("Ошибка при генерации изображения № {} для message = {} при попытке сгенерировать {} картинок", i, message, quantity);
                 e.printStackTrace();
             }
-
         }
-
         return images;
+    }
+
+    // ==================== ОЧИСТКА БАЗ ====================
+
+    private void cleanDatabases() {
+        cleanPostgres();
+        cleanMongoMetadata();
+        cleanGridFs();
+        log.debug("✅ Все файлы удалены из GridFS");
+    }
+
+    private void cleanPostgres() {
+        cargoRepository.deleteAll();
+        locationRepository.deleteAll();
+        addressRepository.deleteAll();
+        skuRepository.deleteAll();
+        dimensionRepository.deleteAll();
+        log.debug("✅ Postgres очищен");
+    }
+
+    private void cleanMongoMetadata() {
+        imageSkuMetadataRepository.deleteAll();
+        imageCargoMetadataRepository.deleteAll();
+        log.debug("✅ Метаданные изображений удалены");
+    }
+
+    private void cleanGridFs() {
+        gridFsTemplate.delete(new Query(Criteria.where("_id").exists(true)));
+        gridFsTemplate.delete(new Query());
+
+        boolean fsFilesExists = mongoTemplate.collectionExists("fs.files");
+        boolean fsChunksExists = mongoTemplate.collectionExists("fs.chunks");
+        log.debug("До удаления: fs.files существует? {}, fs.chunks существует? {}", fsFilesExists, fsChunksExists);
+
+        dropCollectionSafely("fs.files");
+        dropCollectionSafely("fs.chunks");
+
+        fsFilesExists = mongoTemplate.collectionExists("fs.files");
+        fsChunksExists = mongoTemplate.collectionExists("fs.chunks");
+        log.debug("После удаления: fs.files существует? {}, fs.chunks существует? {}", fsFilesExists, fsChunksExists);
+    }
+
+    private void dropCollectionSafely(String collectionName) {
+        try {
+            mongoTemplate.dropCollection(collectionName);
+            log.debug("✅ Коллекция {} удалена", collectionName);
+        } catch (Exception e) {
+            log.error("❌ Ошибка при удалении {}: {}", collectionName, e.getMessage());
+        }
     }
 }
