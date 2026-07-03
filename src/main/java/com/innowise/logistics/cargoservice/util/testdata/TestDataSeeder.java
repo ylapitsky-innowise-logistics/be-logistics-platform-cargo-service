@@ -18,6 +18,7 @@ import com.innowise.logistics.cargoservice.repository.LocationRepository;
 import com.innowise.logistics.cargoservice.repository.SkuRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -25,6 +26,11 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -32,7 +38,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -73,6 +78,29 @@ public class TestDataSeeder {
 
     private final Random random = new Random();
 
+    private static final Map<String, String> SKU_TO_IMAGE_MAP = Map.ofEntries(
+            Map.entry("Беспроводные наушники", "Беспроводные_наушники.png"),
+            Map.entry("Настольная лампа светодиодная", "Настольная_лампа_светодиодная.png"),
+            Map.entry("Ноутбук рабочий", "Ноутбук_рабочий.png"),
+            Map.entry("Смартфон премиум", "Смартфон_премиум.png"),
+            Map.entry("Увлажнитель воздуха ультразвуковой", "Увлажнитель_воздуха_ультразвуковой.png"),
+            Map.entry("Умные часы", "Умные_часы.png"),
+            Map.entry("Книга Паттерны проектирования Enterprise-приложений", "Книга_Паттерны_проектирования_Enterprise-приложений.png"),
+            Map.entry("Книга Руководство по Spring Boot 3", "Книга_Руководство_по_Spring_Boot_3.png"),
+            Map.entry("Книга Философия Java", "Книга_Философия_Java.png"),
+            Map.entry("Книга Чистая Архитектура", "Книга_Чистая_Архитектура.png"),
+            Map.entry("Коврик для йоги нескользящий", "Коврик_для_йоги_нескользящий.png"),
+            Map.entry("Набор разборных гантелей", "Набор_разборных_гантелей.png"),
+            Map.entry("Спортивный рюкзак водонепроницаемый", "Спортивный_рюкзак_водонепроницаемый.png"),
+            Map.entry("Футбольный мяч турнирный", "Футбольный_мяч_турнирный.png"),
+            Map.entry("Кресло офисное анатомическое", "Кресло_офисное_анатомическое.png"),
+            Map.entry("Стеллаж металлический складской", "Стеллаж_металлический_складской.png"),
+            Map.entry("Стол письменный эргономичный", "Стол_письменный_эргономичный.png"),
+            Map.entry("Канцелярский набор премиум", "Канцелярский_набор_премиум.png"),
+            Map.entry("Компактный складной зонт", "Компактный_складной_зонт.png"),
+            Map.entry("Термокружка вакуумная", "Термокружка_вакуумная.png")
+    );
+
     /**
      * Заполняет базу данных PostgreSQL сбалансированным графом связанных сущностей.
      * Метод полностью безопасен для повторных вызовов.
@@ -81,6 +109,10 @@ public class TestDataSeeder {
     @Transactional
     public void seedAllTestData(int imageQuantity, Boolean isCleanUp) {
         log.debug("=== НАЧАЛО СИНХРОННОЙ ГЕНЕРАЦИИ И СОХРАНЕНИЯ ТЕСТОВЫХ ДАННЫХ ===");
+
+
+        // 🔍 ДИАГНОСТИКА
+        checkImageFilesExist();
 
         if (isCleanUp) {
             cleanDatabases();
@@ -161,22 +193,117 @@ public class TestDataSeeder {
         return savedCargos;
     }
 
-    // ==================== ЗАГРУЗКА ИЗОБРАЖЕНИЙ ====================
+    // ==================== ЗАГРУЗКА ИЗОБРАЖЕНИЙ ИЗ ФАЙЛОВ ====================
+
+    /**
+     * Загружает изображение для SKU из файла resources/testdata/images/sku/
+     * @param skuDescription название SKU
+     * @return MultipartFile или null, если файл не найден
+     */
+    private MultipartFile loadImageForSku(String skuDescription) {
+        String imageFileName = SKU_TO_IMAGE_MAP.get(skuDescription);
+        if (imageFileName == null) {
+            return null;
+        }
+
+        try {
+            // ✅ ПРОСТОЙ СПОСОБ: прямой путь от корня проекта
+            String userDir = System.getProperty("user.dir");
+            String fullPath = userDir + "/src/main/resources/testdata/images/sku/" + imageFileName;
+            File file = new File(fullPath);
+
+            if (file.exists()) {
+                byte[] content = Files.readAllBytes(file.toPath());
+                log.info("✅ Загружен файл: {}", fullPath);
+                return createMultipartFile(file.getName(), content);
+            } else {
+                log.warn("⚠️ Файл НЕ НАЙДЕН: {}", fullPath);
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("❌ Ошибка загрузки {}: {}", imageFileName, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Создает MultipartFile из байтов
+     */
+    private MultipartFile createMultipartFile(String filename, byte[] content) {
+        return new MultipartFile() {
+            @Override
+            public String getName() { return filename; }
+            @Override
+            public String getOriginalFilename() { return filename; }
+            @Override
+            public String getContentType() { return "image/png"; }
+            @Override
+            public boolean isEmpty() { return content.length == 0; }
+            @Override
+            public long getSize() { return content.length; }
+            @Override
+            public byte[] getBytes() throws IOException { return content; }
+            @Override
+            public InputStream getInputStream() throws IOException {
+                return new ByteArrayInputStream(content);
+            }
+            @Override
+            public void transferTo(File dest) throws IOException, IllegalStateException {
+                Files.write(dest.toPath(), content);
+            }
+        };
+    }
 
     private void uploadImagesForSku(Sku sku) {
-        String messageSku = " SKU: " + sku.getName();
-        MultipartFile[] images = generateImages(random.nextInt(1, 10), messageSku);
-        log.debug("_сгенерировано: {} Sku изображений", images.length);
+        // 🔥 ПЕРВЫЙ ПРИОРИТЕТ: пробуем загрузить существующее изображение из resources
+//        MultipartFile primaryImage = loadImageForSku(sku.getName());
+        MultipartFile primaryImage = loadImageForSku(sku.getDescription());
 
-        ImageSkuUploadRequest imageUploadRequest = ImageSkuUploadRequest.builder()
-                .id(sku.getId())
-                .description(sku.getDescription())
-                .sortOrder(random.nextInt(3))
-                .isPrimary(random.nextBoolean())
-                .build();
+        if (primaryImage != null) {
+            // Загружаем основное изображение как PRIMARY
+            ImageSkuUploadRequest primaryRequest = ImageSkuUploadRequest.builder()
+                    .id(sku.getId())
+                    .description("Основное изображение для SKU: " + sku.getName())
+                    .sortOrder(0)
+                    .isPrimary(true)
+                    .build();
+            imageSkuService.uploadImage(primaryImage, primaryRequest);
+            log.debug("✅ Загружено основное изображение для SKU: {}", sku.getName());
 
-        Arrays.stream(images).forEach(img -> imageSkuService.uploadImage(img, imageUploadRequest));
+            // Генерируем дополнительные изображения (1-5 штук)
+            int extraCount = random.nextInt(1, 6);
+            String messageSku = " Доп. изображение для SKU: " + sku.getName();
+            MultipartFile[] extraImages = generateImages(extraCount, messageSku);
+
+            // Загружаем дополнительные изображения (НЕ primary)
+            for (int i = 0; i < extraImages.length; i++) {
+                ImageSkuUploadRequest extraRequest = ImageSkuUploadRequest.builder()
+                        .id(sku.getId())
+                        .description("Дополнительное изображение #" + (i + 1) + " для SKU: " + sku.getName())
+                        .sortOrder(i + 1)  // сортировка после primary (0)
+                        .isPrimary(false)
+                        .build();
+                imageSkuService.uploadImage(extraImages[i], extraRequest);
+            }
+            log.debug("_сгенерировано дополнительно: {} Sku изображений", extraImages.length);
+
+        } else {
+            String messageSku = " SKU: " + sku.getName();
+            MultipartFile[] images = generateImages(random.nextInt(1, 12), messageSku);
+            log.debug("_сгенерировано: {} Sku изображений", images.length);
+
+            ImageSkuUploadRequest imageUploadRequest = ImageSkuUploadRequest.builder()
+                    .id(sku.getId())
+                    .description(sku.getDescription())
+                    .sortOrder(random.nextInt(3))
+                    .isPrimary(random.nextBoolean())
+                    .build();
+
+            Arrays.stream(images).forEach(img -> imageSkuService.uploadImage(img, imageUploadRequest));
+        }
     }
+
+    // ==================== ЗАГРУЗКА ИЗОБРАЖЕНИЙ ====================
 
     private void uploadImagesForCargo(Cargo cargo) {
         String messageCargo = " Cargo: " + cargo.getName();
@@ -186,8 +313,9 @@ public class TestDataSeeder {
         ImageCargoUploadRequest imageUploadRequest = ImageCargoUploadRequest.builder()
                 .id(cargo.getId())
                 .description(buildCargoDescription(cargo))
-                .sortOrder(random.nextInt(3))
-                .isPrimary(random.nextBoolean())
+                .sortOrder(random.nextInt(3))   // порядок сортировки
+//                .isPrimary(random.nextBoolean())    // Является - ли передаваемая картинка главной?
+                .isPrimary(false)    // Является - ли передаваемая картинка главной?
                 .build();
 
         Arrays.stream(images).forEach(img -> imageCargoService.uploadImage(img, imageUploadRequest));
@@ -279,5 +407,45 @@ public class TestDataSeeder {
         } catch (Exception e) {
             log.error("❌ Ошибка при удалении {}: {}", collectionName, e.getMessage());
         }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // ==================== ДИАГНОСТИКА ====================
+
+    /**
+     * Простая проверка наличия файлов
+     */
+    private void checkImageFilesExist() {
+        log.info("=== ПРОВЕРКА ФАЙЛОВ ===");
+        String userDir = System.getProperty("user.dir");
+        String fullPath = userDir + "/src/main/resources/testdata/images/sku/";
+        File dir = new File(fullPath);
+
+        if (dir.exists() && dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            log.info("✅ Папка найдена: {}", fullPath);
+            log.info("📄 Найдено файлов: {}", files != null ? files.length : 0);
+            if (files != null && files.length > 0) {
+                for (File file : files) {
+                    log.info("   - {}", file.getName());
+                }
+            }
+        } else {
+            log.error("❌ Папка НЕ НАЙДЕНА: {}", fullPath);
+        }
+        log.info("=== КОНЕЦ ПРОВЕРКИ ===");
     }
 }

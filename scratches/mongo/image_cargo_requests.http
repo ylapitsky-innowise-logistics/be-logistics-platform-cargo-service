@@ -26,7 +26,8 @@ Content-Type: application/json
 Content-Disposition: form-data; name="file"; filename="box_good.png"
 Content-Type: image/png
 
-< ./pictures/Книга_Руководство_по_Spring_Boot_3.png
+#< ./pictures/Книга_Руководство_по_Spring_Boot_3.png
+< ..resources/testdata/images/sku//Книга_Руководство_по_Spring_Boot_3.png
 --boundary--
 
 ### 02. Загрузить дополнительное фото для CARGO ID=1 (Фиксация дефекта)

@@ -52,7 +52,7 @@ public class ImageGenerator implements Generator<MultipartFile>{
             byte[] imageBytes = convertToBytes(image, "png");
 
             // 3. Сохраняем изображение в файл (в корневую директорию проекта)
-            saveImageToFile(image, fileName);
+//            saveImageToFile(image, fileName);
 
             // 4. Создаем MultipartFile из byte[]
             return new InMemoryMultipartFile(fileName, "image/png", imageBytes);
