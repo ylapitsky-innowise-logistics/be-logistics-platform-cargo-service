@@ -19,4 +19,9 @@ public class ApiImageConstants {
 //    public static final String IMAGE_CARGO_DOWNLOAD_URL =  "/{fileId}";
 //    public static final String IMAGE_CARGO_GALLERY_URL =  "/gallery/{entityId}";
 //    public static final String IMAGE_CARGO_PRIMARY_URL =  "/gallery/{entityId}/primary";
+
+    // для генерации сущностей
+    public static final String TEST_DATA_GENERATE_URL = "/api/v1/catalog/test-data/generate";
+
+
 }

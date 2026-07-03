@@ -1,5 +1,6 @@
 package com.innowise.logistics.cargoservice.util.testdata;
 
+import com.innowise.logistics.cargoservice.dto.request.ImageCargoUploadRequest;
 import com.innowise.logistics.cargoservice.dto.request.ImageSkuUploadRequest;
 import com.innowise.logistics.cargoservice.entity.Address;
 import com.innowise.logistics.cargoservice.entity.Cargo;
@@ -109,6 +110,7 @@ public class TestDataSeeder {
         Map<String, Sku> existingSkusMap = skuRepository.findAll().stream()
                 .collect(Collectors.toMap(Sku::getName, sku -> sku));
 
+
         for (Sku rawSku : rawSkus) {
             if (existingSkusMap.containsKey(rawSku.getName())) {
                 // Если артикул с таким кодом уже есть в Postgres — берем его из базы
@@ -127,7 +129,7 @@ public class TestDataSeeder {
                         ;
 //                MultipartFile[] images = generateImages(random.nextInt(10), messageSku);
                 MultipartFile[] images = generateImages(ThreadLocalRandom.current().nextInt(1, 10), messageSku);
-                log.info("_сгенерировано: {} изображений", images.length);
+                log.info("_сгенерировано: {} Sku изображений", images.length);
 
 
                 ImageSkuUploadRequest imageUploadRequest = ImageSkuUploadRequest.builder()
@@ -141,6 +143,7 @@ public class TestDataSeeder {
         }
         log.info("✓ Обработано каталожных артикулов (SKU). Итого в обойме: {}", savedSkus.size());
 
+
         // 5. Вызываем конвейер сборки Cargo на базе объектов, уже имеющих первичные ключи PostgreSQL
         Cargo[] rawCargos = cargoGenerator.generateWithSavedEntities(
                 imageQuantity,
@@ -151,6 +154,59 @@ public class TestDataSeeder {
 
         List<Cargo> savedCargos = cargoRepository.saveAll(List.of(rawCargos));
         log.info("=== Postgres: УСПЕШНО ЗАВЕРШЕНО. Физических товаров (Cargo) добавлено в DB: {} ===", savedCargos.size());
+
+
+
+
+
+
+
+
+
+
+
+        for (Cargo cargo : savedCargos) {
+
+                // === теперь сделаем картинки для Cargo ===
+                String messageCargo =" Cargo: " + cargo.getName();
+                MultipartFile[] images = generateImages(ThreadLocalRandom.current().nextInt(1, 15), messageCargo);
+                log.info("_сгенерировано: {} Cargo изображений", images.length);
+
+                // Описание картинки, которое будет храниться в Mongo - метаданных картинки. Чисто информативное назначение.
+                StringBuilder cargoDescription = new StringBuilder("Изображение для товара Cargo");
+                cargoDescription.append(" с id=").append(cargo.getId());
+                cargoDescription.append("; наименование товара: ").append(cargo.getName());
+                cargoDescription.append("; категория товара: ").append(cargo.getCategory());
+                cargoDescription.append("; артикул товара: ").append(cargo.getSku().getName());
+                cargoDescription.append("; (id артикула товара: ").append(cargo.getSku().getId());
+                cargoDescription.append("); вес товара=").append(cargo.getWeight());
+                cargoDescription.append(" кг.; габариты упаковки товара: длинна=").append(cargo.getDimension().getLength());
+                cargoDescription.append(" м., ширина=").append(cargo.getDimension().getWidth());
+                cargoDescription.append(" м., высота=").append(cargo.getDimension().getHeight());
+                cargoDescription.append(" м.");
+
+                ImageCargoUploadRequest imageUploadRequest = ImageCargoUploadRequest.builder()
+                        .id(cargo.getId())
+                        .description(cargoDescription.toString())
+                        .sortOrder(random.nextInt(3))
+                        .isPrimary(random.nextBoolean())
+                        .build();
+                Arrays.stream(images).forEach(img -> imageCargoService.uploadImage(img, imageUploadRequest));
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

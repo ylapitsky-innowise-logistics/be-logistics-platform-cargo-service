@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.innowise.logistics.cargoservice.constant.ApiImageConstants.TEST_DATA_GENERATE_URL;
+
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/catalog/test-data/generate")
+@RequestMapping(TEST_DATA_GENERATE_URL)
 @RequiredArgsConstructor
 @Validated                                          // Включаем валидацию параметров запроса фреймворком
 @Profile({"dev", "test"})                           // 🛑 Жесткий щит безопасности! Эндпоинт физически заблокирован и отсутствует на Production
@@ -27,10 +29,11 @@ public class TestDataController {
      * Запуск комплексного конвейера генерации и сохранения связанных сущностей в PostgreSQL.
      * Возвращает чистый HTTP-статус 200 OK без тела ответа.
      */
-    @PostMapping("/cargos")
+//    @PostMapping("/cargos")
+    @PostMapping
     public ResponseEntity<Void> generateTestData(
-            @RequestParam(name = "cargos", required = false, defaultValue = "20")
-            @Positive(message = "Количество генерируемых товаров должно быть целым положительным числом")
+            @RequestParam(name = "cargos-quantity", required = false, defaultValue = "5")
+            @Positive(message = "Количество генерируемых товаров 'Cargo' должно быть целым положительным числом!")
             int cargosQuantity,
 
             @RequestParam(name = "pre-clean", required = false, defaultValue = "false")
