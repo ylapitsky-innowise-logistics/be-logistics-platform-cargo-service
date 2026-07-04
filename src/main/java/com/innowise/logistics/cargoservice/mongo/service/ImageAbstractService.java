@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-// Сюда переедет общая логика для downloadImage, getAllImages и deleteImage!
 /**
  * Базовый абстрактный сервис со сквозной параметризацией для управления медиа-контентом.
  *
@@ -65,7 +64,6 @@ public abstract class ImageAbstractService<
         this.metadataRepository = metadataRepository;
         this.postgresRepository = postgresRepository;
     }
-
 
 
     // ===== ОБЩИЕ МЕТОДЫ =====
@@ -113,8 +111,7 @@ public abstract class ImageAbstractService<
     }
 
 
-
-// ===== АБСТРАКТНЫЕ МЕТОДЫ ДЛЯ НАСЛЕДНИКОВ =====
+    // ===== АБСТРАКТНЫЕ МЕТОДЫ ДЛЯ НАСЛЕДНИКОВ =====
 
     protected abstract Long getEntityId(REQUEST request);
 
@@ -131,7 +128,6 @@ public abstract class ImageAbstractService<
     protected abstract Page<T> findMetadataByEntityId(Long entityId, Pageable pageable);
 
 
-
     // ===== РЕАЛИЗАЦИЯ МЕТОДОВ ИНТЕРФЕЙСА =====
 
     /**
@@ -141,24 +137,21 @@ public abstract class ImageAbstractService<
     public ImageUploadResponse uploadImage(MultipartFile file, REQUEST request) {
         log.debug("Загрузка изображения для entity ID={}", getEntityId(request));
 
-        // 1. Валидация файла
-//        validateFile(file);
-
-        // 2. Проверяем существование сущности в Postgres
+        // Проверяем существование сущности в Postgres
         Long entityId = getEntityId(request);
         E entity = findEntityById(entityId);
 
-        // 3. Извлекаем размеры изображения
+        // Извлекаем размеры изображения
         ImageDimension dimension = extractImageDimension(file);
 
-        // 4. Сохраняем файл в GridFS
+        // Сохраняем файл в GridFS
         String fileId = storeFileInGridFS(file);
 
-        // 5. Создаём и сохраняем метаданные
+        // Создаём и сохраняем метаданные
         T metadata = createMetadata(entity, fileId, request, dimension, file);
         T savedMetadata = metadataRepository.save(metadata);
 
-        // 6. Формируем ответ
+        // Формируем ответ
         String fileUrl = buildFileUrl(fileId);
         return new ImageUploadResponse(fileId, fileUrl);
     }
@@ -169,7 +162,6 @@ public abstract class ImageAbstractService<
         Page<T> page = metadataRepository.findAll(pageable);
         return PageResponse.from(page.map(this::toImageViewResponse));
     }
-
 
     /**
      * 3️⃣ READ GALLERY — Специфичен для каждого сервиса, так как методы репозиториев Mongo
@@ -244,7 +236,6 @@ public abstract class ImageAbstractService<
     }
 
 
-
     // ===== ЗАЩИЩЁННЫЕ АБСТРАКТНЫЕ МЕТОДЫ ДЛЯ НАСЛЕДНИКОВ =====
 
     protected abstract void deleteAllByEntityId(Long entityId);
@@ -252,23 +243,7 @@ public abstract class ImageAbstractService<
     protected abstract ImageViewResponse findPrimaryByEntityId(Long entityId);
 
 
-
-
     // ===== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ =====
-
-    // у меня валидация на уровне контроллера (дефолтные методы интерфейса)!
-//    protected void validateFile(MultipartFile file) {
-//        if (file == null || file.isEmpty()) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл не может быть пустым");
-//        }
-//        if (file.getSize() > 10 * 1024 * 1024) {
-//            throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE, "Файл не должен превышать 10 MB");
-//        }
-//        String contentType = file.getContentType();
-//        if (contentType == null || !contentType.startsWith("image/")) {
-//            throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Допустимы только изображения");
-//        }
-//    }
 
     protected abstract String buildFileUrl(String fileId);
 
@@ -284,7 +259,6 @@ public abstract class ImageAbstractService<
                 metadata.getIsPrimary()
         );
     }
-
 
 
     // ===== ВНУТРЕННИЙ КЛАСС =====

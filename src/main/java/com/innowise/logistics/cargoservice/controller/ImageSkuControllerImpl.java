@@ -23,7 +23,10 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import static com.innowise.logistics.cargoservice.constant.ApiImageConstants.*;
+import static com.innowise.logistics.cargoservice.constant.ApiImageConstants.IMAGE_DOWNLOAD_URL;
+import static com.innowise.logistics.cargoservice.constant.ApiImageConstants.IMAGE_GALLERY_URL;
+import static com.innowise.logistics.cargoservice.constant.ApiImageConstants.IMAGE_PRIMARY_URL;
+import static com.innowise.logistics.cargoservice.constant.ApiImageConstants.IMAGE_SKU_BASE_URL;
 
 @Slf4j
 @Validated // Оставляем для работы каскадной валидации @Valid

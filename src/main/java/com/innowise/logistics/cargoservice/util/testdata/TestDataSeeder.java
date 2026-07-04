@@ -18,7 +18,6 @@ import com.innowise.logistics.cargoservice.repository.LocationRepository;
 import com.innowise.logistics.cargoservice.repository.SkuRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -78,28 +77,7 @@ public class TestDataSeeder {
 
     private final Random random = new Random();
 
-    private static final Map<String, String> SKU_TO_IMAGE_MAP = Map.ofEntries(
-            Map.entry("Беспроводные наушники", "Беспроводные_наушники.png"),
-            Map.entry("Настольная лампа светодиодная", "Настольная_лампа_светодиодная.png"),
-            Map.entry("Ноутбук рабочий", "Ноутбук_рабочий.png"),
-            Map.entry("Смартфон премиум", "Смартфон_премиум.png"),
-            Map.entry("Увлажнитель воздуха ультразвуковой", "Увлажнитель_воздуха_ультразвуковой.png"),
-            Map.entry("Умные часы", "Умные_часы.png"),
-            Map.entry("Книга Паттерны проектирования Enterprise-приложений", "Книга_Паттерны_проектирования_Enterprise-приложений.png"),
-            Map.entry("Книга Руководство по Spring Boot 3", "Книга_Руководство_по_Spring_Boot_3.png"),
-            Map.entry("Книга Философия Java", "Книга_Философия_Java.png"),
-            Map.entry("Книга Чистая Архитектура", "Книга_Чистая_Архитектура.png"),
-            Map.entry("Коврик для йоги нескользящий", "Коврик_для_йоги_нескользящий.png"),
-            Map.entry("Набор разборных гантелей", "Набор_разборных_гантелей.png"),
-            Map.entry("Спортивный рюкзак водонепроницаемый", "Спортивный_рюкзак_водонепроницаемый.png"),
-            Map.entry("Футбольный мяч турнирный", "Футбольный_мяч_турнирный.png"),
-            Map.entry("Кресло офисное анатомическое", "Кресло_офисное_анатомическое.png"),
-            Map.entry("Стеллаж металлический складской", "Стеллаж_металлический_складской.png"),
-            Map.entry("Стол письменный эргономичный", "Стол_письменный_эргономичный.png"),
-            Map.entry("Канцелярский набор премиум", "Канцелярский_набор_премиум.png"),
-            Map.entry("Компактный складной зонт", "Компактный_складной_зонт.png"),
-            Map.entry("Термокружка вакуумная", "Термокружка_вакуумная.png")
-    );
+    private static final Map<String, String> SKU_TO_IMAGE_MAP = duildSkuToImageMap();
 
     /**
      * Заполняет базу данных PostgreSQL сбалансированным графом связанных сущностей.
@@ -109,10 +87,6 @@ public class TestDataSeeder {
     @Transactional
     public void seedAllTestData(int imageQuantity, Boolean isCleanUp) {
         log.debug("=== НАЧАЛО СИНХРОННОЙ ГЕНЕРАЦИИ И СОХРАНЕНИЯ ТЕСТОВЫХ ДАННЫХ ===");
-
-
-        // 🔍 ДИАГНОСТИКА
-        checkImageFilesExist();
 
         if (isCleanUp) {
             cleanDatabases();
@@ -233,20 +207,27 @@ public class TestDataSeeder {
         return new MultipartFile() {
             @Override
             public String getName() { return filename; }
+
             @Override
             public String getOriginalFilename() { return filename; }
+
             @Override
             public String getContentType() { return "image/png"; }
+
             @Override
             public boolean isEmpty() { return content.length == 0; }
+
             @Override
             public long getSize() { return content.length; }
+
             @Override
             public byte[] getBytes() throws IOException { return content; }
+
             @Override
             public InputStream getInputStream() throws IOException {
                 return new ByteArrayInputStream(content);
             }
+
             @Override
             public void transferTo(File dest) throws IOException, IllegalStateException {
                 Files.write(dest.toPath(), content);
@@ -256,7 +237,6 @@ public class TestDataSeeder {
 
     private void uploadImagesForSku(Sku sku) {
         // 🔥 ПЕРВЫЙ ПРИОРИТЕТ: пробуем загрузить существующее изображение из resources
-//        MultipartFile primaryImage = loadImageForSku(sku.getName());
         MultipartFile primaryImage = loadImageForSku(sku.getDescription());
 
         if (primaryImage != null) {
@@ -336,6 +316,30 @@ public class TestDataSeeder {
                 .toString();
     }
 
+    private static Map<String, String> duildSkuToImageMap() {
+        return Map.ofEntries(
+                Map.entry("Беспроводные наушники", "Беспроводные_наушники.png"),
+                Map.entry("Настольная лампа светодиодная", "Настольная_лампа_светодиодная.png"),
+                Map.entry("Ноутбук рабочий", "Ноутбук_рабочий.png"),
+                Map.entry("Смартфон премиум", "Смартфон_премиум.png"),
+                Map.entry("Увлажнитель воздуха ультразвуковой", "Увлажнитель_воздуха_ультразвуковой.png"),
+                Map.entry("Умные часы", "Умные_часы.png"),
+                Map.entry("Книга Паттерны проектирования Enterprise-приложений", "Книга_Паттерны_проектирования_Enterprise-приложений.png"),
+                Map.entry("Книга Руководство по Spring Boot 3", "Книга_Руководство_по_Spring_Boot_3.png"),
+                Map.entry("Книга Философия Java", "Книга_Философия_Java.png"),
+                Map.entry("Книга Чистая Архитектура", "Книга_Чистая_Архитектура.png"),
+                Map.entry("Коврик для йоги нескользящий", "Коврик_для_йоги_нескользящий.png"),
+                Map.entry("Набор разборных гантелей", "Набор_разборных_гантелей.png"),
+                Map.entry("Спортивный рюкзак водонепроницаемый", "Спортивный_рюкзак_водонепроницаемый.png"),
+                Map.entry("Футбольный мяч турнирный", "Футбольный_мяч_турнирный.png"),
+                Map.entry("Кресло офисное анатомическое", "Кресло_офисное_анатомическое.png"),
+                Map.entry("Стеллаж металлический складской", "Стеллаж_металлический_складской.png"),
+                Map.entry("Стол письменный эргономичный", "Стол_письменный_эргономичный.png"),
+                Map.entry("Канцелярский набор премиум", "Канцелярский_набор_премиум.png"),
+                Map.entry("Компактный складной зонт", "Компактный_складной_зонт.png"),
+                Map.entry("Термокружка вакуумная", "Термокружка_вакуумная.png"));
+    }
+
     // ==================== ГЕНЕРАЦИЯ ИЗОБРАЖЕНИЙ ====================
 
     private MultipartFile[] generateImages(int quantity, String message) {
@@ -407,45 +411,5 @@ public class TestDataSeeder {
         } catch (Exception e) {
             log.error("❌ Ошибка при удалении {}: {}", collectionName, e.getMessage());
         }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // ==================== ДИАГНОСТИКА ====================
-
-    /**
-     * Простая проверка наличия файлов
-     */
-    private void checkImageFilesExist() {
-        log.info("=== ПРОВЕРКА ФАЙЛОВ ===");
-        String userDir = System.getProperty("user.dir");
-        String fullPath = userDir + "/src/main/resources/testdata/images/sku/";
-        File dir = new File(fullPath);
-
-        if (dir.exists() && dir.isDirectory()) {
-            File[] files = dir.listFiles();
-            log.info("✅ Папка найдена: {}", fullPath);
-            log.info("📄 Найдено файлов: {}", files != null ? files.length : 0);
-            if (files != null && files.length > 0) {
-                for (File file : files) {
-                    log.info("   - {}", file.getName());
-                }
-            }
-        } else {
-            log.error("❌ Папка НЕ НАЙДЕНА: {}", fullPath);
-        }
-        log.info("=== КОНЕЦ ПРОВЕРКИ ===");
     }
 }

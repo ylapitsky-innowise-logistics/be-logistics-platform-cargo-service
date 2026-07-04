@@ -29,7 +29,6 @@ public class TestDataController {
      * Запуск комплексного конвейера генерации и сохранения связанных сущностей в PostgreSQL.
      * Возвращает чистый HTTP-статус 200 OK без тела ответа.
      */
-//    @PostMapping("/cargos")
     @PostMapping
     public ResponseEntity<Void> generateTestData(
             @RequestParam(name = "cargos-quantity", required = false, defaultValue = "5")

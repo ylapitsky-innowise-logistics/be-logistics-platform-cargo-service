@@ -119,15 +119,4 @@ public class ImageSkuServiceImpl extends ImageAbstractService<
     protected String buildFileUrl(String fileId) {
         return IMAGE_SKU_BASE_URL + '/' + fileId;
     }
-
-
-    // Универсальный метод скачивания из GridFS (используется общим контроллером)
-//    public GridFsResource downloadImage(String fileId) {
-//        GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(fileId)));
-//        if (gridFSFile == null) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Изображение не найдено");
-//        }
-//        return new GridFsResource(gridFSFile, gridFSBucket.openDownloadStream(gridFSFile.getObjectId()));
-//    }
-
 }
