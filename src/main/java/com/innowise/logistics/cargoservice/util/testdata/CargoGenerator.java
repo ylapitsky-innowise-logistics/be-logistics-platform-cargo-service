@@ -52,7 +52,7 @@ public class CargoGenerator implements Generator<Cargo> {
         Cargo[] cargos = new Cargo[quantity];
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
-        // 4. Заполняем склады тысячами коробок
+        // 4. Заполняем склады множеством коробок
         for (int i = 0; i < quantity; i++) {
             Sku randomSku = baseSkus[random.nextInt(baseSkus.length)];
             CargoNatureProfile profile = natureCache.get(randomSku.getName());
@@ -80,15 +80,17 @@ public class CargoGenerator implements Generator<Cargo> {
 
     /**
      * Генерация Cargo на базе УЖЕ СОХРАНЕННЫХ в базе данных (PostgreSQL) сущностей.
-     * Полностью исключает TransientObjectException, так как все связанные объекты уже имеют ID.
+     * Исключает TransientObjectException, так как все связанные объекты уже имеют ID.
      */
     public Cargo[] generateWithSavedEntities(int quantity, Sku[] savedSkus, Dimension[] savedDimensions, Location[] savedLocations) {
-        log.info("Запуск конвейера генерации {} Cargo на базе сохраненных сущностей DB", quantity);
+        log.info("Запуск конвейера генерации {} Cargo на базе заранее сохраненных сущностей DB", quantity);
         if (quantity <= 0) {
             throw new IllegalArgumentException(
                     "Количество генерируемых грузов должно быть целым положительным числом. Введено: " + quantity);
         }
-        if (savedSkus == null || savedSkus.length == 0 || savedDimensions == null || savedDimensions.length == 0 || savedLocations == null || savedLocations.length == 0) {
+        if (savedSkus == null || savedSkus.length == 0 ||
+                savedDimensions == null || savedDimensions.length == 0 ||
+                savedLocations == null || savedLocations.length == 0) {
             throw new IllegalArgumentException("Массивы сохраненных сущностей-зависимостей не могут быть пустыми");
         }
 

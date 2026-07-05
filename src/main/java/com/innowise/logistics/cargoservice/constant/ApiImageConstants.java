@@ -22,6 +22,8 @@ public class ApiImageConstants {
 
     // для генерации сущностей
     public static final String TEST_DATA_GENERATE_URL = "/api/v1/catalog/test-data/generate";
-
+//    public static final String TEST_DATA_IMAGE_SKU_PATH = "src/main/resources/testdata/images/sku/";
+//    public static final String TEST_DATA_IMAGE_SKU_PATH = "src\\main\\resources\\testdata\\images\\sku\\";
+    public static final String TEST_DATA_IMAGE_SKU_PATH = "testdata/images/sku/";
 
 }
