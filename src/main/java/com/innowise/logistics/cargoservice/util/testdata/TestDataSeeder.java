@@ -2,18 +2,14 @@ package com.innowise.logistics.cargoservice.util.testdata;
 
 import com.innowise.logistics.cargoservice.dto.request.ImageCargoUploadRequest;
 import com.innowise.logistics.cargoservice.dto.request.ImageSkuUploadRequest;
-import com.innowise.logistics.cargoservice.dto.request.ImageUploadRequest;
 import com.innowise.logistics.cargoservice.entity.Address;
 import com.innowise.logistics.cargoservice.entity.Cargo;
 import com.innowise.logistics.cargoservice.entity.Dimension;
 import com.innowise.logistics.cargoservice.entity.Location;
 import com.innowise.logistics.cargoservice.entity.Sku;
-import com.innowise.logistics.cargoservice.mongo.entity.BaseImageMetadata;
-import com.innowise.logistics.cargoservice.mongo.entity.ImageSkuMetadata;
 import com.innowise.logistics.cargoservice.mongo.repository.ImageCargoMetadataRepository;
 import com.innowise.logistics.cargoservice.mongo.repository.ImageSkuMetadataRepository;
 import com.innowise.logistics.cargoservice.mongo.service.ImageCargoServiceImpl;
-import com.innowise.logistics.cargoservice.mongo.service.ImageService;
 import com.innowise.logistics.cargoservice.mongo.service.ImageSkuServiceImpl;
 import com.innowise.logistics.cargoservice.repository.AddressRepository;
 import com.innowise.logistics.cargoservice.repository.CargoRepository;
@@ -27,7 +23,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,12 +34,10 @@ import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.innowise.logistics.cargoservice.constant.ApiImageConstants.TEST_DATA_IMAGE_SKU_PATH;
 
@@ -109,6 +102,7 @@ public class TestDataSeeder {
 
         log.debug("=== УСПЕШНО ЗАВЕРШЕНО. Физических товаров (Cargo) добавлено в DB: {} ===", savedCargos.size());
     }
+
 
     // ==================== БЛОКИ СОХРАНЕНИЯ СУЩНОСТЕЙ ====================
 
@@ -175,6 +169,7 @@ public class TestDataSeeder {
 
         return savedCargos;
     }
+
 
     // ==================== ЗАГРУЗКА ИЗОБРАЖЕНИЙ ИЗ ФАЙЛОВ ====================
 
@@ -264,85 +259,41 @@ public class TestDataSeeder {
                     .build();
             imageSkuService.uploadImage(primaryImage, primaryRequest);
             log.debug("✅ Загружено основное изображение для SKU: {}", sku.getName());
-
-            // Генерируем дополнительные изображения (1-5 штук)
-            int extraCount = random.nextInt(1, 6);
-            String messageSku = " Загушка для SKU: " + sku.getName();
-            MultipartFile[] extraImages = generateImages(extraCount, messageSku, sku.getId());
-
-            // Загружаем дополнительные изображения (НЕ primary)
-            for (int i = 0; i < extraImages.length; i++) {
-                ImageSkuUploadRequest extraRequest = ImageSkuUploadRequest.builder()
-                        .id(sku.getId())
-                        .description("Дополнительное изображение-заглушка #" + (i + 1) + " для SKU: " + sku.getName())
-                        .sortOrder(i + 1)  // сортировка после primary (0)
-                        .isPrimary(false)
-                        .build();
-                imageSkuService.uploadImage(extraImages[i], extraRequest);
-            }
-            log.debug("_сгенерировано дополнительных: {} Sku (изображений-заглушек)", extraImages.length);
-
-        } else {
-            String messageSku = " SKU: " + sku.getName();
-            MultipartFile[] images = generateImages(random.nextInt(1, 12), messageSku, sku.getId());
-            log.debug("_сгенерировано: {} Sku изображений-заглушек", images.length);
-
-            ImageSkuUploadRequest imageUploadRequest = ImageSkuUploadRequest.builder()
-                    .id(sku.getId())
-                    .description(sku.getDescription())
-                    .sortOrder(random.nextInt(13))
-                    .isPrimary(random.nextBoolean())
-                    .build();
-
-            Arrays.stream(images).forEach(img -> imageSkuService.uploadImage(img, imageUploadRequest));
         }
-    }
-
-    // sku - тот артикул, для которого будем генерить галерею
-    // multipartFiles - тут буду 0 или 1 оригинальное изображение товара, в зависимости найдется оно или нет в ресурсах.
-    // тут мы сначала генерим, потом добавляем, затем именно загружаем фоты в монгу
-    private <R extends ImageService<ImageUploadRequest>> void generateAndSaveAdditionalImagesForEntity(
-            long entityId, // id сущности из Postgres. для которой генериться изображение
-            String entityName, // имя сущности из Postgres. для которой генериться изображение
-            R imageService // Mongo - сервис для сохранения картинок
-    ) {
-
-        // Генерируем количество дополнительных изображений (1-14 штук)
         int extraCount = random.nextInt(1, 14);
+        MultipartFile[] extraImages = generateImages(
+                extraCount, " Заглушка_для SKU: " + sku.getName(), sku.getId());
 
-//        String messageSku = " Заглушка для SKU: " + entityName;
-        String messageSku = " Заглушка для " + entityName;
-        MultipartFile[] extraImages = generateImages(extraCount, messageSku, entityId);
-
-        // Создаем дополнительные изображения (НЕ primary)
         for (int i = 0; i < extraImages.length; i++) {
-            ImageUploadRequest extraRequest = ImageSkuUploadRequest.builder()
-                    .id(entityId)
-//                    .description("Дополнительное изображение-заглушка #" + (i + 1) + " для SKU: " + sku.getName())
-                    .description("Дополнительное изображение-заглушка #" + (i + 1) + " для " + entityName)
-                    .sortOrder(i + 1)  // сортировка после primary (0)
+            ImageSkuUploadRequest extraRequest = ImageSkuUploadRequest.builder()
+                    .id(sku.getId())
+                    .description("Дополнительное изображение-заглушка #" + (i + 1) + " для SKU: " + sku.getName())
+                    .sortOrder(i + 1)
                     .isPrimary(false)
                     .build();
-            imageService.uploadImage(extraImages[i], extraRequest);
+            imageSkuService.uploadImage(extraImages[i], extraRequest);
         }
+
+        log.debug("✅ Загружены доп. изображения для SKU: {} ({} шт.)", sku.getName(), extraImages.length);
     }
 
-
     private void uploadImagesForCargos (List<Cargo> cargos) {
-        for(Cargo c: cargos) {
-            String messageCargo = " Cargo: " + c.getName();
-            MultipartFile[] images = generateImages(random.nextInt(1, 15), messageCargo, c.getId());
+        for(Cargo cargo: cargos) {
+            int extraCount = random.nextInt(1, 14);
+            String messageCargo = " заглушка_для Cargo: " + cargo.getName();
+            MultipartFile[] extraImages = generateImages(extraCount, messageCargo, cargo.getId());
 
-            for (int i = 0; i < images.length; i++) {
-                ImageCargoUploadRequest imageUploadRequest = ImageCargoUploadRequest.builder()
-                        .id(c.getId())
-                        .description(buildCargoDescription(c))
+            for (int i = 0; i < extraImages.length; i++) {
+                ImageCargoUploadRequest extraRequest = ImageCargoUploadRequest.builder()
+                        .id(cargo.getId())
+                        .description(buildCargoDescription(cargo))
                         .sortOrder(i + 1)   // порядок сортировки от 1 (0 - для реальной фото)
                         .isPrimary(false)    // Является - ли передаваемая картинка главной?
                         .build();
 
-                imageCargoService.uploadImage(images[i], imageUploadRequest);
+                imageCargoService.uploadImage(extraImages[i], extraRequest);
             }
+            log.debug("✅ Загружены доп. изображения для Cargo: {} ({} шт.)", cargo.getName(), extraImages.length);
         }
         log.debug("_сгенерировано и загружено в обе DB: {} Cargo изображений-заглушек", cargos.size());
     }
@@ -386,6 +337,7 @@ public class TestDataSeeder {
                 Map.entry("Термокружка вакуумная", "Термокружка_вакуумная.png"));
     }
 
+
     // ==================== ГЕНЕРАЦИЯ ИЗОБРАЖЕНИЙ ====================
 
     private MultipartFile[] generateImages(int quantity, String message, long id) {
@@ -409,6 +361,7 @@ public class TestDataSeeder {
         }
         return images;
     }
+
 
     // ==================== ОЧИСТКА БАЗ ====================
 
