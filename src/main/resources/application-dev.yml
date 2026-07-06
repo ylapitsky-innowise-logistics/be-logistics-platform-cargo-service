@@ -1,11 +1,11 @@
 # src/main/resources/application-dev.yml (разработка)
 
 spring:
-  datasource:
-    # 🟢 ИСПРАВЛЕНО: Теперь dev-режим смотрит на правильный выделенный порт платформы и общую базу
-    url: jdbc:postgresql://localhost:5433/logistics_platform_db?currentSchema=cargo_schema
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+#  datasource:
+#    # 🟢 ИСПРАВЛЕНО: Теперь dev-режим смотрит на правильный выделенный порт платформы и общую базу
+#    url: jdbc:postgresql://localhost:5433/logistics_platform_db?currentSchema=cargo_schema
+#    username: ${DB_USERNAME:postgres}
+#    password: ${DB_PASSWORD:postgres}
 
   jpa:
     hibernate:
@@ -13,4 +13,7 @@ spring:
 
 logging:
   level:
-    org.springframework.security: DEBUG
+    root: INFO                                        # Системные логи Спринга — только INFO
+    com.innowise.logistics.cargoservice: DEBUG       # Весь твой сервис целиком переводим в DEBUG
+    com.innowise.logistics.cargoservice.controller: DEBUG # 🎯 Жестко и принудительно включаем DEBUG для контроллеров
+    org.springframework.web: DEBUG                   # Позволит увидеть сам факт прихода Multipart-запроса

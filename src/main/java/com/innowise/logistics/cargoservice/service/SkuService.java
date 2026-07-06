@@ -1,9 +1,13 @@
 package com.innowise.logistics.cargoservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.innowise.logistics.cargoservice.dto.request.SkuCreatingRequest;
+import com.innowise.logistics.cargoservice.dto.request.SkuUpdateRequest;
 import com.innowise.logistics.cargoservice.dto.response.CargoViewResponse;
 import com.innowise.logistics.cargoservice.dto.response.SkuAvailabilityResponse;
+import com.innowise.logistics.cargoservice.dto.response.SkuCreatingResponse;
 import com.innowise.logistics.cargoservice.dto.response.SkuResponse;
+import com.innowise.logistics.cargoservice.dto.response.SkuViewResponse;
 import com.innowise.logistics.cargoservice.entity.Cargo;
 import com.innowise.logistics.cargoservice.entity.Sku;
 import com.innowise.logistics.cargoservice.entity.Status;
@@ -11,6 +15,7 @@ import com.innowise.logistics.cargoservice.mapper.CargoMapper;
 import com.innowise.logistics.cargoservice.repository.CargoRepository;
 import com.innowise.logistics.cargoservice.repository.ReservationRepository;
 import com.innowise.logistics.cargoservice.repository.SkuRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true) // 🟢 Глобальная оптимизация чтения на уровне класса
 public class SkuService {
 
     private final CargoRepository cargoRepository;
@@ -31,87 +37,122 @@ public class SkuService {
     private final CargoMapper cargoMapper;
     private final ObjectMapper objectMapper;
 
+    // =========================================================
+    // СТАНДАРТНЫЕ CRUD ОПЕРАЦИИ
+    // =========================================================
+
     /**
-     * 1️⃣ Просмотр агрегированной статистики по всем УНИКАЛЬНЫХ доступным SKU.
-     * @param pageable параметры пагинации
-     * @return агрегированный список, зашитый в 'SkuAvailabilityResponse'
+     * C - Create: Заведение нового артикула (SKU) в систему
      */
-    @Transactional(readOnly = true)
+    @Transactional
+    public SkuCreatingResponse createSku(SkuCreatingRequest request) {
+        log.info("Создание нового артикула с именем: {}", request.getName());
+        Sku sku = new Sku();
+        sku.setName(request.getName()); // Сработает кастомный тримминг пробелов
+        sku.setDescription(request.getDescription());
+        sku.setActive(true); // Новый артикул активен по умолчанию
+
+        Sku savedSku = skuRepository.save(sku);
+        return new SkuCreatingResponse(savedSku.getId());
+    }
+
+    /**
+     * R - Read: Получение полной карточки артикула по ID
+     */
+    public SkuViewResponse getSkuById(Long id) {
+        log.debug("Получение полной информации по SKU ID: {}", id);
+        return skuRepository.findById(id)
+                .map(this::mapToViewResponse)
+                .orElseThrow(() -> new EntityNotFoundException("Артикул (SKU) с ID " + id + " не найден"));
+    }
+
+    /**
+     * U - Update: Обновление параметров существующего артикула
+     */
+    @Transactional
+    public SkuViewResponse updateSku(Long id, SkuUpdateRequest request) {
+        log.info("Обновление артикула с ID: {}", id);
+        Sku sku = skuRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Артикул (SKU) с ID " + id + " не найден"));
+
+        sku.setName(request.getName()); // Кастомный сеттер очистит пробелы
+        sku.setDescription(request.getDescription());
+        sku.setActive(request.isActive());
+
+        return mapToViewResponse(sku);
+    }
+
+    /**
+     * D - Delete: Удаление артикула из системы по ID
+     */
+    @Transactional
+    public void deleteSku(Long id) {
+        log.warn("Запрос на удаление артикула с ID: {}", id);
+        if (!skuRepository.existsById(id)) {
+            throw new EntityNotFoundException("Артикул (SKU) с ID " + id + " не найден");
+        }
+        skuRepository.deleteById(id);
+    }
+
+    // =========================================================
+    // 📊 БЛОК АНАЛИТИКИ И СПЕЦИАЛЬНЫХ ВЫБОРОК (СОХРАНЕН ПОЛНОСТЬЮ)
+    // =========================================================
+
+    /**
+     * 1️⃣ Просмотр агрегированной статистики по всем УНИКАЛЬНЫМ доступным SKU.
+     */
     public Page<SkuAvailabilityResponse> getAvailableSkus(Pageable pageable) {
-        return cargoRepository.findAvailableSkuStats(
-                Status.AVAILABLE,
-                pageable
-        );
+        return cargoRepository.findAvailableSkuStats(Status.AVAILABLE, pageable);
     }
 
     /**
      * 2️⃣ Получить доступные товары по SKU с динамической пагинацией и гибкой сортировкой.
-     * Получить детальный пагинированный список конкретных доступных грузов по ID артикула.
-     * Поддерживает гибкую кастомною сортировку (8 видов) через текстовый параметр sortBy.
-     * @param skuId   идентификатор артикула
-     * @param pageNum   номер страницы (начиная с 0)
-     * @param pageSize  размер страницы
-     * @param sortBy    строковый код сортировки (например, "price_asc", "created_desc")
      */
-    @Transactional(readOnly = true)
     public Page<CargoViewResponse> getAvailableItemsBySku(Long skuId, int pageNum, int pageSize, String sortBy) {
-
-        // 1. Собираем объект Sort на основе переданного строкового критерия
         Sort sort = resolveSortOrder(sortBy);
-
-        // 2. Объединяем пагинацию и нашу динамическую сортировку
         Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
-
-        // 3. Выполняем запрос в репозиторий (там отработает наш FETCH JOIN) // Вычитываем пагинированную страницу сущностей из репозитория
         Page<Cargo> cargoPage = cargoRepository.findBySkuIdAndStatus(skuId, Status.AVAILABLE, pageable);
-
-        // 4. Мапим через ваш MapStruct маппер в CargoViewResponse
         return cargoPage.map(cargoMapper::toDto);
     }
 
     /**
-     * Вспомогательный метод-резолвер для маппинга бизнес-критериев в технический Sort.
-     * Промышленный Senior-стандарт разделения логики.
+     * 3️⃣ Получить плоский пагинированный список абсолютно всех зарегистрированных в системе SKU.
      */
-    private Sort resolveSortOrder(String sortBy) {
-        if (sortBy == null || sortBy.isBlank()) {
-            return Sort.by("id").ascending(); // Дефолтная сортировка по ID
-        }
-
-        return switch (sortBy.toLowerCase()) {
-            // 1 & 2. Сортировка по стоимости
-            case "price_asc"  -> Sort.by("price").ascending();
-            case "price_desc" -> Sort.by("price").descending();
-
-            // 3 & 4. Сортировка по дате поступления
-            case "created_asc"  -> Sort.by("createdAt").ascending();
-            case "created_desc" -> Sort.by("createdAt").descending();
-
-            // 5 & 6. Сортировка по дате изменения статуса
-            case "status_date_asc"  -> Sort.by("statusAt").ascending();
-            case "status_date_desc" -> Sort.by("statusAt").descending();
-
-            // 7. Сортировка по самому статусу
-            case "status" -> Sort.by("status").ascending();
-
-            // 8. Доп. вариант: Сортировка по вложенному объекту (например, по названию стеллажа)
-            case "location_rack" -> Sort.by("location.rack").ascending();
-            case "location_shelf" -> Sort.by("location.shelf").ascending();
-
-            // На случай, если прилетело что-то неизвестное
-            default -> Sort.by("id").ascending();
-        };
+    public Page<SkuResponse> getSkus(Pageable pageable) {
+        Page<Sku> skuPage = skuRepository.findAll(pageable);
+        return skuPage.map(sku -> new SkuResponse(sku.getId(), sku.getName()));
     }
 
-    /**
-     * 3️⃣ Получить плоский пагинированный список абсолютно всех зарегистрированных в системе SKU (артикулов).
-     */
-    @Transactional(readOnly = true)
-    public Page<SkuResponse> getSkus(Pageable pageable) {
-        // 1. Запрашиваем страницу сущностей Sku из правильного репозитория
-        Page<Sku> skuPage = skuRepository.findAll(pageable);
+    // =========================================================
+    // ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ
+    // =========================================================
 
-        // 2. Маппим Entity в DTO "на лету" через чистый конструктор рекорда
-        return skuPage.map(sku -> new SkuResponse(sku.getId(), sku.getName()));
+    private SkuViewResponse mapToViewResponse(Sku sku) {
+        return new SkuViewResponse(
+                sku.getId(),
+                sku.getName(),
+                sku.getDescription(),
+                sku.isActive(),
+                sku.getCreatedAt(),
+                sku.getUpdatedAt()
+        );
+    }
+
+    private Sort resolveSortOrder(String sortBy) {
+        if (sortBy == null || sortBy.isBlank()) {
+            return Sort.by("id").ascending();
+        }
+        return switch (sortBy.toLowerCase()) {
+            case "price_asc"  -> Sort.by("price").ascending();
+            case "price_desc" -> Sort.by("price").descending();
+            case "created_asc"  -> Sort.by("createdAt").ascending();
+            case "created_desc" -> Sort.by("createdAt").descending();
+            case "status_date_asc"  -> Sort.by("statusAt").ascending();
+            case "status_date_desc" -> Sort.by("statusAt").descending();
+            case "status" -> Sort.by("status").ascending();
+            case "location_rack" -> Sort.by("location.rack").ascending();
+            case "location_shelf" -> Sort.by("location.shelf").ascending();
+            default -> Sort.by("id").ascending();
+        };
     }
 }

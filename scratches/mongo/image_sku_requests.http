@@ -1,0 +1,157 @@
+# Настройки окружения для SKU Controller
+@host = http://localhost:8085
+@base_skus_url = /api/v1/catalog/images/skus
+
+### ============================================================
+### 1️⃣ CREATE — Загрузка изображений для партий (SKU)
+### ============================================================
+
+### 01. Загрузить основное фото для SKU ID=1 (Смартфон премиум)
+POST {{host}}{{base_skus_url}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 1,
+  "description": "Каталожное фото смартфона премиум-класса",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="smartphone.png"
+Content-Type: image/png
+
+< ../../src/main/resources/testdata/images/sku/Смартфон_премиум.png
+--boundary--
+
+### 02. Загрузить дополнительное фото для SKU ID=1 (Умные часы)
+POST {{host}}{{base_skus_url}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 1,
+  "description": "Аксессуар к смартфону на том же артикуле",
+  "sortOrder": 1,
+  "isPrimary": false
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="smart_watch.png"
+Content-Type: image/png
+
+< ../../src/main/resources/testdata/images/sku/Умные_часы.png
+--boundary--
+
+### 03. Загрузить основное фото для SKU ID=2 (Ноутбук рабочий)
+POST {{host}}{{base_skus_url}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 2,
+  "description": "Каталожное фото рабочего ноутбука",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="laptop.png"
+Content-Type: image/png
+
+< ../../src/main/resources/testdata/images/sku/Ноутбук_рабочий.png
+--boundary--
+
+### 04. Загрузить фото для SKU ID=3 (Книга по Spring Boot 3)
+POST {{host}}{{base_skus_url}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 3,
+  "description": "Книга: Руководство по Spring Boot 3",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="spring_boot.png"
+Content-Type: image/png
+
+< ../../src/main/resources/testdata/images/sku/Книга_Руководство_по_Spring_Boot_3.png
+--boundary--
+
+
+### ============================================================
+### 2️⃣ READ ALL — Получение всех SKU изображений (Пагинация)
+### ============================================================
+
+### 05. Получить все изображения (страница 0, размер 15, сортировка по uploadedAt)
+GET {{host}}{{base_skus_url}}?page=0&size=15&sort=uploadedAt
+Accept: application/json
+
+
+### ============================================================
+### 3️⃣ READ GALLERY — Галерея по ID сущности из Postgres
+### ============================================================
+
+### 06. Получить галерею картинок для SKU ID=1 (Пагинация по умолчанию)
+GET {{host}}{{base_skus_url}}/gallery/1
+Accept: application/json
+
+
+### ============================================================
+### 4️⃣ READ ONE — Стриминг бинарника из GridFS по fileId
+### ============================================================
+
+### 07. Скачать конкретный файл изображения по его GridFS ID
+# ⚠️ ПОДСТАВЬТЕ РЕАЛЬНЫЙ 24-значный fileId ИЗ ОТВЕТА ЗАПРОСОВ 01-06
+GET {{host}}{{base_skus_url}}/6a4b76ca20549b3be8a533f0
+Accept: image/png
+
+
+### ============================================================
+### 5️⃣ UPDATE — Обновление метаданных паспорта картинки
+### ============================================================
+
+### 08. Изменить описание и порядок отображения медиафайла
+# ⚠️ ПОДСТАВЬТЕ РЕАЛЬНЫЙ 24-значный fileId
+PUT {{host}}{{base_skus_url}}/6a4b76ca20549b3be8a533f0
+Content-Type: application/json
+
+{
+  "id": 1,
+  "description": "ОБНОВЛЕННОЕ ОПИСАНИЕ: Смартфон премиум-класса с аксессуарами",
+  "sortOrder": 5,
+  "isPrimary": true
+}
+
+
+### ============================================================
+### 8️⃣ GET PRIMARY — Получение главного фото артикула
+### ============================================================
+
+### 09. Получить обложку (primary image) для SKU ID=1
+GET {{host}}{{base_skus_url}}/gallery/1/primary
+Accept: application/json
+
+
+### ============================================================
+### 6️⃣ & 7️⃣ DELETE — Удаление (Одиночное и пакетное)
+### ============================================================
+
+### 10. Удалить конкретную картинку из GridFS и NoSQL метаданных
+# ⚠️ ПОДСТАВЬТЕ РЕАЛЬНЫЙ 24-значный fileId
+DELETE {{host}}{{base_skus_url}}/6682b1c3d4e5f67890123456
+
+### 11. Очистить всю галерею (каскадно) для SKU ID=3
+DELETE {{host}}{{base_skus_url}}/gallery/3

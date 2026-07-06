@@ -1,0 +1,136 @@
+# Настройки окружения для Cargo Controller
+@host = http://localhost:8085
+@base_cargos_url = /api/v1/catalog/images/cargos
+
+### ============================================================
+### 1️⃣ CREATE — Загрузка фотографий дефектов конкретного груза
+### ============================================================
+
+### 01. Загрузить фото дефекта для CARGO ID=1 (Замятие картона)
+POST {{host}}{{base_cargos_url}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 1,
+  "description": "Фиксация состояния упаковки при приемке: дефект №1",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="cargo_defect_01.png"
+Content-Type: image/png
+
+< ../../src/main/resources/testdata/images/cargo/Cargo_дефекты_01.png
+--boundary--
+
+### 02. Загрузить второе фото дефекта для CARGO ID=1
+POST {{host}}{{base_cargos_url}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 1,
+  "description": "Крупный план трещины на пластиковой защите",
+  "sortOrder": 1,
+  "isPrimary": false
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="cargo_defect_02.png"
+Content-Type: image/png
+
+< ../../src/main/resources/testdata/images/cargo/Cargo_дефекты_01.png
+--boundary--
+
+### 03. Загрузить фото для CARGO ID=2
+POST {{host}}{{base_cargos_url}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="metadata"
+Content-Type: application/json
+
+{
+  "id": 2,
+  "description": "Проверка сколов на углах поддона",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="cargo_defect_03.png"
+Content-Type: image/png
+
+< ../../src/main/resources/testdata/images/cargo/Cargo_дефекты_03.png
+--boundary--
+
+
+### ============================================================
+### 2️⃣ READ ALL — Получение всех Cargo изображений (Пагинация)
+### ============================================================
+
+### 04. Получить все изображения грузов (страница 0, размер 15)
+GET {{host}}{{base_cargos_url}}
+Accept: application/json
+
+
+### ============================================================
+### 3️⃣ READ GALLERY — Галерея Cargo по ID из Postgres
+### ============================================================
+
+### 05. Получить список всех фото дефектов для коробки груза ID=1
+GET {{host}}{{base_cargos_url}}/gallery/1
+Accept: application/json
+
+
+### ============================================================
+### 4️⃣ READ ONE — Скачивание бинарного потока по fileId
+### ============================================================
+
+### 06. Скачать бинарный файл картинки из GridFS
+# ⚠️ ПОДСТАВЬТЕ РЕАЛЬНЫЙ 24-значный fileId ИЗ ОТВЕТА ЗАПРОСОВ 01-05
+GET {{host}}{{base_cargos_url}}/6a4b761520549b3be8a533ec
+Accept: image/png
+
+
+### ============================================================
+### 5️⃣ UPDATE — Обновление описания дефекта груза
+### ============================================================
+
+### 07. Обновить NoSQL метаданные для конкретного файла
+# ⚠️ ПОДСТАВЬТЕ РЕАЛЬНЫЙ 24-значный fileId
+PUT {{host}}{{base_cargos_url}}/6a4b761520549b3be8a533ec
+Content-Type: application/json
+
+{
+  "id": 1,
+  "description": "УТОЧНЕННЫЙ КОММЕНТАРИЙ: Глубокая царапина правого ребра жесткости",
+  "sortOrder": 0,
+  "isPrimary": true
+}
+
+
+### ============================================================
+### 8️⃣ GET PRIMARY — Получение главного фото повреждения
+### ============================================================
+
+### 08. Получить основное изображение брака для CARGO ID=1
+GET {{host}}{{base_cargos_url}}/gallery/1/primary
+Accept: application/json
+
+
+### ============================================================
+### 6️⃣ & 7️⃣ DELETE — Операции удаления для Cargo
+### ============================================================
+
+### 09. Удалить конкретный снимок дефекта
+# ⚠️ ПОДСТАВЬТЕ РЕАЛЬНЫЙ 24-значный fileId
+DELETE {{host}}{{base_cargos_url}}/6a4b754820549b3be8a533e0
+
+### 10. Полностью очистить галерею повреждений для CARGO ID=2
+DELETE {{host}}{{base_cargos_url}}/gallery/2

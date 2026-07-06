@@ -12,7 +12,7 @@ import java.time.Instant;
 public record SkuAvailabilityResponse(
         // Поля по результатам выборки
         Sku sku,
-        String mongoDocId,                          // Линк на MongoDB
+//        String mongoDocId,                          // Линк на MongoDB
         String name,
         Category category,
         Double weight,

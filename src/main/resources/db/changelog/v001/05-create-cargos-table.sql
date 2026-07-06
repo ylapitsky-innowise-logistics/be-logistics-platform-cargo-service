@@ -9,7 +9,6 @@ CREATE TYPE cargo_status_enum AS ENUM ('AVAILABLE', 'RESERVED', 'SHIPPED');
 CREATE TABLE cargos(
     cargo_id       BIGSERIAL,
     sku_id         BIGINT                   NOT NULL,
-    mongo_doc_id   VARCHAR(100),
     name           VARCHAR(255)             NOT NULL,
     cargo_category cargo_category_enum      NOT NULL DEFAULT 'OTHER',
     weight         DOUBLE PRECISION         NOT NULL,
@@ -28,7 +27,6 @@ CREATE TABLE cargos(
 
 COMMENT ON COLUMN cargos.cargo_id IS 'Первичный ключ груза';
 COMMENT ON COLUMN cargos.sku_id IS 'Внешний ключ на артикул товара (FK)';
-COMMENT ON COLUMN cargos.mongo_doc_id IS 'Линк на документ в MongoDB (фотография)';
 COMMENT ON COLUMN cargos.name IS 'Наименование товара';
 COMMENT ON COLUMN cargos.cargo_category IS 'Категория товара (электроника, книги, спорт...)';
 COMMENT ON COLUMN cargos.weight IS 'Вес груза';

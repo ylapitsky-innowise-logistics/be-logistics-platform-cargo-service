@@ -1,0 +1,36 @@
+# Для встроенного HTTP-клиента IntelliJ IDEA
+@host = http://localhost:8085
+@base_path = /api/v1/catalog/skus
+
+### 1. Просмотр агрегированной статистики по всем УНИКАЛЬНЫМ доступным SKU (По умолчанию)
+GET {{host}}{{base_path}}
+Accept: application/json
+
+### 2. Уникальные SKU с пагинацией (Страница 2, размер 3)
+GET {{host}}{{base_path}}?page=2&size=3
+Accept: application/json
+
+### 3. Базовый плоский список абсолютно всех зарегистрированных SKU в системе
+GET {{host}}{{base_path}}/base?page=0&size=10&sort=id,asc
+Accept: application/json
+
+### 4. Детальный список конкретных доступных грузов по ID артикула (Сортировка по увеличению цены)
+GET {{host}}{{base_path}}/2/items?page=0&size=5&sortBy=price_asc
+Accept: application/json
+
+### 5. Детальный список грузов по ID артикула (Сортировка по уменьшению цены)
+GET {{host}}{{base_path}}/2/items?page=0&size=5&sortBy=price_desc
+Accept: application/json
+
+### 6. Детальный список грузов по ID артикула (Сортировка по свежести поступления)
+GET {{host}}{{base_path}}/2/items?page=0&size=5&sortBy=created_desc
+Accept: application/json
+
+
+### ❌ ОШИБКА ВАЛИДАЦИИ: ID артикула должен быть положительным чисвлом (Trigger @Positive)
+GET {{host}}{{base_path}}/-5/items
+Accept: application/json
+
+### ❌ ОШИБКА ВАЛИДАЦИИ: Размер страницы превышает максимально допустимый (Trigger @Max(100))
+GET {{host}}{{base_path}}/2/items?page=0&size=500
+Accept: application/json

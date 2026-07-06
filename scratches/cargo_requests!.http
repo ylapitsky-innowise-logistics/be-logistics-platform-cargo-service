@@ -1,0 +1,212 @@
+# Для встроенного HTTP-клиента IntelliJ IDEA
+@host = http://localhost:8085
+@base_path = /api/v1/catalog/cargos
+
+### ============================================================
+### ПОДГОТОВКА: Убедитесь, что у вас созданы:
+### 1. Хотя бы один SKU (используйте sku_requests.http)
+### 2. Хотя бы один Dimension (используйте dimension_requests.http)
+### 3. Хотя бы один Location (используйте location_requests.http)
+### ============================================================
+
+### ============================================================
+### 1. C - CREATE: Создание 5 новых грузов (товаров на складе)
+### ============================================================
+
+### 01. Создать груз (Смартфон, SKU_ID=1, Dim_ID=1, Loc_ID=1)
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "skuId": 1,
+  "name": "Смартфон Galaxy S25",
+  "category": "ELECTRONICS",
+  "weight": 0.2,
+  "dimensionId": 1,
+  "price": 999.99,
+  "locationId": 1
+}
+
+### 02. Создать груз (Ноутбук, SKU_ID=2, Dim_ID=2, Loc_ID=1)
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "skuId": 2,
+  "name": "Ноутбук MacBook Pro",
+  "category": "ELECTRONICS",
+  "weight": 1.5,
+  "dimensionId": 2,
+  "price": 2499.00,
+  "locationId": 1
+}
+
+### 03. Создать груз (Книга, SKU_ID=3, Dim_ID=3, Loc_ID=2)
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "skuId": 3,
+  "name": "Книга: Чистая Архитектура",
+  "category": "BOOKS",
+  "weight": 0.5,
+  "dimensionId": 3,
+  "price": 45.00,
+  "locationId": 2
+}
+
+### 04. Создать груз (Футбольный мяч, SKU_ID=4, Dim_ID=4, Loc_ID=3)
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "skuId": 4,
+  "name": "Футбольный мяч Adidas",
+  "category": "SPORTS",
+  "weight": 0.45,
+  "dimensionId": 4,
+  "price": 89.99,
+  "locationId": 3
+}
+
+### 05. Создать груз (Настольная лампа, SKU_ID=5, Dim_ID=5, Loc_ID=1)
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "skuId": 5,
+  "name": "Настольная лампа LED",
+  "category": "OTHER",
+  "weight": 1.2,
+  "dimensionId": 5,
+  "price": 34.50,
+  "locationId": 1
+}
+
+### ============================================================
+### 2. R - READ: Получение грузов
+### ============================================================
+
+### 06. Получить все грузы (с пагинацией, 20 элементов на странице)
+GET {{host}}{{base_path}}
+Accept: application/json
+
+### 07. Получить груз по его ID (например, id=1)
+GET {{host}}{{base_path}}/34879
+Accept: application/json
+
+### ============================================================
+### 3. U - UPDATE: Обновление существующего груза
+### ============================================================
+
+### 08. Полное обновление груза (например, id=1)
+PUT {{host}}{{base_path}}/1
+Content-Type: application/json
+
+{
+  "skuId": 1,
+  "name": "Смартфон Galaxy S25 (обновлено)",
+  "category": "ELECTRONICS",
+  "weight": 0.25,
+  "dimensionId": 1,
+  "price": 899.99,
+  "locationId": 2
+}
+
+### ============================================================
+### 4. D - DELETE: Удаление груза
+### ============================================================
+
+### 09. Удалить груз по ID (например, id=5)
+DELETE {{host}}{{base_path}}/5
+
+### ============================================================
+### 5. БИЗНЕС-ОПЕРАЦИЯ: Расчет стоимости
+### ============================================================
+
+### 10. Расчет стоимости по списку ID товаров
+POST {{host}}{{base_path}}/calculate-price
+Content-Type: application/json
+
+[
+  1, 2, 3
+]
+
+### ============================================================
+### 6. ❌ ТЕСТЫ НА ОШИБКИ (Валидация)
+### ============================================================
+
+### 11. ❌ ОШИБКА 404: Получение несуществующего груза (id=99999)
+GET {{host}}{{base_path}}/99999
+Accept: application/json
+
+### 12. ❌ ОШИБКА ВАЛИДАЦИИ: Создание груза без обязательного поля "name"
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "skuId": 1,
+  "category": "ELECTRONICS",
+  "weight": 0.2,
+  "dimensionId": 1,
+  "price": 999.99,
+  "locationId": 1
+}
+
+### 13. ❌ ОШИБКА ВАЛИДАЦИИ: Создание груза с отрицательной ценой
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "skuId": 1,
+  "name": "Смартфон Galaxy S25",
+  "category": "ELECTRONICS",
+  "weight": 0.2,
+  "dimensionId": 1,
+  "price": -100.00,
+  "locationId": 1
+}
+
+### 14. ❌ ОШИБКА ВАЛИДАЦИИ: Создание груза с несуществующим skuId (99999)
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "skuId": 99999,
+  "name": "Несуществующий товар",
+  "category": "OTHER",
+  "weight": 1.0,
+  "dimensionId": 1,
+  "price": 100.00,
+  "locationId": 1
+}
+
+### 15. ❌ ОШИБКА ВАЛИДАЦИИ: Пустой список ID при расчете цены
+POST {{host}}{{base_path}}/calculate-price
+Content-Type: application/json
+
+[]
+
+### 16. ❌ ОШИБКА ВАЛИДАЦИИ: Список ID с null элементом при расчете цены
+POST {{host}}{{base_path}}/calculate-price
+Content-Type: application/json
+
+[
+  1,
+  null,
+  3
+]
+
+### 17. ❌ ОШИБКА ВАЛИДАЦИИ: Создание груза с отрицательным весом
+POST {{host}}{{base_path}}
+Content-Type: application/json
+
+{
+  "skuId": 1,
+  "name": "Смартфон Galaxy S25",
+  "category": "ELECTRONICS",
+  "weight": -0.2,
+  "dimensionId": 1,
+  "price": 999.99,
+  "locationId": 1
+}

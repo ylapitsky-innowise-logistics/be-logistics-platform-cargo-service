@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
 @Entity
 @Table(name = "locations")
@@ -21,7 +22,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = "id")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true) // Спасает от LazyInitializationException
 public class Location {
 
     @Id
@@ -29,17 +30,19 @@ public class Location {
     @Column(name = "location_id")
     private Long id;
 
-    @Column(name = "shelf")
-    private String shelf;                   // Полка, где находится товар
+    @Column(name = "rack", nullable = false, length = 50)
+    @Comment("Стеллаж, где находится товар")
+    @EqualsAndHashCode.Include // Сравниваем по координатам стеллажа
+    private String rack;
 
-    @Column(name = "rack", nullable = false)
-    private String rack;                    // Стеллаж, где находится товар
-
+    @Column(name = "shelf", length = 50)
+    @Comment("Полка, где находится товар")
+    @EqualsAndHashCode.Include // и полки
+    private String shelf;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "address_id",
-            nullable = false
-    )
+    @JoinColumn(name = "address_id", nullable = false)
+    @Comment("Внешний ключ на адрес склада (FK)")
+    // Аннотацию @EqualsAndHashCode.Include сюда НЕ СТАВИМ, чтобы держать связь ленивой!
     private Address address;
 }

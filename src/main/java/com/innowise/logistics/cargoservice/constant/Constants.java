@@ -1,6 +1,13 @@
 package com.innowise.logistics.cargoservice.constant;
 
-public abstract class Constants {
+import lombok.experimental.UtilityClass;
 
-    public static final String CYRRENCY = "RUB";
+@UtilityClass                   // Ломбок сделает класс final, скроет конструктор и запретит наследование
+public class Constants {
+
+    // Базовая валюта платформы для финансовых расчетов
+    public static final String CURRENCY = "RUB";
+
+    // Здесь же в будущем можно хранить системные лимиты
+    public static final int DEFAULT_PAGE_SIZE = 20;
 }
