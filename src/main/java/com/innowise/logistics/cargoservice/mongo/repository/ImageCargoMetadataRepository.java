@@ -15,7 +15,8 @@ public interface ImageCargoMetadataRepository extends MongoRepository<ImageCargo
     Page<ImageCargoMetadata> findByCargoId(Long cargoId, Pageable pageable);
 
     // 📖 Найти главное изображение для Cargo
-    Optional<ImageCargoMetadata> findByCargoIdAndIsPrimaryTrue(Long cargoId);
+//    Optional<ImageCargoMetadata> findByCargoIdAndIsPrimaryTrue(Long cargoId);
+    Optional<ImageCargoMetadata> findFirstByCargoIdAndIsPrimaryTrue(Long cargoId);
 
     // 🗑️ Удалить все изображения для Cargo
     void deleteByCargoId(Long cargoId);

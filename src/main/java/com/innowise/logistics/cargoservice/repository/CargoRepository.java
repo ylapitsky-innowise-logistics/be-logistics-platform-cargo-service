@@ -13,9 +13,16 @@ import org.springframework.stereotype.Repository;
 
 import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CargoRepository extends JpaRepository<Cargo, Long> {
+
+    /**
+     * Получить Cargo по ID и сразу подтянуть связанный Sku (решает LazyInitializationException)
+     */
+    @Query("SELECT c FROM Cargo c LEFT JOIN FETCH c.sku WHERE c.id = :id")
+    Optional<Cargo> findByIdWithSku(@Param("id") Long id);
 
     /**
      * Найти первые N доступных товаров по 'артикулу' и 'статусу'

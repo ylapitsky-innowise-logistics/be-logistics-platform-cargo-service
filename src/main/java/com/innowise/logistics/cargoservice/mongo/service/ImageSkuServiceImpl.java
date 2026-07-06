@@ -59,6 +59,7 @@ public class ImageSkuServiceImpl extends ImageAbstractService<
                                             ImageDimension dimension,
                                             MultipartFile file) {
         ImageSkuMetadata metadata = new ImageSkuMetadata();
+        metadata.setId(fileId); // Синхронизируем первичный ключ паспорта с ID файла GridFS!
         metadata.setGridFsFileId(fileId);
         metadata.setSkuId(entity.getId());
         metadata.setSkuName(entity.getName());
@@ -107,7 +108,7 @@ public class ImageSkuServiceImpl extends ImageAbstractService<
 
     @Override
     protected ImageViewResponse findPrimaryByEntityId(Long entityId) {
-        return metadataRepository.findBySkuIdAndIsPrimaryTrue(entityId)
+        return metadataRepository.findFirstBySkuIdAndIsPrimaryTrue(entityId)
                 .map(this::toImageViewResponse)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,

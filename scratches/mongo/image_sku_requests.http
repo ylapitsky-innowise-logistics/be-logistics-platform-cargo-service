@@ -1,15 +1,13 @@
-# Для встроенного HTTP-клиента IntelliJ IDEA
+# Настройки окружения для SKU Controller
 @host = http://localhost:8085
+@base_skus_url = /api/v1/catalog/images/skus
 
 ### ============================================================
-### ПОДГОТОВКА: Убедитесь, что созданы SKU с ID=1, ID=2, ID=3, ID=4
+### 1️⃣ CREATE — Загрузка изображений для партий (SKU)
 ### ============================================================
-
-### 1. ЗАГРУЗКА ФОТО ДЛЯ SKU (Артикулов)
-### Базовый путь: /api/v1/catalog/images/skus
 
 ### 01. Загрузить основное фото для SKU ID=1 (Смартфон премиум)
-POST {{host}}/api/v1/catalog/images/skus
+POST {{host}}{{base_skus_url}}
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -26,11 +24,11 @@ Content-Type: application/json
 Content-Disposition: form-data; name="file"; filename="smartphone.png"
 Content-Type: image/png
 
-< ./pictures/Смартфон_премиум.png
+< ../../src/main/resources/testdata/images/sku/Смартфон_премиум.png
 --boundary--
 
 ### 02. Загрузить дополнительное фото для SKU ID=1 (Умные часы)
-POST {{host}}/api/v1/catalog/images/skus
+POST {{host}}{{base_skus_url}}
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -47,11 +45,11 @@ Content-Type: application/json
 Content-Disposition: form-data; name="file"; filename="smart_watch.png"
 Content-Type: image/png
 
-< ./pictures/Умные_часы.png
+< ../../src/main/resources/testdata/images/sku/Умные_часы.png
 --boundary--
 
-### 03. Загрузить фото для SKU ID=2 (Ноутбук рабочий)
-POST {{host}}/api/v1/catalog/images/skus
+### 03. Загрузить основное фото для SKU ID=2 (Ноутбук рабочий)
+POST {{host}}{{base_skus_url}}
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -68,11 +66,11 @@ Content-Type: application/json
 Content-Disposition: form-data; name="file"; filename="laptop.png"
 Content-Type: image/png
 
-< ./pictures/Ноутбук_рабочий.png
+< ../../src/main/resources/testdata/images/sku/Ноутбук_рабочий.png
 --boundary--
 
-### 04. Загрузить фото для SKU ID=3 (Книга по паттернам)
-POST {{host}}/api/v1/catalog/images/skus
+### 04. Загрузить фото для SKU ID=3 (Книга по Spring Boot 3)
+POST {{host}}{{base_skus_url}}
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -81,27 +79,6 @@ Content-Type: application/json
 
 {
   "id": 3,
-  "description": "Книга: Паттерны проектирования Enterprise-приложений",
-  "sortOrder": 0,
-  "isPrimary": true
-}
---boundary
-Content-Disposition: form-data; name="file"; filename="design_patterns.png"
-Content-Type: image/png
-
-< ./pictures/Книга_Паттерны_проектирования_Enterprise-приложений.png
---boundary--
-
-### 05. Загрузить фото для SKU ID=4 (Книга по Spring Boot)
-POST {{host}}/api/v1/catalog/images/skus
-Content-Type: multipart/form-data; boundary=boundary
-
---boundary
-Content-Disposition: form-data; name="metadata"
-Content-Type: application/json
-
-{
-  "id": 4,
   "description": "Книга: Руководство по Spring Boot 3",
   "sortOrder": 0,
   "isPrimary": true
@@ -110,148 +87,71 @@ Content-Type: application/json
 Content-Disposition: form-data; name="file"; filename="spring_boot.png"
 Content-Type: image/png
 
-< ./pictures/Книга_Руководство_по_Spring_Boot_3.png
---boundary--
-
-### 06. Загрузить фото для SKU ID=4 (дополнительное — Философия Java)
-POST {{host}}/api/v1/catalog/images/skus
-Content-Type: multipart/form-data; boundary=boundary
-
---boundary
-Content-Disposition: form-data; name="metadata"
-Content-Type: application/json
-
-{
-  "id": 4,
-  "description": "Дополнительная книга по Java на том же артикуле",
-  "sortOrder": 1,
-  "isPrimary": false
-}
---boundary
-Content-Disposition: form-data; name="file"; filename="java_philosophy.png"
-Content-Type: image/png
-
-< ./pictures/Книга_Философия_Java.png
---boundary--
-
-### 07. Загрузить фото для SKU ID=4 (дополнительное — Чистая архитектура)
-POST {{host}}/api/v1/catalog/images/skus
-Content-Type: multipart/form-data; boundary=boundary
-
---boundary
-Content-Disposition: form-data; name="metadata"
-Content-Type: application/json
-
-{
-  "id": 4,
-  "description": "Книга: Чистая архитектура",
-  "sortOrder": 2,
-  "isPrimary": false
-}
---boundary
-Content-Disposition: form-data; name="file"; filename="clean_architecture.png"
-Content-Type: image/png
-
-< ./pictures/Книга_Чистая_Архитектура.png
+< ../../src/main/resources/testdata/images/sku/Книга_Руководство_по_Spring_Boot_3.png
 --boundary--
 
 
-### 2. ПОЛУЧЕНИЕ ГАЛЕРЕИ ИЗОБРАЖЕНИЙ
-### Путь: GET /api/v1/catalog/images/skus/gallery/{skuId}
+### ============================================================
+### 2️⃣ READ ALL — Получение всех SKU изображений (Пагинация)
+### ============================================================
 
-### 08. Получить галерею для SKU ID=1 (2 фото)
-GET {{host}}/api/v1/catalog/images/skus/gallery/1
-Accept: application/json
-
-### 09. Получить галерею для SKU ID=2 (1 фото)
-GET {{host}}/api/v1/catalog/images/skus/gallery/2
-Accept: application/json
-
-### 10. Получить галерею для SKU ID=3 (1 фото)
-GET {{host}}/api/v1/catalog/images/skus/gallery/3
-Accept: application/json
-
-### 11. Получить галерею для SKU ID=4 (3 фото)
-GET {{host}}/api/v1/catalog/images/skus/gallery/4
+### 05. Получить все изображения (страница 0, размер 15, сортировка по uploadedAt)
+GET {{host}}{{base_skus_url}}?page=0&size=15&sort=uploadedAt
 Accept: application/json
 
 
-### 3. ПОЛУЧЕНИЕ ВСЕХ ИЗОБРАЖЕНИЙ (с пагинацией)
-### Путь: GET /api/v1/catalog/images/skus
+### ============================================================
+### 3️⃣ READ GALLERY — Галерея по ID сущности из Postgres
+### ============================================================
 
-### 12. Получить все SKU-изображения (страница 0, размер 10)
-GET {{host}}/api/v1/catalog/images/skus?page=0&size=10
-Accept: application/json
-
-### 13. Получить все SKU-изображения (страница 1, размер 5)
-GET {{host}}/api/v1/catalog/images/skus?page=1&size=5
+### 06. Получить галерею картинок для SKU ID=1 (Пагинация по умолчанию)
+GET {{host}}{{base_skus_url}}/gallery/1
 Accept: application/json
 
 
-### 4. СКАЧИВАНИЕ КОНКРЕТНОГО ИЗОБРАЖЕНИЯ
-### Путь: GET /api/v1/catalog/images/skus/{fileId}
-### (Подставьте реальный ID из ответов выше)
+### ============================================================
+### 4️⃣ READ ONE — Стриминг бинарника из GridFS по fileId
+### ============================================================
 
-### 14. Скачать изображение (пример)
-GET {{host}}/api/v1/catalog/images/skus/PLACE_YOUR_REAL_GRIDFS_ID_HERE
+### 07. Скачать конкретный файл изображения по его GridFS ID
+# ⚠️ ПОДСТАВЬТЕ РЕАЛЬНЫЙ 24-значный fileId ИЗ ОТВЕТА ЗАПРОСОВ 01-06
+GET {{host}}{{base_skus_url}}/6a4b76ca20549b3be8a533f0
 Accept: image/png
 
 
-### 5. ПОЛУЧЕНИЕ ГЛАВНОГО ИЗОБРАЖЕНИЯ
-### Путь: GET /api/v1/catalog/images/skus/gallery/{skuId}/primary
+### ============================================================
+### 5️⃣ UPDATE — Обновление метаданных паспорта картинки
+### ============================================================
 
-### 15. Получить главное фото для SKU ID=1
-GET {{host}}/api/v1/catalog/images/skus/gallery/1/primary
-Accept: application/json
-
-
-### 6. ОБНОВЛЕНИЕ МЕТАДАННЫХ
-### Путь: PUT /api/v1/catalog/images/skus/{fileId}
-
-### 16. Обновить описание у файла (подставьте реальный fileId)
-PUT {{host}}/api/v1/catalog/images/skus/PLACE_YOUR_REAL_GRIDFS_ID_HERE
+### 08. Изменить описание и порядок отображения медиафайла
+# ⚠️ ПОДСТАВЬТЕ РЕАЛЬНЫЙ 24-значный fileId
+PUT {{host}}{{base_skus_url}}/6a4b76ca20549b3be8a533f0
 Content-Type: application/json
 
 {
   "id": 1,
-  "description": "НОВОЕ ОПИСАНИЕ: Смартфон премиум-класса с улучшенной камерой",
-  "sortOrder": 0,
+  "description": "ОБНОВЛЕННОЕ ОПИСАНИЕ: Смартфон премиум-класса с аксессуарами",
+  "sortOrder": 5,
   "isPrimary": true
 }
 
 
-### 7. ❌ ТЕСТЫ НА ОШИБКИ
+### ============================================================
+### 8️⃣ GET PRIMARY — Получение главного фото артикула
+### ============================================================
 
-### 17. ❌ ОШИБКА 404: Несуществующий SKU
-GET {{host}}/api/v1/catalog/images/skus/gallery/99999
+### 09. Получить обложку (primary image) для SKU ID=1
+GET {{host}}{{base_skus_url}}/gallery/1/primary
 Accept: application/json
 
-### 18. ❌ ОШИБКА 404: Несуществующий файл
-GET {{host}}/api/v1/catalog/images/skus/660000000000000000000000
-Accept: image/png
 
-### 19. ❌ ОШИБКА ВАЛИДАЦИИ: Загрузка без обязательного поля "id"
-POST {{host}}/api/v1/catalog/images/skus
-Content-Type: multipart/form-data; boundary=boundary
+### ============================================================
+### 6️⃣ & 7️⃣ DELETE — Удаление (Одиночное и пакетное)
+### ============================================================
 
---boundary
-Content-Disposition: form-data; name="metadata"
-Content-Type: application/json
+### 10. Удалить конкретную картинку из GridFS и NoSQL метаданных
+# ⚠️ ПОДСТАВЬТЕ РЕАЛЬНЫЙ 24-значный fileId
+DELETE {{host}}{{base_skus_url}}/6682b1c3d4e5f67890123456
 
-{
-  "description": "Фото без ID",
-  "sortOrder": 0,
-  "isPrimary": true
-}
---boundary
-Content-Disposition: form-data; name="file"; filename="test.png"
-Content-Type: image/png
-
-< ./pictures/Компактный_складной_зонт.png
---boundary--
-
-### 20. ❌ УДАЛЕНИЕ: Удалить изображение (подставьте реальный fileId)
-DELETE {{host}}/api/v1/catalog/images/skus/PLACE_YOUR_REAL_GRIDFS_ID_HERE
-
-### 21. ❌ УДАЛЕНИЕ ГАЛЕРЕИ: Удалить все фото для SKU ID=4
-DELETE {{host}}/api/v1/catalog/images/skus/gallery/4
+### 11. Очистить всю галерею (каскадно) для SKU ID=3
+DELETE {{host}}{{base_skus_url}}/gallery/3

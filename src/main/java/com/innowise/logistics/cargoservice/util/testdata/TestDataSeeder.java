@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 import static com.innowise.logistics.cargoservice.constant.ApiImageConstants.TEST_DATA_IMAGE_SKU_PATH;
 
 /**
- * 🟢 Сервис-оркестратор наполнения базы данных тестовыми данными.
+ * 🟢 Сервис для наполнения базы данных тестовыми данными.
  * Открывает единую транзакцию и соблюдает строгую последовательность сохранения графа связей.
  * т.е. он выступает в роли диспетчера: вызывает генераторы по цепочке,
  * поочередно сохраняет сущности через репозитории и передает ID дальше.
@@ -304,12 +304,12 @@ public class TestDataSeeder {
                 .append("; наименование товара: ").append(cargo.getName())
                 .append("; категория товара: ").append(cargo.getCategory())
                 .append("; артикул товара: ").append(cargo.getSku().getName())
-                .append("; (id артикула товара: ").append(cargo.getSku().getId())
-                .append("); вес товара=").append(cargo.getWeight())
-                .append("кг.; габариты упаковки товара: длинна=").append(cargo.getDimension().getLength())
-                .append("см., ширина=").append(cargo.getDimension().getWidth())
-                .append("см., высота=").append(cargo.getDimension().getHeight())
-                .append("см.")
+                .append("; id артикула товара: ").append(cargo.getSku().getId())
+                .append("; вес товара=").append(cargo.getWeight())
+                .append(" кг.; габариты упаковки товара: длинна=").append(cargo.getDimension().getLength())
+                .append(" см., ширина=").append(cargo.getDimension().getWidth())
+                .append(" см., высота=").append(cargo.getDimension().getHeight())
+                .append(" см.")
                 .toString();
     }
 

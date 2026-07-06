@@ -15,7 +15,8 @@ public interface ImageSkuMetadataRepository extends MongoRepository<ImageSkuMeta
     Page<ImageSkuMetadata> findBySkuId(Long skuId, Pageable pageable);
 
     // 📖 Найти главное изображение для SKU
-    Optional<ImageSkuMetadata> findBySkuIdAndIsPrimaryTrue(Long skuId);
+//    Optional<ImageSkuMetadata> findBySkuIdAndIsPrimaryTrue(Long skuId);
+    Optional<ImageSkuMetadata> findFirstBySkuIdAndIsPrimaryTrue(Long skuId);
 
     // 🗑️ Удалить все изображения для SKU
     void deleteBySkuId(Long skuId);

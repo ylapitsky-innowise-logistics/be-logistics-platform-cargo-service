@@ -44,7 +44,7 @@ public class ImageCargoServiceImpl extends ImageAbstractService<
 
     @Override
     protected Cargo findEntityById(Long id) {
-        return postgresRepository.findById(id)
+        return postgresRepository.findByIdWithSku(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Груз (Cargo) с ID " + id + " не найден"
@@ -58,6 +58,7 @@ public class ImageCargoServiceImpl extends ImageAbstractService<
                                                 ImageDimension dimension,
                                                 MultipartFile file) {
         ImageCargoMetadata metadata = new ImageCargoMetadata();
+        metadata.setId(fileId); // Синхронизируем первичный ключ паспорта с ID файла GridFS!
         metadata.setGridFsFileId(fileId);
         metadata.setCargoId(entity.getId());
         metadata.setCargoName(entity.getName());
@@ -106,7 +107,7 @@ public class ImageCargoServiceImpl extends ImageAbstractService<
 
     @Override
     protected ImageViewResponse findPrimaryByEntityId(Long entityId) {
-        return metadataRepository.findByCargoIdAndIsPrimaryTrue(entityId)
+        return metadataRepository.findFirstByCargoIdAndIsPrimaryTrue(entityId)
                 .map(this::toImageViewResponse)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,

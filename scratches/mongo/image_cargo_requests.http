@@ -1,15 +1,13 @@
-# Для встроенного HTTP-клиента IntelliJ IDEA
+# Настройки окружения для Cargo Controller
 @host = http://localhost:8085
+@base_cargos_url = /api/v1/catalog/images/cargos
 
 ### ============================================================
-### ПОДГОТОВКА: Убедитесь, что созданы Cargo с ID=1, ID=2, ID=3, ID=4
+### 1️⃣ CREATE — Загрузка фотографий дефектов конкретного груза
 ### ============================================================
 
-### 1. ЗАГРУЗКА ФОТО ДЛЯ CARGO (Физических коробок на складе)
-### Базовый путь: /api/v1/catalog/images/cargos
-
-### 01. Загрузить фото для CARGO ID=1 (Фиксация состояния при приёмке)
-POST {{host}}/api/v1/catalog/images/cargos
+### 01. Загрузить фото дефекта для CARGO ID=1 (Замятие картона)
+POST {{host}}{{base_cargos_url}}
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -18,20 +16,19 @@ Content-Type: application/json
 
 {
   "id": 1,
-  "description": "Внешний вид товара при приёмке (коробка без повреждений)",
+  "description": "Фиксация состояния упаковки при приемке: дефект №1",
   "sortOrder": 0,
   "isPrimary": true
 }
 --boundary
-Content-Disposition: form-data; name="file"; filename="box_good.png"
+Content-Disposition: form-data; name="file"; filename="cargo_defect_01.png"
 Content-Type: image/png
 
-#< ./pictures/Книга_Руководство_по_Spring_Boot_3.png
-< ..resources/testdata/images/sku//Книга_Руководство_по_Spring_Boot_3.png
+< ../../src/main/resources/testdata/images/cargo/Cargo_дефекты_01.png
 --boundary--
 
-### 02. Загрузить дополнительное фото для CARGO ID=1 (Фиксация дефекта)
-POST {{host}}/api/v1/catalog/images/cargos
+### 02. Загрузить второе фото дефекта для CARGO ID=1
+POST {{host}}{{base_cargos_url}}
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -40,19 +37,19 @@ Content-Type: application/json
 
 {
   "id": 1,
-  "description": "Выявленный дефект: повреждение угла коробки при транспортировке",
+  "description": "Крупный план трещины на пластиковой защите",
   "sortOrder": 1,
   "isPrimary": false
 }
 --boundary
-Content-Disposition: form-data; name="file"; filename="box_damaged.png"
+Content-Disposition: form-data; name="file"; filename="cargo_defect_02.png"
 Content-Type: image/png
 
-< ./pictures/Книга_Философия_Java.png
+< ../../src/main/resources/testdata/images/cargo/Cargo_дефекты_01.png
 --boundary--
 
-### 03. Загрузить фото для CARGO ID=2 (Спортивный инвентарь — мяч)
-POST {{host}}/api/v1/catalog/images/cargos
+### 03. Загрузить фото для CARGO ID=2
+POST {{host}}{{base_cargos_url}}
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -61,198 +58,79 @@ Content-Type: application/json
 
 {
   "id": 2,
-  "description": "Товары для спорта: турнирный футбольный мяч",
+  "description": "Проверка сколов на углах поддона",
   "sortOrder": 0,
   "isPrimary": true
 }
 --boundary
-Content-Disposition: form-data; name="file"; filename="football.png"
+Content-Disposition: form-data; name="file"; filename="cargo_defect_03.png"
 Content-Type: image/png
 
-< ./pictures/Футбольный_мяч_турнирный.png
---boundary--
-
-### 04. Загрузить дополнительное фото для CARGO ID=2 (Коврик для йоги)
-POST {{host}}/api/v1/catalog/images/cargos
-Content-Type: multipart/form-data; boundary=boundary
-
---boundary
-Content-Disposition: form-data; name="metadata"
-Content-Type: application/json
-
-{
-  "id": 2,
-  "description": "Дополнительное оборудование: нескользящий коврик для йоги",
-  "sortOrder": 1,
-  "isPrimary": false
-}
---boundary
-Content-Disposition: form-data; name="file"; filename="yoga_mat.png"
-Content-Type: image/png
-
-< ./pictures/Коврик_для_йоги_нескользящий.png
---boundary--
-
-### 05. Загрузить фото для CARGO ID=3 (Беспроводные наушники)
-POST {{host}}/api/v1/catalog/images/cargos
-Content-Type: multipart/form-data; boundary=boundary
-
---boundary
-Content-Disposition: form-data; name="metadata"
-Content-Type: application/json
-
-{
-  "id": 3,
-  "description": "Аудиотехника: беспроводные наушники",
-  "sortOrder": 0,
-  "isPrimary": true
-}
---boundary
-Content-Disposition: form-data; name="file"; filename="headphones.png"
-Content-Type: image/png
-
-< ./pictures/Беспроводные_наушники.png
---boundary--
-
-### 06. Загрузить фото для CARGO ID=4 (Эргономичное кресло)
-POST {{host}}/api/v1/catalog/images/cargos
-Content-Type: multipart/form-data; boundary=boundary
-
---boundary
-Content-Disposition: form-data; name="metadata"
-Content-Type: application/json
-
-{
-  "id": 4,
-  "description": "Офисная мебель: анатомическое кресло",
-  "sortOrder": 0,
-  "isPrimary": true
-}
---boundary
-Content-Disposition: form-data; name="file"; filename="chair.png"
-Content-Type: image/png
-
-< ./pictures/Кресло_офисное_анатомическое.png
---boundary--
-
-### 07. Загрузить дополнительное фото для CARGO ID=4 (Стол)
-POST {{host}}/api/v1/catalog/images/cargos
-Content-Type: multipart/form-data; boundary=boundary
-
---boundary
-Content-Disposition: form-data; name="metadata"
-Content-Type: application/json
-
-{
-  "id": 4,
-  "description": "Эргономичный письменный стол в комплекте с креслом",
-  "sortOrder": 1,
-  "isPrimary": false
-}
---boundary
-Content-Disposition: form-data; name="file"; filename="desk.png"
-Content-Type: image/png
-
-< ./pictures/Стол_письменный_эргономичный.png
+< ../../src/main/resources/testdata/images/cargo/Cargo_дефекты_03.png
 --boundary--
 
 
-### 2. ПОЛУЧЕНИЕ ГАЛЕРЕИ ИЗОБРАЖЕНИЙ
-### Путь: GET /api/v1/catalog/images/cargos/gallery/{cargoId}
+### ============================================================
+### 2️⃣ READ ALL — Получение всех Cargo изображений (Пагинация)
+### ============================================================
 
-### 08. Получить галерею для CARGO ID=1 (2 фото)
-GET {{host}}/api/v1/catalog/images/cargos/gallery/1
-Accept: application/json
-
-### 09. Получить галерею для CARGO ID=2 (2 фото)
-GET {{host}}/api/v1/catalog/images/cargos/gallery/2
-Accept: application/json
-
-### 10. Получить галерею для CARGO ID=3 (1 фото)
-GET {{host}}/api/v1/catalog/images/cargos/gallery/3
-Accept: application/json
-
-### 11. Получить галерею для CARGO ID=4 (2 фото)
-GET {{host}}/api/v1/catalog/images/cargos/gallery/4
+### 04. Получить все изображения грузов (страница 0, размер 15)
+GET {{host}}{{base_cargos_url}}
 Accept: application/json
 
 
-### 3. ПОЛУЧЕНИЕ ВСЕХ ИЗОБРАЖЕНИЙ (с пагинацией)
-### Путь: GET /api/v1/catalog/images/cargos
+### ============================================================
+### 3️⃣ READ GALLERY — Галерея Cargo по ID из Postgres
+### ============================================================
 
-### 12. Получить все Cargo-изображения (страница 0, размер 10)
-GET {{host}}/api/v1/catalog/images/cargos?page=0&size=10
-Accept: application/json
-
-### 13. Получить все Cargo-изображения (страница 1, размер 5)
-GET {{host}}/api/v1/catalog/images/cargos?page=1&size=5
+### 05. Получить список всех фото дефектов для коробки груза ID=1
+GET {{host}}{{base_cargos_url}}/gallery/1
 Accept: application/json
 
 
-### 4. СКАЧИВАНИЕ КОНКРЕТНОГО ИЗОБРАЖЕНИЯ
-### Путь: GET /api/v1/catalog/images/cargos/{fileId}
-### (Подставьте реальный ID из ответов выше)
+### ============================================================
+### 4️⃣ READ ONE — Скачивание бинарного потока по fileId
+### ============================================================
 
-### 14. Скачать изображение (пример)
-GET {{host}}/api/v1/catalog/images/cargos/PLACE_YOUR_REAL_GRIDFS_ID_HERE
+### 06. Скачать бинарный файл картинки из GridFS
+# ⚠️ ПОДСТАВЬТЕ РЕАЛЬНЫЙ 24-значный fileId ИЗ ОТВЕТА ЗАПРОСОВ 01-05
+GET {{host}}{{base_cargos_url}}/6a4b761520549b3be8a533ec
 Accept: image/png
 
 
-### 5. ПОЛУЧЕНИЕ ГЛАВНОГО ИЗОБРАЖЕНИЯ
-### Путь: GET /api/v1/catalog/images/cargos/gallery/{cargoId}/primary
+### ============================================================
+### 5️⃣ UPDATE — Обновление описания дефекта груза
+### ============================================================
 
-### 15. Получить главное фото для CARGO ID=1
-GET {{host}}/api/v1/catalog/images/cargos/gallery/1/primary
-Accept: application/json
-
-
-### 6. ОБНОВЛЕНИЕ МЕТАДАННЫХ
-### Путь: PUT /api/v1/catalog/images/cargos/{fileId}
-
-### 16. Обновить описание у файла (подставьте реальный fileId)
-PUT {{host}}/api/v1/catalog/images/cargos/PLACE_YOUR_REAL_GRIDFS_ID_HERE
+### 07. Обновить NoSQL метаданные для конкретного файла
+# ⚠️ ПОДСТАВЬТЕ РЕАЛЬНЫЙ 24-значный fileId
+PUT {{host}}{{base_cargos_url}}/6a4b761520549b3be8a533ec
 Content-Type: application/json
 
 {
   "id": 1,
-  "description": "НОВОЕ ОПИСАНИЕ: Дефект упаковки — вмятина на углу, зафиксирована при приёмке",
-  "sortOrder": 1,
-  "isPrimary": false
-}
-
-
-### 7. ❌ ТЕСТЫ НА ОШИБКИ
-
-### 17. ❌ ОШИБКА 404: Несуществующий CARGO
-GET {{host}}/api/v1/catalog/images/cargos/gallery/99999
-Accept: application/json
-
-### 18. ❌ ОШИБКА 404: Несуществующий файл
-GET {{host}}/api/v1/catalog/images/cargos/660000000000000000000000
-Accept: image/png
-
-### 19. ❌ ОШИБКА ВАЛИДАЦИИ: Загрузка без обязательного поля "id"
-POST {{host}}/api/v1/catalog/images/cargos
-Content-Type: multipart/form-data; boundary=boundary
-
---boundary
-Content-Disposition: form-data; name="metadata"
-Content-Type: application/json
-
-{
-  "description": "Фото-сирота без CARGO ID",
+  "description": "УТОЧНЕННЫЙ КОММЕНТАРИЙ: Глубокая царапина правого ребра жесткости",
   "sortOrder": 0,
   "isPrimary": true
 }
---boundary
-Content-Disposition: form-data; name="file"; filename="test.png"
-Content-Type: image/png
 
-< ./pictures/Компактный_складной_зонт.png
---boundary--
 
-### 20. ❌ УДАЛЕНИЕ: Удалить изображение (подставьте реальный fileId)
-DELETE {{host}}/api/v1/catalog/images/cargos/PLACE_YOUR_REAL_GRIDFS_ID_HERE
+### ============================================================
+### 8️⃣ GET PRIMARY — Получение главного фото повреждения
+### ============================================================
 
-### 21. ❌ УДАЛЕНИЕ ГАЛЕРЕИ: Удалить все фото для CARGO ID=4
-DELETE {{host}}/api/v1/catalog/images/cargos/gallery/4
+### 08. Получить основное изображение брака для CARGO ID=1
+GET {{host}}{{base_cargos_url}}/gallery/1/primary
+Accept: application/json
+
+
+### ============================================================
+### 6️⃣ & 7️⃣ DELETE — Операции удаления для Cargo
+### ============================================================
+
+### 09. Удалить конкретный снимок дефекта
+# ⚠️ ПОДСТАВЬТЕ РЕАЛЬНЫЙ 24-значный fileId
+DELETE {{host}}{{base_cargos_url}}/6a4b754820549b3be8a533e0
+
+### 10. Полностью очистить галерею повреждений для CARGO ID=2
+DELETE {{host}}{{base_cargos_url}}/gallery/2
