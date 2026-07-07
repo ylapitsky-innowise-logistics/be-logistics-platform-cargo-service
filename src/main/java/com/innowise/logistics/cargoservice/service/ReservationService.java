@@ -38,6 +38,9 @@ public class ReservationService {
     private final SkuRepository skuRepository;
     private final CargoMapper cargoMapper;
 
+
+
+    // ПЕРЕДЕЛКА: Буду передавать сюда List<CargoReservationRequest> в котором жестко регламентировать
     /**
      * 1️⃣ Зарезервировать товары
      * согласно переданному списку (Sku / количество, зашито в CargoReservationResponse) .
@@ -123,6 +126,34 @@ public class ReservationService {
                 savedReservation.getTotalQuantity(),
                 CURRENCY);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * 2️⃣ Снять резервирование (бронь) с товаров по ID бронирования.

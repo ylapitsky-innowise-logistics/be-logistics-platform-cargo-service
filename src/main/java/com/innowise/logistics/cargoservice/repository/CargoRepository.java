@@ -7,6 +7,7 @@ import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -108,4 +109,13 @@ public interface CargoRepository extends JpaRepository<Cargo, Long> {
             @Param("status") Status status,
             Pageable pageable
     );
+
+    // Bulk-обновление статусов
+    @Modifying(clearAutomatically = true)  // ← указывает, что запрос изменяет данные, Без неё Hibernate не выполнит запрос. очищает кэш после обновления
+    @Query("UPDATE Cargo c SET c.status = :newStatus WHERE c.id IN :ids")
+    int updateStatusByIds(
+            @Param("ids") List<Long> ids,
+            @Param("newStatus") Status newStatus
+    );
+    // Возвращает количество обновлённых строк
 }
