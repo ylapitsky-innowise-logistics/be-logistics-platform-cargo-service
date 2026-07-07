@@ -18,12 +18,12 @@ Content-Type: application/json
 
 [
   {
-    "skuId": 1,
+    "skuId": 78,
     "quantity": 2
   },
   {
-    "skuId": 2,
-    "quantity": 1
+    "skuId": 73,
+    "quantity": 3
   }
 ]
 
