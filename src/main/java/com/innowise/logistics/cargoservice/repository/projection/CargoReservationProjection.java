@@ -8,8 +8,6 @@ import java.math.BigDecimal;
  * Задел на будущий high-load production:
  * Буду возвращать из репозитория ПРОЕКЦИЮ, т.е. набор только необходимых для резервирования полей.
  * Будем считать, что мой проект потом разрастется, поэтому целесообразно.
- *
- * В данном пакете - ПРОЕКЦИИ (интерфейсы)
  */
 public interface CargoReservationProjection {
     Long getId();
@@ -17,3 +15,5 @@ public interface CargoReservationProjection {
     Double getWeight();
     Status getStatus();
 }
+
+// В данном пакете лежат ПРОЕКЦИИ (интерфейсы)

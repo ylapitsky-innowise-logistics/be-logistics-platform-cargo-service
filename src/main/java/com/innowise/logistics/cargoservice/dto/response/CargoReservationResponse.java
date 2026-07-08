@@ -5,14 +5,6 @@ import java.time.Instant;
 import java.util.Set;
 
 public record CargoReservationResponse(
-//        Long bookingId,           // Id брони
-//        Instant createdAt,        // Дата создания брони
-//
-//        BigDecimal totalPrice,    // Итоговая сумма стоимости всех позиций
-//        Double totalWeight,       // Итоговый вес
-//        Integer totalItemsCount,  // Общее количество единиц товара
-//        String currency           // Валюта
-
 
 // ===== 1. Идентификаторы и Аудит =====
         Long reservationId,         // Id брони

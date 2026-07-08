@@ -3,6 +3,7 @@ package com.innowise.logistics.cargoservice.repository;
 import com.innowise.logistics.cargoservice.dto.response.SkuAvailabilityResponse;
 import com.innowise.logistics.cargoservice.entity.Cargo;
 import com.innowise.logistics.cargoservice.entity.Status;
+import com.innowise.logistics.cargoservice.repository.projection.CargoReservationProjection;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -110,6 +111,59 @@ public interface CargoRepository extends JpaRepository<Cargo, Long> {
             Pageable pageable
     );
 
+    // ===
+
+    // Используем ПРОЕКЦИЮ для облегчения возвращаемой сущности, ТОЛЬКО НЕОБХОДИМЫЕ ПОЛЯ!
+    @Query("""
+           SELECT DISTINCT c.id as id, 
+                  c.price as price,
+                  c.weight as weight,
+                  c.status as status
+           FROM Cargo c
+           WHERE c.id IN (:cargoIds) 
+                AND c.status = :status
+           ORDER BY c.id
+           """)
+    List<CargoReservationProjection> findProjectionsByCargoIdAndStatus(
+            @Param("cargoIds") List<Long> cargoIds,
+            @Param("status") Status status,
+            Pageable pageable
+    );
+
+    @Query("""
+       SELECT c.id as id, 
+              c.price as price, 
+              c.weight as weight, 
+              c.status as status
+       FROM Cargo c
+       WHERE c.sku.id = :skuId 
+         AND c.status = :status
+         AND c.id NOT IN (:excludedIds)
+       ORDER BY c.id
+       """)
+    List<CargoReservationProjection> findProjectionsBySkuIdAndStatusExcludingIds(
+            @Param("skuId") Long skuId,
+            @Param("status") Status status,
+            @Param("excludedIds") List<Long> excludedIds,
+            Pageable pageable
+    );
+
+    // Используем ПРОЕКЦИЮ для облегчения возвращаемой сущности, ТОЛЬКО НЕОБХОДИМЫЕ ПОЛЯ!
+    @Query("""
+           SELECT c.id as id, 
+                  c.price as price, 
+                  c.weight as weight, 
+                  c.status as status
+           FROM Cargo c
+           WHERE c.sku.id = :skuId AND c.status = :status
+           ORDER BY c.id
+           """)
+    List<CargoReservationProjection> findProjectionsBySkuIdAndStatus(
+            @Param("skuId") Long skuId,
+            @Param("status") Status status,
+            Pageable pageable
+    );
+
     // Bulk-обновление статусов
     @Modifying(clearAutomatically = true)  // ← указывает, что запрос изменяет данные, Без неё Hibernate не выполнит запрос. очищает кэш после обновления
     @Query("UPDATE Cargo c SET c.status = :newStatus WHERE c.id IN :ids")
@@ -118,4 +172,5 @@ public interface CargoRepository extends JpaRepository<Cargo, Long> {
             @Param("newStatus") Status newStatus
     );
     // Возвращает количество обновлённых строк
+
 }
