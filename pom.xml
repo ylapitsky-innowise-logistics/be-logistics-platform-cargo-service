@@ -135,6 +135,9 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+                    <jvmArguments>  <!-- 👈 GMT+3 -->
+                        -Duser.timezone=Europe/Moscow
+                    </jvmArguments>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
