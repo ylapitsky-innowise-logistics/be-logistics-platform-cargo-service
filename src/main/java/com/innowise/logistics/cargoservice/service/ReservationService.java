@@ -295,13 +295,15 @@ public class ReservationService {
 
     /**
      * 3️⃣ Получить пагинированный список всех резервирований в системе.
+     * Можно отфильтровать по статусу активности (isActive).
      *
-     * @param pageable параметры пагинации от контроллера
+     * @param isActive фильтр по активности (true — активные, false — неактивные, null — все)
+     * @param pageable параметры пагинации
      * @return страница с DTO бронирований
      */
     @Transactional(readOnly = true)
-    public Page<CargoReservationResponse> getAllReservations(Pageable pageable) {
-        Page<Reservation> reservationPage = reservationRepository.findAll(pageable);
+    public Page<CargoReservationResponse> getAllReservations(Boolean isActive, Pageable pageable) {
+        Page<Reservation> reservationPage = reservationRepository.findAllByActive(isActive, pageable);
 
         return reservationPage.map(r -> new CargoReservationResponse(
                 r.getId(),
