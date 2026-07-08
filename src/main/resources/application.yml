@@ -67,3 +67,4 @@ logging:
   level:
     com.innowise.logistics.cargoservice: DEBUG
     liquibase: INFO
+
