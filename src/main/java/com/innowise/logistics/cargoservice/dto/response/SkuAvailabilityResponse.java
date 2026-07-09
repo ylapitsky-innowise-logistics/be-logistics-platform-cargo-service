@@ -10,18 +10,19 @@ import java.math.RoundingMode;
 import java.time.Instant;
 
 public record SkuAvailabilityResponse(
-        // Поля по результатам выборки
-        Sku sku,
-//        String mongoDocId,                          // Линк на MongoDB
-        String name,
-        Category category,
-        Double weight,
-        Dimension dimension,
 
-        // Вычисляемые поля
+        // Информация о SKU (каталог)
+        Sku sku,
+        String name,                    // из Cargo
+        Category category,              // из Cargo
+        Double weight,                  // из Cargo
+        Dimension dimension,            // из Cargo
+
+        // Статистика по ценам / Вычисляемые поля
         BigDecimal priceMin,
         BigDecimal priceMax,
 
+        // Даты
         // 🟢 Форматируем дату и принудительно переводим Instant (UTC) в зону GMT+3
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm 'GMT+3'", timezone = "GMT+3")
         Instant createdAtFrom,
@@ -29,6 +30,7 @@ public record SkuAvailabilityResponse(
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm 'GMT+3'", timezone = "GMT+3")
         Instant createdAtTo,
 
+        // Количество доступных товаров
         Long availableQuantity     // сколько таких товаров доступно
 ) {
     /**

@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -240,9 +241,12 @@ public class ReservationService {
     }
 
     private Double calculateTotalWeight(List<CargoReservationProjection> projections) {
-        return projections.stream()
+        double sum = projections.stream()
                 .mapToDouble(CargoReservationProjection::getWeight)
                 .sum();
+        return BigDecimal.valueOf(sum)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
     }
 
 

@@ -1,5 +1,6 @@
 package com.innowise.logistics.cargoservice.repository;
 
+import com.innowise.logistics.cargoservice.dto.SkuStats;
 import com.innowise.logistics.cargoservice.dto.response.SkuAvailabilityResponse;
 import com.innowise.logistics.cargoservice.entity.Cargo;
 import com.innowise.logistics.cargoservice.entity.Status;
@@ -173,4 +174,92 @@ public interface CargoRepository extends JpaRepository<Cargo, Long> {
     );
     // Возвращает количество обновлённых строк
 
+
+
+
+
+
+    /**
+     * Получить статистику по SKU с группировкой.
+     * Здесь мы работаем с Cargo, а не с Sku!
+     */
+    @Query("""
+           SELECT new com.innowise.logistics.cargoservice.dto.SkuStats(
+               c.sku.id,
+               c.sku.name,
+               c.sku.description,
+               c.sku.isActive,
+               c.sku.createdAt,
+               c.sku.updatedAt,
+               c.name,
+               c.category,
+               c.weight,
+               c.dimension,
+               MIN(c.price),
+               MAX(c.price),
+               COUNT(c.id),
+               MIN(c.createdAt),
+               MAX(c.createdAt)
+           )
+           FROM Cargo c
+           WHERE c.status = :status
+           AND (:isActive IS NULL OR c.sku.isActive = :isActive)
+           GROUP BY 
+               c.sku.id,
+               c.sku.name,
+               c.sku.description,
+               c.sku.isActive,
+               c.sku.createdAt,
+               c.sku.updatedAt,
+               c.name,
+               c.category,
+               c.weight,
+               c.dimension
+           """)
+    Page<SkuStats> findSkuStatsByStatusAndActive(
+            @Param("status") Status status,
+            @Param("isActive") Boolean isActive,
+            Pageable pageable
+    );
+
+    /**
+     * Получить статистику для конкретных SKU (для пост-обработки)
+     */
+    @Query("""
+           SELECT new com.innowise.logistics.cargoservice.dto.SkuStats(
+               c.sku.id,
+               c.sku.name,
+               c.sku.description,
+               c.sku.isActive,
+               c.sku.createdAt,
+               c.sku.updatedAt,
+               c.name,
+               c.category,
+               c.weight,
+               c.dimension,
+               MIN(c.price),
+               MAX(c.price),
+               COUNT(c.id),
+               MIN(c.createdAt),
+               MAX(c.createdAt)
+           )
+           FROM Cargo c
+           WHERE c.sku.id IN :skuIds
+           AND c.status = :status
+           GROUP BY 
+               c.sku.id,
+               c.sku.name,
+               c.sku.description,
+               c.sku.isActive,
+               c.sku.createdAt,
+               c.sku.updatedAt,
+               c.name,
+               c.category,
+               c.weight,
+               c.dimension
+           """)
+    List<SkuStats> getStatsBySkuIdsAndStatus(
+            @Param("skuIds") List<Long> skuIds,
+            @Param("status") Status status
+    );
 }
