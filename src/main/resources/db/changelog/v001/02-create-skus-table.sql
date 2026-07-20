@@ -5,12 +5,12 @@
 
 CREATE TABLE skus(
     sku_id      BIGSERIAL,
-    name        VARCHAR(100)    NOT NULL,
+    name        VARCHAR(100)                    NOT NULL,
 
     description VARCHAR(1000),
-    is_active   BOOLEAN         NOT NULL DEFAULT TRUE,
-    created_at  TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-    updated_at  TIMESTAMPTZ     NOT NULL,
+    is_active   BOOLEAN                         NOT NULL DEFAULT TRUE,
+    created_at  TIMESTAMP(0) WITHOUT TIME ZONE  NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMP(0) WITHOUT TIME ZONE  NOT NULL,
 
     CONSTRAINT pk_skus PRIMARY KEY (sku_id),
     CONSTRAINT uq_sku_name UNIQUE (name) -- Гарантия уникальности бизнес-кода на уровне БД

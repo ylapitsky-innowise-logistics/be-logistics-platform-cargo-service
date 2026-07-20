@@ -89,9 +89,10 @@ public class SkuController {
      */
     @GetMapping
     public ResponseEntity<PageResponse<SkuAvailabilityResponse>> getAvailableSkus(
+            @RequestParam(required = false) Boolean isActive,
             @PageableDefault(page = 0, size = 10, sort = "sku.id") Pageable pageable) {
         log.info("REST запрос на агрегированную статистику SKU. Пагинация: {}", pageable);
-        Page<SkuAvailabilityResponse> response = skuService.getAvailableSkus(pageable);
+        Page<SkuAvailabilityResponse> response = skuService.getAvailableSkusByActive(isActive, pageable);
         return ResponseEntity.ok(PageResponse.from(response));
     }
 

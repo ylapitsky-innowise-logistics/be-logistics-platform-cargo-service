@@ -11,17 +11,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -66,14 +61,19 @@ public class ReservationController {
 
     /**
      * 3️⃣ GET /api/v1/catalog/reservations
-     * Просмотреть все существующие резервирования (с пагинацией).
+     * Получить список бронирований с пагинацией и фильтром по активности.
+     * is_active = true -> вернет только активные
+     * is_active = false -> вернет только НЕ активные
+     * is_active = null -> вернет все
      */
     @GetMapping
     public ResponseEntity<PageResponse<CargoReservationResponse>> getAllReservations(
-            @PageableDefault(page = 0, size = 10) Pageable pageable) {
+            @RequestParam(required = false, name = "is_active") Boolean isActive,
+            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        log.info("REST запрос на получение списка всех бронирований. Пагинация: {}", pageable);
-        Page<CargoReservationResponse> response = reservationService.getAllReservations(pageable);
+        log.info("REST запрос на получение бронирований. isActive={}, page={}, size={}",
+                isActive, pageable.getPageNumber(), pageable.getPageSize());
+        Page<CargoReservationResponse> response = reservationService.getAllReservations(isActive, pageable);
         return ResponseEntity.ok(PageResponse.from(response));
     }
 

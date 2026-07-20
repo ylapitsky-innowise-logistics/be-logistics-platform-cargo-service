@@ -1,6 +1,7 @@
 package com.innowise.logistics.cargoservice.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.innowise.logistics.cargoservice.dto.SkuStats;
 import com.innowise.logistics.cargoservice.dto.request.SkuCreatingRequest;
 import com.innowise.logistics.cargoservice.dto.request.SkuUpdateRequest;
 import com.innowise.logistics.cargoservice.dto.response.CargoViewResponse;
@@ -12,6 +13,7 @@ import com.innowise.logistics.cargoservice.entity.Cargo;
 import com.innowise.logistics.cargoservice.entity.Sku;
 import com.innowise.logistics.cargoservice.entity.Status;
 import com.innowise.logistics.cargoservice.mapper.CargoMapper;
+import com.innowise.logistics.cargoservice.mapper.SkuAvailabilityMapper;
 import com.innowise.logistics.cargoservice.repository.CargoRepository;
 import com.innowise.logistics.cargoservice.repository.ReservationRepository;
 import com.innowise.logistics.cargoservice.repository.SkuRepository;
@@ -35,7 +37,7 @@ public class SkuService {
     private final ReservationRepository reservationRepository;
     private final SkuRepository skuRepository;
     private final CargoMapper cargoMapper;
-    private final ObjectMapper objectMapper;
+    private final SkuAvailabilityMapper skuAvailabilityMapper;
 
     // =========================================================
     // СТАНДАРТНЫЕ CRUD ОПЕРАЦИИ
@@ -101,8 +103,19 @@ public class SkuService {
     /**
      * 1️⃣ Просмотр агрегированной статистики по всем УНИКАЛЬНЫМ доступным SKU.
      */
-    public Page<SkuAvailabilityResponse> getAvailableSkus(Pageable pageable) {
-        return cargoRepository.findAvailableSkuStats(Status.AVAILABLE, pageable);
+    public Page<SkuAvailabilityResponse> getAvailableSkusByActive(Boolean isActive, Pageable pageable) {
+//        return cargoRepository.findAvailableSkuStats(Status.AVAILABLE, pageable);
+        log.debug("Getting SKU availability with isActive: {}", isActive);
+
+        // Один запрос к БД с группировкой
+        Page<SkuStats> statsPage = cargoRepository.findSkuStatsByStatusAndActive(
+                Status.AVAILABLE,
+                isActive,
+                pageable
+        );
+
+        // Маппим результат
+        return statsPage.map(skuAvailabilityMapper::toResponse);
     }
 
     /**
