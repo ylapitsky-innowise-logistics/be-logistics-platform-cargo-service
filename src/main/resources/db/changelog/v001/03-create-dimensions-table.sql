@@ -12,6 +12,8 @@ CREATE TABLE dimensions(
     CONSTRAINT pk_dimensions PRIMARY KEY (dimension_id)
 );
 
+ALTER TABLE dimensions ADD CONSTRAINT uq_dimensions_length_width_height UNIQUE (length, width, height);
+
 COMMENT ON COLUMN dimensions.dimension_id IS 'Первичный ключ габаритов';
 COMMENT ON COLUMN dimensions.length IS 'Длина товара';
 COMMENT ON COLUMN dimensions.width IS 'Ширина товара';

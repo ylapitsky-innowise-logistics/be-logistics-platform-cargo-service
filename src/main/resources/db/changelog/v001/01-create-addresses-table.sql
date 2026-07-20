@@ -17,6 +17,11 @@ CREATE TABLE addresses(
     CONSTRAINT pk_addresses PRIMARY KEY (address_id)
 );
 
+-- ✅ Уникальность адреса по всем полям (кроме ID)
+ALTER TABLE addresses ADD CONSTRAINT uq_addresses_full UNIQUE (
+    country, zip_code, city, microdistrict, street, house, block, apartment
+);
+
 COMMENT ON COLUMN addresses.address_id IS 'Первичный ключ адреса';
 COMMENT ON COLUMN addresses.country IS 'Страна';
 COMMENT ON COLUMN addresses.zip_code IS 'Почтовый индекс';
