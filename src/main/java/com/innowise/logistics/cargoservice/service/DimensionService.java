@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -22,6 +24,19 @@ public class DimensionService {
 
     @Transactional
     public DimensionCreatingResponse createDimension(DimensionCreatingRequest request) {
+        // 1. Проверяем, существует ли уже такой набор габаритов
+        Optional<Dimension> existingDimension = dimensionRepository
+                .findByLengthAndWidthAndHeight(
+                        request.getLength(),
+                        request.getWidth(),
+                        request.getHeight()
+                );
+
+        if (existingDimension.isPresent()) {
+            return new DimensionCreatingResponse(existingDimension.get().getId());
+        }
+
+        // 2. Если нет — создаём новые
         Dimension dimension = new Dimension();
         dimension.setLength(request.getLength());
         dimension.setWidth(request.getWidth());

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface SkuRepository extends JpaRepository<Sku, Long> {
 
@@ -23,6 +25,10 @@ public interface SkuRepository extends JpaRepository<Sku, Long> {
      */
     @Query("SELECT s FROM Sku s WHERE (:isActive IS NULL OR s.isActive = :isActive)")
     Page<Sku> findAllByActive(@Param("isActive") Boolean isActive, Pageable pageable);
+
+    // Ищем SKU по уникальному имени (бизнес-ключу)
+    Optional<Sku> findByName(String name);
+
 
 //    /**
 //     * Найти все активные SKU (isActive = true) с пагинацией и сортировкой.
