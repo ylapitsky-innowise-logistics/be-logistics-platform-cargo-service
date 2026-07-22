@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -25,13 +27,30 @@ public class LocationService {
 
     @Transactional
     public LocationCreatingResponse createLocation(LocationCreatingRequest request) {
-        Address address = addressRepository.findById(request.getAddressId())
-                .orElseThrow(() -> new EntityNotFoundException("Адрес склада с ID " + request.getAddressId() + " не найден"));
 
+        // 1. Проверяем, существует ли адрес
+        Address address = addressRepository.findById(request.getAddressId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Адрес склада с ID " + request.getAddressId() + " не найден"
+                ));
+
+        // 2. Проверяем, существует ли уже такая локация на этом адресе
+        Optional<Location> existingLocation = locationRepository
+                .findByRackAndShelfAndAddress_Id(
+                        request.getRack(),
+                        request.getShelf(),
+                        request.getAddressId()
+                );
+
+        if (existingLocation.isPresent()) {
+            return new LocationCreatingResponse(existingLocation.get().getId());
+        }
+
+        // 3. Если не существует — создаём новую
         Location location = new Location();
         location.setRack(request.getRack());
         location.setShelf(request.getShelf());
-        location.setAddress(address); // Привязываем managed-сущность адреса
+        location.setAddress(address);
 
         Location saved = locationRepository.save(location);
         return new LocationCreatingResponse(saved.getId());

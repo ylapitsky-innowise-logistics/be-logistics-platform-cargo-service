@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true) // Оптимизация для операций чтения
@@ -25,6 +27,25 @@ public class AddressService {
      */
     @Transactional
     public AddressCreatingResponse createAddress(AddressCreatingRequest request) {
+        // 1. Проверяем, существует ли уже такой адрес
+        Optional<Address> existingAddress = addressRepository
+                .findByCountryAndZipCodeAndCityAndMicrodistrictAndStreetAndHouseAndBlockAndApartment(
+                        request.getCountry(),
+                        request.getZipCode(),
+                        request.getCity(),
+                        request.getMicrodistrict(),
+                        request.getStreet(),
+                        request.getHouse(),
+                        request.getBlock(),
+                        request.getApartment()
+                );
+
+        // 2. Если существует — возвращаем его ID
+        if (existingAddress.isPresent()) {
+            return new AddressCreatingResponse(existingAddress.get().getId());
+        }
+
+        // 3. Если нет — создаём новый
         Address address = new Address();
         mapCreatingRequestToEntity(request, address);
         Address savedAddress = addressRepository.save(address);

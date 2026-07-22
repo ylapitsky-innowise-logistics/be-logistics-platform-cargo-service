@@ -13,6 +13,9 @@ CREATE TABLE locations(
     CONSTRAINT fk_locations_on_address FOREIGN KEY (address_id) REFERENCES addresses (address_id)
 );
 
+-- ✅ Уникальность ячейки по координатам + ID адреса
+ALTER TABLE locations ADD CONSTRAINT uq_locations_rack_shelf_address UNIQUE (rack, shelf, address_id);
+
 COMMENT ON COLUMN locations.location_id IS 'Первичный ключ ячейки нахождения';
 COMMENT ON COLUMN locations.shelf IS 'Полка, где находится товар';
 COMMENT ON COLUMN locations.rack IS 'Стеллаж, где находится товар';

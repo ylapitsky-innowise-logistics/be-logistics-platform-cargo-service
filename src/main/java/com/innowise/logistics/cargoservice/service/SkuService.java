@@ -27,6 +27,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -49,12 +51,26 @@ public class SkuService {
     @Transactional
     public SkuCreatingResponse createSku(SkuCreatingRequest request) {
         log.info("Создание нового артикула с именем: {}", request.getName());
+
+        // 1. Нормализуем имя (обрезаем пробелы)
+        String normalizedName = request.getName() != null ? request.getName().trim() : null;
+
+        // 2. Проверяем, существует ли уже SKU с таким именем
+        Optional<Sku> existingSku = skuRepository.findByName(normalizedName);
+
+        if (existingSku.isPresent()) {
+            log.debug("SKU с именем {} уже существует (ID: {})", normalizedName, existingSku.get().getId());
+            return new SkuCreatingResponse(existingSku.get().getId());
+        }
+
+        // 3. Если нет — создаём новый
         Sku sku = new Sku();
-        sku.setName(request.getName()); // Сработает кастомный тримминг пробелов
+        sku.setName(normalizedName); // Сработает кастомный тримминг пробелов
         sku.setDescription(request.getDescription());
         sku.setActive(true); // Новый артикул активен по умолчанию
 
         Sku savedSku = skuRepository.save(sku);
+        log.info("Создан новый SKU с ID: {}", savedSku.getId());
         return new SkuCreatingResponse(savedSku.getId());
     }
 
